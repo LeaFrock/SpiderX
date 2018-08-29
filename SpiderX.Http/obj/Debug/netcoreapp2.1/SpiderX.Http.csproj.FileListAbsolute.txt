@@ -1,0 +1,12 @@
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\bin\Debug\netcoreapp2.1\SpiderX.Http.deps.json
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\bin\Debug\netcoreapp2.1\SpiderX.Http.dll
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\bin\Debug\netcoreapp2.1\SpiderX.Http.pdb
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\bin\Debug\netcoreapp2.1\SpiderX.Extensions.dll
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\bin\Debug\netcoreapp2.1\SpiderX.Extensions.pdb
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.csprojAssemblyReference.cache
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.csproj.CoreCompileInputs.cache
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.AssemblyInfoInputs.cache
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.AssemblyInfo.cs
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.csproj.CopyComplete
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.dll
+D:\ProgramDemos\Github\SpiderX\SpiderX.Http\obj\Debug\netcoreapp2.1\SpiderX.Http.pdb

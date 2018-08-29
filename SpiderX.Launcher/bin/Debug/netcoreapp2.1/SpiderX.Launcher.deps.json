@@ -11,6 +11,7 @@
           "Microsoft.Extensions.Configuration": "2.1.1",
           "Microsoft.Extensions.Configuration.FileExtensions": "2.1.1",
           "Microsoft.Extensions.Configuration.Json": "2.1.1",
+          "SpiderX.Business": "1.0.0",
           "System.Text.Encoding.CodePages": "4.5.0"
         },
         "runtime": {
@@ -142,6 +143,11 @@
             "fileVersion": "4.6.26515.6"
           }
         }
+      },
+      "SpiderX.Business/1.0.0": {
+        "runtime": {
+          "SpiderX.Business.dll": {}
+        }
       }
     }
   },
@@ -234,6 +240,11 @@
       "sha512": "sha512-16EVkWmNnoH3/Yj9c5s5VuLK5Uv/Dnkc3P2kMmnD7wJcUuvcHVvM2IhVJanf2hHRZUitH+cIkPCPHrBoCXc7Rw==",
       "path": "system.text.encoding.codepages/4.5.0",
       "hashPath": "system.text.encoding.codepages.4.5.0.nupkg.sha512"
+    },
+    "SpiderX.Business/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

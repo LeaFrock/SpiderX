@@ -18,3 +18,6 @@ D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\bin\Debug\netcoreapp2.1\SpiderX.
 D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\obj\Debug\netcoreapp2.1\SpiderX.Launcher.dll
 D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\obj\Debug\netcoreapp2.1\SpiderX.Launcher.pdb
 D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\bin\Debug\netcoreapp2.1\AppSettings\appsettings.json
+D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\bin\Debug\netcoreapp2.1\SpiderX.Business.dll
+D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\bin\Debug\netcoreapp2.1\SpiderX.Business.pdb
+D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\obj\Debug\netcoreapp2.1\SpiderX.Launcher.csproj.CopyComplete

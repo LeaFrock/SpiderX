@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using SpiderX.Extensions.Http;
 
 namespace SpiderX.Http
 {
@@ -12,15 +13,17 @@ namespace SpiderX.Http
 			return WebRequest.CreateHttp(url);
 		}
 
-		public static HttpWebRequest CreateRequest(string url)
+		public static string GetResponseText(WebRequest request)
 		{
-			HttpWebRequest request = WebRequest.CreateHttp(url);
-			request.Accept = "application/json, text/javascript, */*; q=0.01";
-			request.Connection = "keep-alive";
-			request.ContentType = "application/json; encoding=utf-8";
-			request.Timeout = 5000;
-			request.UserAgent = "";
-			return request;
+			var r = GetResponse(request);
+			if (r == null)
+			{
+				return null;
+			}
+			using (r)
+			{
+				return r.ToText();
+			}
 		}
 
 		public static HttpWebResponse GetResponse(WebRequest request)

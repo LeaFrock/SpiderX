@@ -207,16 +207,6 @@
         "build": {
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
-      },
-      "SpiderX.BusinessBase/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v2.1",
-        "compile": {
-          "bin/placeholder/SpiderX.BusinessBase.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/SpiderX.BusinessBase.dll": {}
-        }
       }
     }
   },
@@ -683,17 +673,11 @@
         "netstandard.library.2.0.3.nupkg.sha512",
         "netstandard.library.nuspec"
       ]
-    },
-    "SpiderX.BusinessBase/1.0.0": {
-      "type": "project",
-      "path": "../SpiderX.BusinessBase/SpiderX.BusinessBase.csproj",
-      "msbuildProject": "../SpiderX.BusinessBase/SpiderX.BusinessBase.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.1": [
-      "Microsoft.NETCore.App >= 2.1.0",
-      "SpiderX.BusinessBase >= 1.0.0"
+      "Microsoft.NETCore.App >= 2.1.0"
     ]
   },
   "packageFolders": {
@@ -725,11 +709,7 @@
       },
       "frameworks": {
         "netcoreapp2.1": {
-          "projectReferences": {
-            "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.BusinessBase\\SpiderX.BusinessBase.csproj": {
-              "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.BusinessBase\\SpiderX.BusinessBase.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {

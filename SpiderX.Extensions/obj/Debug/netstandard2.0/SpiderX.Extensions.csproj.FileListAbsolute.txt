@@ -1,0 +1,9 @@
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\bin\Debug\netstandard2.0\SpiderX.Extensions.deps.json
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\bin\Debug\netstandard2.0\SpiderX.Extensions.dll
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\bin\Debug\netstandard2.0\SpiderX.Extensions.pdb
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\obj\Debug\netstandard2.0\SpiderX.Extensions.csprojAssemblyReference.cache
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\obj\Debug\netstandard2.0\SpiderX.Extensions.csproj.CoreCompileInputs.cache
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\obj\Debug\netstandard2.0\SpiderX.Extensions.AssemblyInfoInputs.cache
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\obj\Debug\netstandard2.0\SpiderX.Extensions.AssemblyInfo.cs
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\obj\Debug\netstandard2.0\SpiderX.Extensions.dll
+D:\ProgramDemos\Github\SpiderX\SpiderX.Extensions\obj\Debug\netstandard2.0\SpiderX.Extensions.pdb

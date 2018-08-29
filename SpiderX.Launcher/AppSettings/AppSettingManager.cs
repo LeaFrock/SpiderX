@@ -34,9 +34,9 @@ namespace SpiderX.Launcher
 
 		public IReadOnlyList<DbConfig> DbConfigs => _dbConfigs;
 
-		public string BllName { get; private set; }
+		public string CaseName { get; private set; }
 
-		public string[] BllParams { get; private set; }
+		public string[] CaseParams { get; private set; }
 
 		public DbConfig FindConfig(string name, bool isTest)
 		{
@@ -64,17 +64,17 @@ namespace SpiderX.Launcher
 			{
 				throw new ArgumentException("No DbConfigs Valid.");
 			}
-			string bllName = conf.GetSection("BllName").Value;
+			string bllName = conf.GetSection("CaseName").Value;
 			if (string.IsNullOrWhiteSpace(bllName))
 			{
-				throw new ArgumentNullException("BllName is Null or WhiteSpace");
+				throw new ArgumentNullException("CaseName is Null or WhiteSpace");
 			}
-			BllName = CorrectName(bllName);
-			var bllParams = conf.GetSection("BllParams").GetChildren();
-			BllParams = bllParams.Select(p => p.Value).ToArray();
+			CaseName = CorrectCaseName(bllName);
+			var bllParams = conf.GetSection("CaseParams").GetChildren();
+			CaseParams = bllParams.Select(p => p.Value).ToArray();
 		}
 
-		private static string CorrectName(string name)
+		private static string CorrectCaseName(string name)
 		{
 			string trimName = name.Trim();
 			if (!trimName.EndsWith("Bll", StringComparison.CurrentCultureIgnoreCase))

@@ -8,26 +8,26 @@ namespace SpiderX.Extensions.Http
 {
 	public static class HttpExtension
 	{
-		public static string ReadText(this HttpWebResponse response, bool isDisposeRequired = true)
+		public static string ToText(this HttpWebResponse response)
 		{
 			Stream responseStream = response.GetResponseStream();
 			//Check Encoding
-			Encoding encodingInstance;
+			Encoding encoding;
 			if (response.CharacterSet != null)
 			{
 				try
 				{
-					encodingInstance = Encoding.GetEncoding(response.CharacterSet);
+					encoding = Encoding.GetEncoding(response.CharacterSet);
 				}
 				catch (ArgumentException)
 				{
-					encodingInstance = Encoding.UTF8;
+					encoding = Encoding.UTF8;
 					Console.WriteLine("Invalid Encoding: " + response.CharacterSet);
 				}
 			}
 			else
 			{
-				encodingInstance = Encoding.UTF8;
+				encoding = Encoding.UTF8;
 			}
 			//Check GZip or Deflate
 			Stream readStream;
@@ -52,16 +52,10 @@ namespace SpiderX.Extensions.Http
 				readStream = responseStream;
 			}
 			//Output Text
-			string text;
-			using (StreamReader sr = new StreamReader(readStream, encoding: encodingInstance))
+			using (StreamReader sr = new StreamReader(readStream, encoding))
 			{
-				text = sr.ReadToEnd();
+				return sr.ReadToEnd();
 			}
-			if (isDisposeRequired)
-			{
-				response.Dispose();
-			}
-			return text;
 		}
 	}
 }

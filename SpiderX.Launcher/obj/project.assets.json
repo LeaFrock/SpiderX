@@ -351,6 +351,16 @@
             "rid": "win"
           }
         }
+      },
+      "SpiderX.Business/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.1",
+        "compile": {
+          "bin/placeholder/SpiderX.Business.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SpiderX.Business.dll": {}
+        }
       }
     }
   },
@@ -1036,6 +1046,11 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "SpiderX.Business/1.0.0": {
+      "type": "project",
+      "path": "../SpiderX.Business/SpiderX.Business.csproj",
+      "msbuildProject": "../SpiderX.Business/SpiderX.Business.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1044,6 +1059,7 @@
       "Microsoft.Extensions.Configuration.FileExtensions >= 2.1.1",
       "Microsoft.Extensions.Configuration.Json >= 2.1.1",
       "Microsoft.NETCore.App >= 2.1.0",
+      "SpiderX.Business >= 1.0.0",
       "System.Text.Encoding.CodePages >= 4.5.0"
     ]
   },
@@ -1076,7 +1092,11 @@
       },
       "frameworks": {
         "netcoreapp2.1": {
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Business\\SpiderX.Business.csproj": {
+              "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Business\\SpiderX.Business.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

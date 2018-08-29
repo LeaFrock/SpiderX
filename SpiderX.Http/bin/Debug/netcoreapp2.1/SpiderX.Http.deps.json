@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.1",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.1": {
+      "SpiderX.Http/1.0.0": {
+        "dependencies": {
+          "SpiderX.Extensions": "1.0.0"
+        },
+        "runtime": {
+          "SpiderX.Http.dll": {}
+        }
+      },
+      "SpiderX.Extensions/1.0.0": {
+        "runtime": {
+          "SpiderX.Extensions.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SpiderX.Http/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SpiderX.Extensions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

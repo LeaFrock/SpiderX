@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpiderX.Business\SpiderX.Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="AppSettings\appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
