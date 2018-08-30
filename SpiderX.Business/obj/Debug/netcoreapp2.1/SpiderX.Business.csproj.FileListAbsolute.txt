@@ -1,8 +1,0 @@
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\bin\Debug\netcoreapp2.1\SpiderX.Business.deps.json
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\bin\Debug\netcoreapp2.1\SpiderX.Business.dll
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\bin\Debug\netcoreapp2.1\SpiderX.Business.pdb
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\obj\Debug\netcoreapp2.1\SpiderX.Business.csproj.CoreCompileInputs.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\obj\Debug\netcoreapp2.1\SpiderX.Business.AssemblyInfoInputs.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\obj\Debug\netcoreapp2.1\SpiderX.Business.AssemblyInfo.cs
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\obj\Debug\netcoreapp2.1\SpiderX.Business.dll
-D:\ProgramDemos\Github\SpiderX\SpiderX.Business\obj\Debug\netcoreapp2.1\SpiderX.Business.pdb

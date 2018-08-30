@@ -1,9 +1,0 @@
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\bin\Debug\netcoreapp2.1\SpiderX.DataClient.deps.json
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\bin\Debug\netcoreapp2.1\SpiderX.DataClient.dll
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\obj\Debug\netcoreapp2.1\SpiderX.DataClient.csproj.CoreCompileInputs.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\obj\Debug\netcoreapp2.1\SpiderX.DataClient.AssemblyInfoInputs.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\obj\Debug\netcoreapp2.1\SpiderX.DataClient.AssemblyInfo.cs
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\bin\Debug\netcoreapp2.1\SpiderX.DataClient.pdb
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\obj\Debug\netcoreapp2.1\SpiderX.DataClient.csprojAssemblyReference.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\obj\Debug\netcoreapp2.1\SpiderX.DataClient.dll
-D:\ProgramDemos\Github\SpiderX\SpiderX.DataClient\obj\Debug\netcoreapp2.1\SpiderX.DataClient.pdb

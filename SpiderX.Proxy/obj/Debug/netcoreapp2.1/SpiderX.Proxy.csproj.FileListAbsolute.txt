@@ -1,9 +1,0 @@
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\bin\Debug\netcoreapp2.1\SpiderX.Proxy.deps.json
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\bin\Debug\netcoreapp2.1\SpiderX.Proxy.dll
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\bin\Debug\netcoreapp2.1\SpiderX.Proxy.pdb
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\obj\Debug\netcoreapp2.1\SpiderX.Proxy.csprojAssemblyReference.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\obj\Debug\netcoreapp2.1\SpiderX.Proxy.csproj.CoreCompileInputs.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\obj\Debug\netcoreapp2.1\SpiderX.Proxy.AssemblyInfoInputs.cache
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\obj\Debug\netcoreapp2.1\SpiderX.Proxy.AssemblyInfo.cs
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\obj\Debug\netcoreapp2.1\SpiderX.Proxy.dll
-D:\ProgramDemos\Github\SpiderX\SpiderX.Proxy\obj\Debug\netcoreapp2.1\SpiderX.Proxy.pdb
