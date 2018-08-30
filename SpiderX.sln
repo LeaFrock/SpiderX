@@ -23,7 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BusinessCase", "BusinessCas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.DataClient", "SpiderX.DataClient\SpiderX.DataClient.csproj", "{206063C2-4341-4FC1-985F-6E6238FFA0D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.Business", "SpiderX.Business\SpiderX.Business.csproj", "{F22F4C47-B588-4F8A-9889-2C21898F28F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Business", "SpiderX.Business\SpiderX.Business.csproj", "{F22F4C47-B588-4F8A-9889-2C21898F28F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.BusinessBase", "SpiderX.BusinessBase\SpiderX.BusinessBase.csproj", "{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{F22F4C47-B588-4F8A-9889-2C21898F28F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F22F4C47-B588-4F8A-9889-2C21898F28F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F22F4C47-B588-4F8A-9889-2C21898F28F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{616F4606-B4D5-4F76-9B58-7148A41572D4} = {687D0BA8-64D4-4E85-AD7A-74950C4932E7}
 		{206063C2-4341-4FC1-985F-6E6238FFA0D5} = {1395E972-C46B-4D1E-B0DB-A4D804D48A60}
 		{F22F4C47-B588-4F8A-9889-2C21898F28F0} = {ED7F11A2-5BF3-40E8-9D4E-D5F99FE695A4}
+		{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7} = {ED7F11A2-5BF3-40E8-9D4E-D5F99FE695A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA9EF8C1-3356-453F-94EF-F79B8E79D808}

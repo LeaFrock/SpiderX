@@ -352,14 +352,24 @@
           }
         }
       },
-      "SpiderX.Business/1.0.0": {
+      "SpiderX.BusinessBase/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v2.1",
+        "framework": ".NETStandard,Version=v2.0",
         "compile": {
-          "bin/placeholder/SpiderX.Business.dll": {}
+          "bin/placeholder/SpiderX.BusinessBase.dll": {}
         },
         "runtime": {
-          "bin/placeholder/SpiderX.Business.dll": {}
+          "bin/placeholder/SpiderX.BusinessBase.dll": {}
+        }
+      },
+      "SpiderX.Extensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "compile": {
+          "bin/placeholder/SpiderX.Extensions.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SpiderX.Extensions.dll": {}
         }
       }
     }
@@ -1047,10 +1057,15 @@
         "version.txt"
       ]
     },
-    "SpiderX.Business/1.0.0": {
+    "SpiderX.BusinessBase/1.0.0": {
       "type": "project",
-      "path": "../SpiderX.Business/SpiderX.Business.csproj",
-      "msbuildProject": "../SpiderX.Business/SpiderX.Business.csproj"
+      "path": "../SpiderX.BusinessBase/SpiderX.BusinessBase.csproj",
+      "msbuildProject": "../SpiderX.BusinessBase/SpiderX.BusinessBase.csproj"
+    },
+    "SpiderX.Extensions/1.0.0": {
+      "type": "project",
+      "path": "../SpiderX.Extensions/SpiderX.Extensions.csproj",
+      "msbuildProject": "../SpiderX.Extensions/SpiderX.Extensions.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1059,7 +1074,8 @@
       "Microsoft.Extensions.Configuration.FileExtensions >= 2.1.1",
       "Microsoft.Extensions.Configuration.Json >= 2.1.1",
       "Microsoft.NETCore.App >= 2.1.0",
-      "SpiderX.Business >= 1.0.0",
+      "SpiderX.BusinessBase >= 1.0.0",
+      "SpiderX.Extensions >= 1.0.0",
       "System.Text.Encoding.CodePages >= 4.5.0"
     ]
   },
@@ -1093,8 +1109,11 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Business\\SpiderX.Business.csproj": {
-              "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Business\\SpiderX.Business.csproj"
+            "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.BusinessBase\\SpiderX.BusinessBase.csproj": {
+              "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.BusinessBase\\SpiderX.BusinessBase.csproj"
+            },
+            "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Extensions\\SpiderX.Extensions.csproj": {
+              "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Extensions\\SpiderX.Extensions.csproj"
             }
           }
         }

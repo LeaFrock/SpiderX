@@ -26,6 +26,26 @@ namespace SpiderX.Launcher
 			}
 		}
 
+		private static string CorrectCaseName(string name)
+		{
+			string trimName = name.Trim();
+			if (!trimName.EndsWith("Bll", StringComparison.CurrentCultureIgnoreCase))
+			{
+				trimName += "Bll";
+			}
+			return trimName;
+		}
+
+		private static string CorrectBusinessDllName(string name)
+		{
+			string trimName = name.Trim();
+			if (trimName.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase))
+			{
+				return trimName;
+			}
+			return trimName + ".dll";
+		}
+
 		private AppSettingManager()
 		{
 		}
@@ -37,6 +57,10 @@ namespace SpiderX.Launcher
 		public string CaseName { get; private set; }
 
 		public string[] CaseParams { get; private set; }
+
+		public string BusinessDllName { get; private set; }
+
+		public bool AutoClose { get; private set; } = true;
 
 		public DbConfig FindConfig(string name, bool isTest)
 		{
@@ -50,7 +74,24 @@ namespace SpiderX.Launcher
 				.SetBasePath(filePath)
 				.AddJsonFile("appsettings.json", true, true)
 				.Build();
-			var dbConfigs = conf.GetSection("DbConfigs").GetChildren();
+			//Load .dll Name
+			string dllName = conf.GetSection(nameof(BusinessDllName)).Value;
+			if (string.IsNullOrWhiteSpace(dllName))
+			{
+				throw new ArgumentNullException("Invalid BusinessDllName.");
+			}
+			BusinessDllName = CorrectBusinessDllName(dllName);
+			//Load Case Name&Params
+			string bllName = conf.GetSection(nameof(CaseName)).Value;
+			if (string.IsNullOrWhiteSpace(bllName))
+			{
+				throw new ArgumentNullException("CaseName is Null or WhiteSpace");
+			}
+			CaseName = CorrectCaseName(bllName);
+			var bllParams = conf.GetSection(nameof(CaseParams)).GetChildren();
+			CaseParams = bllParams.Select(p => p.Value).ToArray();
+			//Load DbConfigs
+			var dbConfigs = conf.GetSection(nameof(DbConfigs)).GetChildren();
 			_dbConfigs = new List<DbConfig>();
 			foreach (var dbSection in dbConfigs)
 			{
@@ -64,24 +105,12 @@ namespace SpiderX.Launcher
 			{
 				throw new ArgumentException("No DbConfigs Valid.");
 			}
-			string bllName = conf.GetSection("CaseName").Value;
-			if (string.IsNullOrWhiteSpace(bllName))
+			//Load Other
+			var autoCloseStr = conf.GetSection(nameof(AutoClose)).Value;
+			if (bool.TryParse(autoCloseStr, out bool autoClose))
 			{
-				throw new ArgumentNullException("CaseName is Null or WhiteSpace");
+				AutoClose = autoClose;
 			}
-			CaseName = CorrectCaseName(bllName);
-			var bllParams = conf.GetSection("CaseParams").GetChildren();
-			CaseParams = bllParams.Select(p => p.Value).ToArray();
-		}
-
-		private static string CorrectCaseName(string name)
-		{
-			string trimName = name.Trim();
-			if (!trimName.EndsWith("Bll", StringComparison.CurrentCultureIgnoreCase))
-			{
-				trimName += "Bll";
-			}
-			return trimName;
 		}
 	}
 }

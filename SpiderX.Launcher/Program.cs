@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
-using SpiderX.Business;
+using SpiderX.BusinessBase;
+using SpiderX.Extensions;
 
 namespace SpiderX.Launcher
 {
@@ -8,34 +10,71 @@ namespace SpiderX.Launcher
 	{
 		private static void Main(string[] args)
 		{
-			var setting = AppSettingManager.Instance;
-			if (string.IsNullOrWhiteSpace(setting.CaseName))
+			//Startup
+			StartUp startUp = new StartUp();
+			startUp.Run();
+			//Load SettingManager
+			AppSettingManager settingManager = AppSettingManager.Instance;
+			//Get TargetType
+			if (!TryGetType(settingManager.CaseName, out Type bllType))
 			{
-				throw new ArgumentNullException("CaseName is Null or Empty.");
+				return;
 			}
-			if (!TryGetCaseType(setting.CaseName, out Type bllType))
+			if (!bllType.IsClass || bllType.IsNotPublic)
 			{
-				throw new TypeLoadException(setting.CaseName + " Not Found.");
+				throw new TypeAccessException(settingManager.CaseName + " Invalid Class.");
 			}
-
-			Console.ReadKey();
-		}
-
-		private static bool TryGetCaseType(string className, out Type caseType)
-		{
+			//Create Instance
+			object bllInstance;
 			try
 			{
-				Assembly a = typeof(BllBase).Assembly;
-				var types = a.GetTypes();
-				caseType = Array.Find(types, t => t.Name.Equals(className, StringComparison.CurrentCultureIgnoreCase));
-				return true;
+				bllInstance = Activator.CreateInstance(bllType, false);
 			}
-			catch //(Exception ex)
+			catch (Exception ex)
 			{
-				//throw ex;
-				caseType = null;
-				return false;
+				throw ex;
 			}
+			//Get&Invoke Method
+			string methodName = nameof(BllBase.Run);
+			if (settingManager.CaseParams.IsNullOrEmpty())
+			{
+				MethodInfo mi = bllType.GetMethod(methodName);
+				if (mi == null)
+				{
+					throw new MissingMethodException(settingManager.CaseName + " Method() Not Found.");
+				}
+				mi.Invoke(bllInstance, null);
+			}
+			else
+			{
+				MethodInfo mi = bllType.GetMethod(methodName, new Type[] { typeof(string[]) });
+				if (mi == null)
+				{
+					throw new MissingMethodException(settingManager.CaseName + " Method(string[]) Not Found.");
+				}
+				mi.Invoke(bllInstance, new object[] { settingManager.CaseParams });
+			}
+			//End
+			if (!settingManager.AutoClose)
+			{
+				Console.ReadKey();
+			}
+		}
+
+		private static bool TryGetType(string className, out Type caseType)
+		{
+			Type[] types;
+			try
+			{
+				Assembly a = Assembly.LoadFrom(Path.Combine(StartUp.ModulesFileName, AppSettingManager.Instance.BusinessDllName));
+				types = a.GetTypes();
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+			caseType = Array.Find(types, t => t.Name.Equals(className, StringComparison.CurrentCultureIgnoreCase));
+			return caseType != null;
 		}
 	}
 }

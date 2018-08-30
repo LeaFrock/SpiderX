@@ -4,4 +4,13 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>2</WarningLevel>
+    <OutputPath>D:\ProgramDemos\Github\SpiderX\SpiderX.Launcher\bin\Debug\netcoreapp2.1\Modules\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpiderX.BusinessBase\SpiderX.BusinessBase.csproj" />
+  </ItemGroup>
+
 </Project>
