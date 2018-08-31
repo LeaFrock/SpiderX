@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HelpBase", "HelpBase", "{2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetworkBase", "NetworkBase", "{687D0BA8-64D4-4E85-AD7A-74950C4932E7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestCase", "TestCase", "{E5592319-2535-4DB5-B6FA-DE1652B4672F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Extensions", "SpiderX.Extensions\SpiderX.Extensions.csproj", "{8BBE1AFC-3F90-42BF-9E22-9CA6C029E736}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Http", "SpiderX.Http\SpiderX.Http.csproj", "{ECD4EE45-8E0F-4A64-9618-FCEFA223F0D6}"
@@ -25,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.DataClient", "Spide
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Business", "SpiderX.Business\SpiderX.Business.csproj", "{F22F4C47-B588-4F8A-9889-2C21898F28F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.BusinessBase", "SpiderX.BusinessBase\SpiderX.BusinessBase.csproj", "{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.BusinessBase", "SpiderX.BusinessBase\SpiderX.BusinessBase.csproj", "{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
