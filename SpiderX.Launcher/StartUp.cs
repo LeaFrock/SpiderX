@@ -19,32 +19,11 @@ namespace SpiderX.Launcher
 		private void CheckModulesFile()
 		{
 			ModulesDirectoryPath = Path.Combine(Environment.CurrentDirectory, ModulesDirectoryName);
-			var settingManager = AppSettingManager.Instance;
 			if (!Directory.Exists(ModulesDirectoryPath))
 			{
 				Directory.CreateDirectory(ModulesDirectoryPath);
-				settingManager.CopyModuleTo(ModulesDirectoryPath);
 			}
-			else
-			{
-				switch (settingManager.BusinessModuleCopyMode)
-				{
-					case BusinessModuleCopyModeEnum.AlwaysCopy:
-						settingManager.CopyModuleTo(ModulesDirectoryPath);
-						break;
-
-					case BusinessModuleCopyModeEnum.CopyOnce:
-						if (File.Exists(ModulesDirectoryPath))
-						{
-							break;
-						}
-						settingManager.CopyModuleTo(ModulesDirectoryPath);
-						break;
-
-					default:
-						break;
-				}
-			}
+			AppSettingManager.Instance.CopyModuleTo(ModulesDirectoryPath);
 		}
 	}
 }

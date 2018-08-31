@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
+using SpiderX.DataClient;
 
 namespace SpiderX.Launcher
 {
@@ -89,7 +90,21 @@ namespace SpiderX.Launcher
 				throw new FileNotFoundException("Modules Load Fail: " + sourceFile);
 			}
 			string destFileName = Path.Combine(destDirectoryPath, BusinessModuleName);
-			File.Copy(sourceFile, destFileName, true);
+			switch (_businessModuleCopyMode)
+			{
+				case BusinessModuleCopyModeEnum.AlwaysCopy:
+					File.Copy(sourceFile, destFileName, true);
+					break;
+
+				case BusinessModuleCopyModeEnum.CopyOnce:
+					if (!File.Exists(destFileName))
+					{
+						File.Copy(sourceFile, destFileName);
+					}
+					break;
+
+				default: break;
+			}
 		}
 
 		private void Initialize()

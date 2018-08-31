@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpiderX.BusinessBase\SpiderX.BusinessBase.csproj" />
+    <ProjectReference Include="..\SpiderX.DataClient\SpiderX.DataClient.csproj" />
     <ProjectReference Include="..\SpiderX.Extensions\SpiderX.Extensions.csproj" />
   </ItemGroup>
 

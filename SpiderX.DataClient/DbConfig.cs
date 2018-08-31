@@ -1,9 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 
-namespace SpiderX.Launcher
+namespace SpiderX.DataClient
 {
 	public sealed class DbConfig
 	{
@@ -15,10 +14,9 @@ namespace SpiderX.Launcher
 
 		public DbCategoryEnum Cat { get; set; }
 
-		public string Connection { get; set; }
+		public string ConnectionString { get; set; }
 
-		[DefaultValue(true)]
-		public bool IsTest { get; set; }
+		public bool IsTest { get; set; } = true;
 
 		public static DbConfig CreateInstance(IConfiguration source)
 		{
@@ -28,24 +26,24 @@ namespace SpiderX.Launcher
 			{
 				return null;
 			}
-			string connection = source.GetSection("ConnectionString").Value;
+			string connection = source.GetSection(nameof(ConnectionString)).Value;
 			if (string.IsNullOrWhiteSpace(connection))
 			{
 				return null;
 			}
-			string catStr = source.GetSection("Cat").Value;
+			string catStr = source.GetSection(nameof(Cat)).Value;
 			if (!Enum.TryParse(catStr, out DbCategoryEnum cat))
 			{
 				return null;
 			}
-			string testStr = source.GetSection("IsTest").Value;
+			string testStr = source.GetSection(nameof(IsTest)).Value;
 			if (bool.TryParse(testStr, out bool isTest))
 			{
 				instance.IsTest = isTest;
 			}
-			instance.Name = source.GetSection("Name").Value ?? "???";
+			instance.Name = source.GetSection(nameof(Name)).Value ?? "???";
 			instance.Cat = cat;
-			instance.Connection = connection;
+			instance.ConnectionString = connection;
 			instance.TempId = Interlocked.Increment(ref _globalTempId);
 			return instance;
 		}
