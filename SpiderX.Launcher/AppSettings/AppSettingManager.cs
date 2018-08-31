@@ -58,13 +58,38 @@ namespace SpiderX.Launcher
 
 		public string[] CaseParams { get; private set; }
 
-		public string BusinessDllName { get; private set; }
+		public string BusinessModuleName { get; private set; }
+
+		public string BusinessModulePath { get; private set; }
+
+		private BusinessModuleCopyModeEnum _businessModuleCopyMode;
+
+		public BusinessModuleCopyModeEnum BusinessModuleCopyMode => _businessModuleCopyMode;
 
 		public bool AutoClose { get; private set; } = true;
 
 		public DbConfig FindConfig(string name, bool isTest)
 		{
 			return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
+		}
+
+		public void CopyModuleTo(string destDirectoryPath)
+		{
+			if (string.IsNullOrWhiteSpace(BusinessModulePath))
+			{
+				throw new ArgumentException("Modules Load Fail: Invalid BusinessModulePath.");
+			}
+			if (!Directory.Exists(BusinessModulePath))
+			{
+				throw new DirectoryNotFoundException("Modules Load Fail: " + BusinessModulePath);
+			}
+			string sourceFile = Path.Combine(BusinessModulePath, BusinessModuleName);
+			if (!File.Exists(sourceFile))
+			{
+				throw new FileNotFoundException("Modules Load Fail: " + sourceFile);
+			}
+			string destFileName = Path.Combine(destDirectoryPath, BusinessModuleName);
+			File.Copy(sourceFile, destFileName, true);
 		}
 
 		private void Initialize()
@@ -75,12 +100,15 @@ namespace SpiderX.Launcher
 				.AddJsonFile("appsettings.json", true, true)
 				.Build();
 			//Load .dll Name
-			string dllName = conf.GetSection(nameof(BusinessDllName)).Value;
+			string dllName = conf.GetSection(nameof(BusinessModuleName)).Value;
 			if (string.IsNullOrWhiteSpace(dllName))
 			{
-				throw new ArgumentNullException("Invalid BusinessDllName.");
+				throw new ArgumentNullException("Invalid BusinessModuleName.");
 			}
-			BusinessDllName = CorrectBusinessDllName(dllName);
+			BusinessModuleName = CorrectBusinessDllName(dllName);
+			BusinessModulePath = conf.GetSection(nameof(BusinessModulePath)).Value;
+			string copyMode = conf.GetSection(nameof(BusinessModuleCopyMode)).Value;
+			Enum.TryParse(copyMode, true, out _businessModuleCopyMode);
 			//Load Case Name&Params
 			string bllName = conf.GetSection(nameof(CaseName)).Value;
 			if (string.IsNullOrWhiteSpace(bllName))
@@ -112,5 +140,11 @@ namespace SpiderX.Launcher
 				AutoClose = autoClose;
 			}
 		}
+	}
+
+	public enum BusinessModuleCopyModeEnum : sbyte
+	{
+		CopyOnce = 0,//Copy only when the module doesn't exist
+		AlwaysCopy = 1,//Copy or Overwrite the module
 	}
 }

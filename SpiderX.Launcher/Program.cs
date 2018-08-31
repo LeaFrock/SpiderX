@@ -10,11 +10,11 @@ namespace SpiderX.Launcher
 	{
 		private static void Main(string[] args)
 		{
+			//Load SettingManager
+			AppSettingManager settingManager = AppSettingManager.Instance;
 			//Startup
 			StartUp startUp = new StartUp();
 			startUp.Run();
-			//Load SettingManager
-			AppSettingManager settingManager = AppSettingManager.Instance;
 			//Get TargetType
 			if (!TryGetType(settingManager.CaseName, out Type bllType))
 			{
@@ -66,7 +66,7 @@ namespace SpiderX.Launcher
 			Type[] types;
 			try
 			{
-				Assembly a = Assembly.LoadFrom(Path.Combine(StartUp.ModulesFileName, AppSettingManager.Instance.BusinessDllName));
+				Assembly a = Assembly.LoadFrom(Path.Combine(StartUp.ModulesDirectoryName, AppSettingManager.Instance.BusinessModuleName));
 				types = a.GetTypes();
 			}
 			catch (Exception ex)

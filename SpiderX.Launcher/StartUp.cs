@@ -6,9 +6,9 @@ namespace SpiderX.Launcher
 {
 	public sealed class StartUp
 	{
-		public const string ModulesFileName = "Modules";
+		public const string ModulesDirectoryName = "BusinessModules";
 
-		public static string ModulesFilePath { get; private set; }
+		public static string ModulesDirectoryPath { get; private set; }
 
 		public void Run()
 		{
@@ -18,9 +18,33 @@ namespace SpiderX.Launcher
 
 		private void CheckModulesFile()
 		{
-			string path = Path.Combine(Environment.CurrentDirectory, ModulesFileName);
-			Directory.CreateDirectory(path);
-			ModulesFilePath = path;
+			ModulesDirectoryPath = Path.Combine(Environment.CurrentDirectory, ModulesDirectoryName);
+			var settingManager = AppSettingManager.Instance;
+			if (!Directory.Exists(ModulesDirectoryPath))
+			{
+				Directory.CreateDirectory(ModulesDirectoryPath);
+				settingManager.CopyModuleTo(ModulesDirectoryPath);
+			}
+			else
+			{
+				switch (settingManager.BusinessModuleCopyMode)
+				{
+					case BusinessModuleCopyModeEnum.AlwaysCopy:
+						settingManager.CopyModuleTo(ModulesDirectoryPath);
+						break;
+
+					case BusinessModuleCopyModeEnum.CopyOnce:
+						if (File.Exists(ModulesDirectoryPath))
+						{
+							break;
+						}
+						settingManager.CopyModuleTo(ModulesDirectoryPath);
+						break;
+
+					default:
+						break;
+				}
+			}
 		}
 	}
 }
