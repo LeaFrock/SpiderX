@@ -3,17 +3,17 @@ using System.Threading;
 
 namespace SpiderX.DataClient
 {
-	public sealed class DataClientSetting
+	public sealed class DbClientSetting
 	{
-		private static DataClientSetting _instance;
+		private static DbClientSetting _instance;
 
-		public static DataClientSetting Instance
+		public static DbClientSetting Instance
 		{
 			get
 			{
 				if (_instance == null)
 				{
-					Interlocked.CompareExchange(ref _instance, new DataClientSetting(), null);
+					Interlocked.CompareExchange(ref _instance, new DbClientSetting(), null);
 				}
 				return _instance;
 			}

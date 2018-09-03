@@ -126,7 +126,7 @@ namespace SpiderX.Launcher
 			CaseParams = bllParams.Select(p => p.Value).ToArray();
 			//Load DbConfigs
 			var dbConfigs = LoadDbConfigs(conf);
-			DataClientSetting.Instance.InitializeConfigs(dbConfigs);
+			DbClientSetting.Instance.InitializeConfigs(dbConfigs);
 			//Load Other
 			var autoCloseStr = conf.GetSection(nameof(AutoClose)).Value;
 			if (bool.TryParse(autoCloseStr, out bool autoClose))
