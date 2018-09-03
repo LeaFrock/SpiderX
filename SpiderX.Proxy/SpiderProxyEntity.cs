@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Net;
 
 namespace SpiderX.Proxy
 {
@@ -31,7 +32,7 @@ namespace SpiderX.Proxy
 
 		private SpiderProxy _proxy;
 
-		public SpiderProxy Proxy
+		public IWebProxy Proxy
 		{
 			get
 			{

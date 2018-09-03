@@ -51,10 +51,6 @@ namespace SpiderX.Launcher
 		{
 		}
 
-		private List<DbConfig> _dbConfigs;
-
-		public IReadOnlyList<DbConfig> DbConfigs => _dbConfigs;
-
 		public string CaseName { get; private set; }
 
 		public string[] CaseParams { get; private set; }
@@ -68,11 +64,6 @@ namespace SpiderX.Launcher
 		public BusinessModuleCopyModeEnum BusinessModuleCopyMode => _businessModuleCopyMode;
 
 		public bool AutoClose { get; private set; } = true;
-
-		public DbConfig FindConfig(string name, bool isTest)
-		{
-			return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
-		}
 
 		public void CopyModuleTo(string destDirectoryPath)
 		{
@@ -114,7 +105,7 @@ namespace SpiderX.Launcher
 				.SetBasePath(filePath)
 				.AddJsonFile("appsettings.json", true, true)
 				.Build();
-			//Load .dll Name
+			//Load Module Name
 			string dllName = conf.GetSection(nameof(BusinessModuleName)).Value;
 			if (string.IsNullOrWhiteSpace(dllName))
 			{
@@ -134,26 +125,33 @@ namespace SpiderX.Launcher
 			var bllParams = conf.GetSection(nameof(CaseParams)).GetChildren();
 			CaseParams = bllParams.Select(p => p.Value).ToArray();
 			//Load DbConfigs
-			var dbConfigs = conf.GetSection(nameof(DbConfigs)).GetChildren();
-			_dbConfigs = new List<DbConfig>();
-			foreach (var dbSection in dbConfigs)
-			{
-				DbConfig item = DbConfig.CreateInstance(dbSection);
-				if (item != null)
-				{
-					_dbConfigs.Add(item);
-				}
-			}
-			if (_dbConfigs.Count < 1)
-			{
-				throw new ArgumentException("No DbConfigs Valid.");
-			}
+			var dbConfigs = LoadDbConfigs(conf);
+			DataClientSetting.Instance.InitializeConfigs(dbConfigs);
 			//Load Other
 			var autoCloseStr = conf.GetSection(nameof(AutoClose)).Value;
 			if (bool.TryParse(autoCloseStr, out bool autoClose))
 			{
 				AutoClose = autoClose;
 			}
+		}
+
+		private List<DbConfig> LoadDbConfigs(IConfigurationRoot root)
+		{
+			var dbSections = root.GetSection("DbConfigs").GetChildren();
+			var result = new List<DbConfig>();
+			foreach (var dbSection in dbSections)
+			{
+				DbConfig item = DbConfig.CreateInstance(dbSection);
+				if (item != null)
+				{
+					result.Add(item);
+				}
+			}
+			if (result.Count < 1)
+			{
+				throw new ArgumentException("No DbConfigs Valid.");
+			}
+			return result;
 		}
 	}
 
