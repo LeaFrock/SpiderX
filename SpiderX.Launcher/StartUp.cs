@@ -10,13 +10,13 @@ namespace SpiderX.Launcher
 
 		public static string ModulesDirectoryPath { get; private set; }
 
-		public void Run()
+		public static void Run()
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 			CheckModulesFile();
 		}
 
-		private void CheckModulesFile()
+		private static void CheckModulesFile()
 		{
 			ModulesDirectoryPath = Path.Combine(Environment.CurrentDirectory, ModulesDirectoryName);
 			if (!Directory.Exists(ModulesDirectoryPath))

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SpiderX.Launcher": {
+      "commandName": "Project",
+      "commandLineArgs": "csdn 1 11"
+    }
+  }
+}

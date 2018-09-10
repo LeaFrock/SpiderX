@@ -27,16 +27,6 @@ namespace SpiderX.Launcher
 			}
 		}
 
-		private static string CorrectCaseName(string name)
-		{
-			string trimName = name.Trim();
-			if (!trimName.EndsWith("Bll", StringComparison.CurrentCultureIgnoreCase))
-			{
-				trimName += "Bll";
-			}
-			return trimName;
-		}
-
 		private static string CorrectBusinessDllName(string name)
 		{
 			string trimName = name.Trim();
@@ -121,7 +111,7 @@ namespace SpiderX.Launcher
 			{
 				throw new ArgumentNullException("CaseName is Null or WhiteSpace");
 			}
-			CaseName = CorrectCaseName(bllName);
+			CaseName = bllName;
 			var bllParams = conf.GetSection(nameof(CaseParams)).GetChildren();
 			CaseParams = bllParams.Select(p => p.Value).ToArray();
 			//Load DbConfigs
