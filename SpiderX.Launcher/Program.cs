@@ -90,9 +90,9 @@ namespace SpiderX.Launcher
 				Assembly a = Assembly.LoadFrom(Path.Combine(StartUp.ModulesDirectoryName, AppSettingManager.Instance.BusinessModuleName));
 				types = a.GetTypes();
 			}
-			catch (Exception ex)
+			catch
 			{
-				throw ex;
+				throw;
 			}
 			caseType = Array.Find(types, t => t.Name.Equals(className, StringComparison.CurrentCultureIgnoreCase));
 			return caseType != null;

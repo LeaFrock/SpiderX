@@ -59,7 +59,8 @@ namespace SpiderX.Launcher
 		{
 			if (string.IsNullOrWhiteSpace(BusinessModulePath))
 			{
-				throw new ArgumentException("Modules Load Fail: Invalid BusinessModulePath.");
+				//throw new ArgumentException("Modules Load Fail: Invalid BusinessModulePath.");
+				return;
 			}
 			if (!Directory.Exists(BusinessModulePath))
 			{
