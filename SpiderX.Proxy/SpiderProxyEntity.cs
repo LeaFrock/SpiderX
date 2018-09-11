@@ -10,11 +10,14 @@ namespace SpiderX.Proxy
 
 		public string Port { get; set; }
 
-		public string IpString { get; set; }
-
-		public string City { get; set; }
+		public string Location { get; set; }
 
 		public bool HttpsEnabled { get; set; }
+
+		/// <summary>
+		/// 匿名度（0透明1普匿2混淆3高匿）
+		/// </summary>
+		public int AnonymityDegree { get; set; }
 
 		private Uri _address;
 
