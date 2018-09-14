@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpiderX.BusinessBase
+﻿namespace SpiderX.BusinessBase
 {
 	public abstract class BllBase
 	{
@@ -10,7 +8,6 @@ namespace SpiderX.BusinessBase
 
 		public virtual void Run()
 		{
-			throw new NotImplementedException(ClassName + " Method() Not Overrided.");
 		}
 	}
 }

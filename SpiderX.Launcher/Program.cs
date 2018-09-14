@@ -13,10 +13,31 @@ namespace SpiderX.Launcher
 			//Load SettingManager
 			AppSettingManager settingManager = AppSettingManager.Instance;
 			//Startup
-			StartUp startUp = new StartUp();
-			startUp.Run();
+			StartUp.Run();
+			//Get Input
+			string caseName;
+			string[] caseParams;
+			if (args.IsNullOrEmpty())
+			{
+				caseName = settingManager.CaseName;
+				caseParams = settingManager.CaseParams;
+			}
+			else
+			{
+				caseName = args[0];
+				if (args.Length > 1)
+				{
+					caseParams = new string[args.Length - 1];
+					Array.Copy(args, 1, caseParams, 0, caseParams.Length);
+				}
+				else
+				{
+					caseParams = null;
+				}
+			}
+			caseName = CorrectCaseName(caseName);
 			//Get TargetType
-			if (!TryGetType(settingManager.CaseName, out Type bllType))
+			if (!TryGetType(caseName, out Type bllType))
 			{
 				return;
 			}
@@ -36,12 +57,12 @@ namespace SpiderX.Launcher
 			}
 			//Get&Invoke Method
 			string methodName = nameof(BllBase.Run);
-			if (settingManager.CaseParams.IsNullOrEmpty())
+			if (caseParams.IsNullOrEmpty())
 			{
-				MethodInfo mi = bllType.GetMethod(methodName);
+				MethodInfo mi = bllType.GetMethod(methodName, Type.EmptyTypes);
 				if (mi == null)
 				{
-					throw new MissingMethodException(settingManager.CaseName + " Method() Not Found.");
+					throw new MissingMethodException(caseName + " Method() Not Found.");
 				}
 				mi.Invoke(bllInstance, null);
 			}
@@ -50,9 +71,9 @@ namespace SpiderX.Launcher
 				MethodInfo mi = bllType.GetMethod(methodName, new Type[] { typeof(string[]) });
 				if (mi == null)
 				{
-					throw new MissingMethodException(settingManager.CaseName + " Method(string[]) Not Found.");
+					throw new MissingMethodException(caseName + " Method(string[]) Not Found.");
 				}
-				mi.Invoke(bllInstance, new object[] { settingManager.CaseParams });
+				mi.Invoke(bllInstance, new object[] { caseParams });
 			}
 			//End
 			if (!settingManager.AutoClose)
@@ -69,12 +90,22 @@ namespace SpiderX.Launcher
 				Assembly a = Assembly.LoadFrom(Path.Combine(StartUp.ModulesDirectoryName, AppSettingManager.Instance.BusinessModuleName));
 				types = a.GetTypes();
 			}
-			catch (Exception ex)
+			catch
 			{
-				throw ex;
+				throw;
 			}
 			caseType = Array.Find(types, t => t.Name.Equals(className, StringComparison.CurrentCultureIgnoreCase));
 			return caseType != null;
+		}
+
+		private static string CorrectCaseName(string name)
+		{
+			string trimName = name.Trim();
+			if (!trimName.EndsWith("Bll", StringComparison.CurrentCultureIgnoreCase))
+			{
+				trimName += "Bll";
+			}
+			return trimName;
 		}
 	}
 }
