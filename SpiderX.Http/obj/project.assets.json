@@ -697,23 +697,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\PeterChen\\.nuget\\packages\\": {},
+    "C:\\Users\\叶影\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Http\\SpiderX.Http.csproj",
+      "projectUniqueName": "F:\\Program\\Github\\SpiderX\\SpiderX.Http\\SpiderX.Http.csproj",
       "projectName": "SpiderX.Http",
-      "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Http\\SpiderX.Http.csproj",
-      "packagesPath": "C:\\Users\\PeterChen\\.nuget\\packages\\",
-      "outputPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Http\\obj\\",
+      "projectPath": "F:\\Program\\Github\\SpiderX\\SpiderX.Http\\SpiderX.Http.csproj",
+      "packagesPath": "C:\\Users\\叶影\\.nuget\\packages\\",
+      "outputPath": "F:\\Program\\Github\\SpiderX\\SpiderX.Http\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\PeterChen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\叶影\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -726,8 +726,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Extensions\\SpiderX.Extensions.csproj": {
-              "projectPath": "D:\\ProgramDemos\\Github\\SpiderX\\SpiderX.Extensions\\SpiderX.Extensions.csproj"
+            "F:\\Program\\Github\\SpiderX\\SpiderX.Extensions\\SpiderX.Extensions.csproj": {
+              "projectPath": "F:\\Program\\Github\\SpiderX\\SpiderX.Extensions\\SpiderX.Extensions.csproj"
             }
           }
         }
