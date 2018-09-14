@@ -12,12 +12,17 @@ namespace SpiderX.Proxy
 
 		public string Location { get; set; }
 
-		public bool HttpsEnabled { get; set; }
+		/// <summary>
+		/// IP类型（0Http 1Https）
+		/// </summary>
+		public int Category { get; set; }
 
 		/// <summary>
-		/// 匿名度（0透明1普匿2混淆3高匿）
+		/// 匿名度（0透明 1普匿2 混淆 3高匿）
 		/// </summary>
 		public int AnonymityDegree { get; set; }
+
+		public double ResponseSeconds { get; set; }
 
 		private Uri _address;
 

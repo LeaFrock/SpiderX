@@ -59,7 +59,7 @@ namespace SpiderX.Launcher
 			string methodName = nameof(BllBase.Run);
 			if (caseParams.IsNullOrEmpty())
 			{
-				MethodInfo mi = bllType.GetMethod(methodName);
+				MethodInfo mi = bllType.GetMethod(methodName, Type.EmptyTypes);
 				if (mi == null)
 				{
 					throw new MissingMethodException(caseName + " Method() Not Found.");

@@ -5,11 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.8.7" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SpiderX.BusinessBase\SpiderX.BusinessBase.csproj" />
+    <ProjectReference Include="..\SpiderX.Http\SpiderX.Http.csproj" />
   </ItemGroup>
 
 </Project>
