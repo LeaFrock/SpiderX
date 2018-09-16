@@ -8,12 +8,14 @@ namespace SpiderX.Http
     {
         public HtmlDocument LoadHtml(WebResponse response)
         {
+            HtmlDocument document = new HtmlDocument();
             try
             {
-                Stream stream = response.GetResponseStream();
-                HtmlDocument document = new HtmlDocument();
-                document.Load(stream);
-                return document;
+                using (Stream stream = response.GetResponseStream())
+                {
+                    document.Load(stream);
+                    return document;
+                }
             }
             catch
             {
