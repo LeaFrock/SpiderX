@@ -1,20 +1,30 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using HtmlAgilityPack;
 
 namespace SpiderX.Http
 {
-	public sealed class HtmlResponser
-	{
-		public HtmlDocument LoadHtml(WebRequest request)
-		{
-			var response = request.GetResponseText();
-			if (string.IsNullOrEmpty(response))
-			{
-				return null;
-			}
-			HtmlDocument document = new HtmlDocument();
-			document.Load(response);
-			return document;
-		}
-	}
+    public sealed class HtmlResponser
+    {
+        public HtmlDocument LoadHtml(WebResponse response)
+        {
+            HtmlDocument document = new HtmlDocument();
+            try
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    document.Load(stream);
+                    return document;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                response.Dispose();
+            }
+        }
+    }
 }
