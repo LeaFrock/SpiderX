@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 
 namespace SpiderX.DataClient
@@ -10,6 +11,8 @@ namespace SpiderX.DataClient
 		public int TempId { get; set; }
 
 		public string Name { get; set; }
+
+		public DbEnum Type { get; set; }
 
 		public string ConnectionString { get; set; }
 
@@ -23,11 +26,17 @@ namespace SpiderX.DataClient
 			{
 				return null;
 			}
-			string connection = source.GetSection(nameof(ConnectionString)).Value;
-			if (string.IsNullOrWhiteSpace(connection))
+			string connection = source.GetSection(nameof(ConnectionString)).Value?.Trim();
+			if (string.IsNullOrEmpty(connection))
 			{
 				return null;
 			}
+			string typeStr = source.GetSection(nameof(Type)).Value;
+			if (!Enum.TryParse(typeStr, out DbEnum type))
+			{
+				return null;
+			}
+			instance.Type = type;
 			string testStr = source.GetSection(nameof(IsTest)).Value;
 			if (bool.TryParse(testStr, out bool isTest))
 			{
