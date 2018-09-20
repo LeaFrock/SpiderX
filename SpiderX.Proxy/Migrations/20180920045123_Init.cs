@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SpiderX.Proxy.Migrations
 {
-    public partial class InitSpiderProxy : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,7 +13,7 @@ namespace SpiderX.Proxy.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Host = table.Column<string>(nullable: true),
+                    Host = table.Column<string>(type: "VARCHAR(32)", nullable: true),
                     Port = table.Column<int>(nullable: false),
                     Location = table.Column<string>(nullable: true),
                     Category = table.Column<int>(nullable: false),

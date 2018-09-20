@@ -9,8 +9,8 @@ using SpiderX.Proxy;
 namespace SpiderX.Proxy.Migrations
 {
     [DbContext(typeof(ProxyDbContext))]
-    [Migration("20180918105327_InitSpiderProxy")]
-    partial class InitSpiderProxy
+    [Migration("20180920045123_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,7 +30,8 @@ namespace SpiderX.Proxy.Migrations
 
                     b.Property<int>("Category");
 
-                    b.Property<string>("Host");
+                    b.Property<string>("Host")
+                        .HasColumnType("VARCHAR(32)");
 
                     b.Property<string>("Location");
 

@@ -1,29 +1,38 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace SpiderX.DataClient
 {
 	public sealed class DbClient
 	{
-		private DbClientSetting _setting;
+		public DbClient() : this(DbClientSetting.Instance)
+		{
+		}
 
-		public DbClientSetting Setting
+		public DbClient(DbClientSetting setting)
+		{
+			Setting = setting ?? throw new ArgumentNullException("Setting Cannot be Null.");
+		}
+
+		private static DbClient _default;
+
+		public static DbClient Default
 		{
 			get
 			{
-				if (_setting == null)
+				if (_default == null)
 				{
-					Interlocked.CompareExchange(ref _setting, DbClientSetting.Instance, null);
+					Interlocked.CompareExchange(ref _default, new DbClient(), null);
 				}
-				return _setting;
-			}
-			set
-			{
-				Interlocked.Exchange(ref _setting, value);
+				return _default;
 			}
 		}
 
-		//public IDbConnection CreateConnection(string connectString)
-		//{
-		//}
+		public DbClientSetting Setting { get; }
+
+		public DbConfig FindConfig(string name, bool isTest)
+		{
+			return Setting.FindConfig(name, isTest);
+		}
 	}
 }

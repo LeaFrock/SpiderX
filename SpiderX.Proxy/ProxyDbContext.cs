@@ -52,6 +52,9 @@ namespace SpiderX.Proxy
 				.Property(e => e.Id)
 				.ValueGeneratedOnAdd();
 			modelBuilder.Entity<SpiderProxyEntity>()
+				.Property(e => e.Host)
+				.HasColumnType("VARCHAR(32)");
+			modelBuilder.Entity<SpiderProxyEntity>()
 				.HasIndex(e => new { e.Host, e.Port })
 				.IsUnique();
 			modelBuilder.Entity<SpiderProxyEntity>()

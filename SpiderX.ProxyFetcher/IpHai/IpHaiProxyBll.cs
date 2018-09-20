@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using SpiderX.BusinessBase;
+using SpiderX.DataClient;
 using SpiderX.Http;
 using SpiderX.Proxy;
 
@@ -32,6 +33,11 @@ namespace SpiderX.ProxyFetcher
 		public override void Run()
 		{
 			base.Run();
+			ProxyAgent pa = CreateProxyAgent();
+			if (pa == null)
+			{
+				return;
+			}
 			var ngEntities = GetProxyEntities(NgUrl);
 			var npEntities = GetProxyEntities(NpUrl);
 			var wgEntities = GetProxyEntities(WgUrl);
@@ -41,6 +47,17 @@ namespace SpiderX.ProxyFetcher
 			totalEntities.AddRange(npEntities);
 			totalEntities.AddRange(wgEntities);
 			totalEntities.AddRange(wpEntities);
+			pa.AddProxyEntities(totalEntities);
+		}
+
+		private ProxyAgent CreateProxyAgent()
+		{
+			var conf = DbClient.Default.FindConfig("SqlServerTest", true);
+			if (conf == null)
+			{
+				return null;
+			}
+			return new ProxyAgent(conf);
 		}
 
 		private List<SpiderProxyEntity> GetProxyEntities(string url)

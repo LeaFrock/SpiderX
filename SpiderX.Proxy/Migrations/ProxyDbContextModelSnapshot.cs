@@ -28,7 +28,8 @@ namespace SpiderX.Proxy.Migrations
 
                     b.Property<int>("Category");
 
-                    b.Property<string>("Host");
+                    b.Property<string>("Host")
+                        .HasColumnType("VARCHAR(32)");
 
                     b.Property<string>("Location");
 
