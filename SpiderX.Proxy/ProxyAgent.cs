@@ -22,7 +22,7 @@ namespace SpiderX.Proxy
 			}
 		}
 
-		public int AddProxyEntities(IEnumerable<SpiderProxyEntity> entities)
+		public int InsertProxyEntities(IEnumerable<SpiderProxyEntity> entities)
 		{
 			using (var context = new ProxyDbContext(DbConfig))
 			{

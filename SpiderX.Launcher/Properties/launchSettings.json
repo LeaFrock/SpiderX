@@ -1,7 +1,8 @@
 {
   "profiles": {
     "SpiderX.Launcher": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "iphaiproxy"
     }
   }
 }

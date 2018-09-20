@@ -7,9 +7,8 @@ namespace SpiderX.Business.CSDN
 	{
 		public override string ClassName => GetType().Name;
 
-		public override void Run(params string[] objs)
+		public override void Run(params string[] args)
 		{
-			Console.WriteLine(objs[0] + objs[1]);
 		}
 	}
 }

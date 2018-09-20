@@ -4,7 +4,7 @@
 	{
 		public abstract string ClassName { get; }
 
-		public abstract void Run(params string[] objs);
+		public abstract void Run(params string[] args);
 
 		public virtual void Run()
 		{

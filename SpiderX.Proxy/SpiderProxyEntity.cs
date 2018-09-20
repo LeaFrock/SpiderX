@@ -24,7 +24,7 @@ namespace SpiderX.Proxy
 		/// </summary>
 		public int AnonymityDegree { get; set; }
 
-		public int ResponseMilliseconds { get; set; }
+		public int ResponseMilliseconds { get; set; } = 10000;
 
 		private Uri _address;
 
