@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Business", "SpiderX
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.BusinessBase", "SpiderX.BusinessBase\SpiderX.BusinessBase.csproj", "{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.ProxyFetcher", "SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj", "{F21A7920-203D-4D73-96FE-C96652E733B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.ProxyFetcher", "SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj", "{F21A7920-203D-4D73-96FE-C96652E733B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.Security", "SpiderX.Security\SpiderX.Security.csproj", "{990E9CD4-335A-4D38-A218-AECD5CEE61BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{F21A7920-203D-4D73-96FE-C96652E733B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F21A7920-203D-4D73-96FE-C96652E733B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F21A7920-203D-4D73-96FE-C96652E733B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{990E9CD4-335A-4D38-A218-AECD5CEE61BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{990E9CD4-335A-4D38-A218-AECD5CEE61BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{990E9CD4-335A-4D38-A218-AECD5CEE61BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{990E9CD4-335A-4D38-A218-AECD5CEE61BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +83,7 @@ Global
 		{F22F4C47-B588-4F8A-9889-2C21898F28F0} = {ED7F11A2-5BF3-40E8-9D4E-D5F99FE695A4}
 		{03B2DACA-E3F3-4482-BD5B-3EE242FEADF7} = {ED7F11A2-5BF3-40E8-9D4E-D5F99FE695A4}
 		{F21A7920-203D-4D73-96FE-C96652E733B8} = {ED7F11A2-5BF3-40E8-9D4E-D5F99FE695A4}
+		{990E9CD4-335A-4D38-A218-AECD5CEE61BF} = {2B321A9D-71DB-4080-A732-A396F5517448}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA9EF8C1-3356-453F-94EF-F79B8E79D808}
