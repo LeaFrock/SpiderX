@@ -46,20 +46,15 @@ namespace SpiderX.Proxy
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<SpiderProxyEntity>()
-				.HasKey(e => e.Id);
-			modelBuilder.Entity<SpiderProxyEntity>()
-				.Property(e => e.Id)
-				.ValueGeneratedOnAdd();
-			modelBuilder.Entity<SpiderProxyEntity>()
-				.Property(e => e.Host)
-				.HasColumnType("VARCHAR(32)");
-			modelBuilder.Entity<SpiderProxyEntity>()
-				.HasIndex(e => new { e.Host, e.Port })
-				.IsUnique();
-			modelBuilder.Entity<SpiderProxyEntity>()
-				.Ignore(e => e.Address)
-				.Ignore(e => e.Value);
+			modelBuilder.Entity<SpiderProxyEntity>(e =>
+			{
+				e.HasKey(p => p.Id);
+				e.Property(p => p.Id).ValueGeneratedOnAdd();
+				e.HasIndex(p => new { p.Host, p.Port }).IsUnique();
+				e.Property(p => p.Host).HasColumnType("VARCHAR(32)");
+				e.Ignore(p => p.Address);
+				e.Ignore(p => p.Value);
+			});
 		}
 	}
 }

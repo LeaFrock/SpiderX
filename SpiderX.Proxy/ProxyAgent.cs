@@ -14,7 +14,7 @@ namespace SpiderX.Proxy
 
 		public DbConfig DbConfig { get; }
 
-		public List<SpiderProxyEntity> SelectProxyEntities()
+		public List<SpiderProxyEntity> SelectTotalProxyEntities()
 		{
 			using (var context = new ProxyDbContext(DbConfig))
 			{
@@ -22,11 +22,25 @@ namespace SpiderX.Proxy
 			}
 		}
 
+		public List<SpiderProxyEntity> SelectProxyEntities(Func<SpiderProxyEntity, bool> match)
+		{
+			using (var context = new ProxyDbContext(DbConfig))
+			{
+				return context.ProxyEntities.Where(match).ToList();
+			}
+		}
+
 		public int InsertProxyEntities(IEnumerable<SpiderProxyEntity> entities)
 		{
 			using (var context = new ProxyDbContext(DbConfig))
 			{
-				context.ProxyEntities.AddRange(entities);
+				foreach (var entity in entities)
+				{
+					if (!context.ProxyEntities.Any(p => p.Host == entity.Host && p.Port == entity.Port))
+					{
+						context.ProxyEntities.Add(entity);
+					}
+				}
 				return context.SaveChanges();
 			}
 		}
