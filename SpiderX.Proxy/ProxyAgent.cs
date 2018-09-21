@@ -32,16 +32,19 @@ namespace SpiderX.Proxy
 
 		public int InsertProxyEntities(IEnumerable<SpiderProxyEntity> entities)
 		{
+			int count = 0;
+			var distinctEntities = entities.Distinct(SpiderProxyEntityComparer.Default);
 			using (var context = new ProxyDbContext(DbConfig))
 			{
-				foreach (var entity in entities)
+				foreach (var entity in distinctEntities)
 				{
 					if (!context.ProxyEntities.Any(p => p.Host == entity.Host && p.Port == entity.Port))
 					{
 						context.ProxyEntities.Add(entity);
+						count++;
 					}
 				}
-				return context.SaveChanges();
+				return count > 0 ? context.SaveChanges() : 0;
 			}
 		}
 
@@ -61,9 +64,10 @@ namespace SpiderX.Proxy
 
 		public int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyEntity> update)
 		{
+			var distinctIds = ids.Distinct();
 			using (var context = new ProxyDbContext(DbConfig))
 			{
-				foreach (var id in ids)
+				foreach (var id in distinctIds)
 				{
 					var entity = context.ProxyEntities.Find(id);
 					if (entity != null)

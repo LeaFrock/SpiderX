@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 
 namespace SpiderX.Proxy
 {
-	public sealed class SpiderProxyEntity
+	public sealed class SpiderProxyEntity : IEqualityComparer<SpiderProxyEntity>
 	{
 		public int Id { get; set; }
 
@@ -52,6 +53,16 @@ namespace SpiderX.Proxy
 				}
 				return _value;
 			}
+		}
+
+		public bool Equals(SpiderProxyEntity x, SpiderProxyEntity y)
+		{
+			return x.Host == y.Host && x.Port == y.Port;
+		}
+
+		public int GetHashCode(SpiderProxyEntity obj)
+		{
+			return Address.Authority.GetHashCode();
 		}
 	}
 }

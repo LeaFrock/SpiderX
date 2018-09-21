@@ -29,7 +29,7 @@ namespace SpiderX.ProxyFetcher.KuaiDaili
 		{
 			base.Run();
 			ProxyAgent pa = CreateProxyAgent();
-			var entities = GetProxyEntities(InhaUrlTemplate, 1);
+			var entities = GetProxyEntities(IntrUrlTemplate, 1);
 			int insertCount = pa.InsertProxyEntities(entities);
 		}
 
@@ -135,7 +135,7 @@ namespace SpiderX.ProxyFetcher.KuaiDaili
 
 		private HttpWebRequest CreateRequest(string urlTemplate, int page)
 		{
-			var request = WebRequest.CreateHttp(InhaUrlTemplate + page.ToString());
+			var request = WebRequest.CreateHttp(urlTemplate + page.ToString());
 			request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
 			request.Host = HomePageHost;
 			request.UserAgent = HttpConsole.DefaultPcUserAgent;
