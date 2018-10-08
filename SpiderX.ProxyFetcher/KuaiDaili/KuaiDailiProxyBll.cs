@@ -29,7 +29,7 @@ namespace SpiderX.ProxyFetcher.KuaiDaili
 		{
 			base.Run();
 			ProxyAgent pa = CreateProxyAgent();
-			var entities = GetProxyEntities(IntrUrlTemplate, 1);
+			var entities = GetProxyEntities(InhaUrlTemplate, 1);
 			int insertCount = pa.InsertProxyEntities(entities);
 		}
 

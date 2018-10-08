@@ -11,14 +11,12 @@ namespace SpiderX.Launcher
 		private static void Main(string[] args)
 		{
 			//Load SettingManager
-			AppSettingManager settingManager = AppSettingManager.Instance;
-			//Startup
-			StartUp.Run();
-			//Get Input
+			AppSettingManager settingManager;
 			string caseName;
 			string[] caseParams;
 			if (args.IsNullOrEmpty())
 			{
+				settingManager = AppSettingManager.Instance;
 				caseName = settingManager.CaseName;
 				caseParams = settingManager.CaseParams;
 			}
@@ -34,8 +32,11 @@ namespace SpiderX.Launcher
 				{
 					caseParams = null;
 				}
+				settingManager = AppSettingManager.CreateInstance(caseName, caseParams);
+				caseName = settingManager.CaseName;
 			}
-			caseName = CorrectCaseName(caseName);
+			//StartUp
+			StartUp.Run();
 			//Get TargetType
 			if (!TryGetType(caseName, out Type bllType))
 			{
@@ -99,16 +100,6 @@ namespace SpiderX.Launcher
 			}
 			caseType = Array.Find(types, t => t.Name.Equals(className, StringComparison.CurrentCultureIgnoreCase));
 			return caseType != null;
-		}
-
-		private static string CorrectCaseName(string name)
-		{
-			string trimName = name.Trim();
-			if (!trimName.EndsWith("Bll", StringComparison.CurrentCultureIgnoreCase))
-			{
-				trimName += "Bll";
-			}
-			return trimName;
 		}
 	}
 }
