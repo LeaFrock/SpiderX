@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SpiderX.Http;
 using SpiderX.Proxy;
@@ -20,12 +22,45 @@ namespace SpiderX.ProxyFetcher.XiciDaili
 			Run();
 		}
 
-		public const string TableItemXpath = "//table[contains(@id,'ip')]/tbody//tr";
+		public const string TableItemXpath = "//table[contains(@id,'ip')]//tr";//如果用Chrome或FireFox，浏览器会自动补全tbody，但此处XPath不能写作"//table[contains(@id,'ip')]/tbody//tr".
 
 		public override void Run()
 		{
 			base.Run();
-			var aaa = GetProxyEntitiesByPage(UrlTemplate, 1);
+			ProxyAgent pa = CreateProxyAgent();
+			var entities = GetProxyEntities(UrlTemplate, 10);
+			int insertCount = pa.InsertProxyEntities(entities);
+		}
+
+		private List<SpiderProxyEntity> GetProxyEntitiesConcurrently(string urlTemplate, int maxPage)
+		{
+			List<SpiderProxyEntity> entities = new List<SpiderProxyEntity>(maxPage * 15);
+			Parallel.For(1, maxPage + 1, new ParallelOptions() { MaxDegreeOfParallelism = Math.Min(maxPage, 50) },
+				p =>
+				{
+					var tmpList = GetProxyEntitiesByPage(urlTemplate, p);
+					if (tmpList == null || tmpList.Count < 1)
+					{
+						return;
+					}
+					lock (entities)
+					{
+						entities.AddRange(tmpList);
+					}
+				});
+			return entities;
+		}
+
+		private List<SpiderProxyEntity> GetProxyEntities(string urlTemplate, int maxPage)
+		{
+			List<SpiderProxyEntity> entities = new List<SpiderProxyEntity>(maxPage * 20);
+			for (int p = 1; p <= maxPage; p++)
+			{
+				var tmpList = GetProxyEntitiesByPage(urlTemplate, p);
+				entities.AddRange(tmpList);
+				Thread.Sleep(_randomEvent.Next(4000, 6000));
+			}
+			return entities;
 		}
 
 		private List<SpiderProxyEntity> GetProxyEntitiesByPage(string urlTemplate, int page)

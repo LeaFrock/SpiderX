@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SpiderX.Http;
@@ -29,7 +30,7 @@ namespace SpiderX.ProxyFetcher.KuaiDaili
 		{
 			base.Run();
 			ProxyAgent pa = CreateProxyAgent();
-			var entities = GetProxyEntities(InhaUrlTemplate, 1);
+			var entities = GetProxyEntities(InhaUrlTemplate, 10);
 			int insertCount = pa.InsertProxyEntities(entities);
 		}
 
@@ -59,6 +60,7 @@ namespace SpiderX.ProxyFetcher.KuaiDaili
 			{
 				var tmpList = GetProxyEntitiesByPage(urlTemplate, p);
 				entities.AddRange(tmpList);
+				Thread.Sleep(_randomEvent.Next(4000, 6000));
 			}
 			return entities;
 		}
