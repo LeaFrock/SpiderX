@@ -44,7 +44,7 @@ namespace SpiderX.Launcher
 			}
 			if (!bllType.IsClass || bllType.IsNotPublic)
 			{
-				throw new TypeAccessException(settingManager.CaseName + " Invalid Class.");
+				throw new TypeAccessException("Invalid Type: " + settingManager.CaseName);
 			}
 			//Create Instance
 			object bllInstance;
