@@ -8,7 +8,7 @@ namespace SpiderX.Extensions
 		public static string ToFullExceptionString(this Exception ex)
 		{
 			Exception tempEx = ex;
-			StringBuilder sb = new StringBuilder(8);//默认是16，但是一般异常极少会嵌套这么多层
+			StringBuilder sb = new StringBuilder(4);//默认是16，但是一般异常极少会嵌套这么多层
 			sb.AppendLine(tempEx.ToString());
 			while (tempEx.InnerException != null)
 			{

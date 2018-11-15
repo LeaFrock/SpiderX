@@ -42,7 +42,7 @@ namespace SpiderX.Launcher
             {
                 return;
             }
-            if (!bllType.IsClass || bllType.IsNotPublic)
+            if (!bllType.IsClass || bllType.IsAbstract || bllType.IsNotPublic)
             {
                 throw new TypeAccessException("Invalid Type: " + settingManager.CaseName);
             }
@@ -87,16 +87,19 @@ namespace SpiderX.Launcher
         private static bool TryGetType(string className, out Type caseType)
         {
             var settingManager = AppSettingManager.Instance;
-            string loadPath = Path.Combine(StartUp.ModulesDirectoryName, className, settingManager.BusinessModuleName);
+            string loadPath = Path.Combine(Directory.GetCurrentDirectory(), StartUp.ModulesDirectoryName, className, settingManager.BusinessModuleName + ".dll");
+            Assembly a;
             try
             {
-                Assembly a = Assembly.LoadFrom(loadPath);
-                caseType = a.GetType(className, false, true);
+                a = Assembly.LoadFrom(loadPath);
             }
             catch
             {
-                throw;
+                caseType = null;
+                return false;
             }
+            string fullClassName = settingManager.BusinessModuleName + '.' + className;
+            caseType = a.GetType(fullClassName, false, true);
             return caseType != null;
         }
     }
