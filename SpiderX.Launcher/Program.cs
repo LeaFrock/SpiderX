@@ -56,7 +56,7 @@ namespace SpiderX.Launcher
             {
                 throw ex;
             }
-            //Get&Invoke Method
+            //Invoke Method
             string methodName = nameof(BllBase.Run);
             if (caseParams.IsNullOrEmpty())
             {

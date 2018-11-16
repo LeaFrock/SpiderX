@@ -23,7 +23,9 @@ namespace SpiderX.ProxyFetcher
 
         public const string TableItemXpath = "//table[contains(@id,'ip')]//tr";//如果用Chrome或FireFox，浏览器会自动补全tbody，但此处XPath不能写作"//table[contains(@id,'ip')]/tbody//tr".
 
-        public override void Run()
+		internal override ProxyApiProvider ApiProvider => throw new NotImplementedException();
+
+		public override void Run()
         {
             base.Run();
             ProxyAgent pa = CreateProxyAgent();
@@ -70,7 +72,7 @@ namespace SpiderX.ProxyFetcher
             {
                 return null;
             }
-            var htmlDocument = _defaultHtmlResponser.LoadHtml(response);
+            var htmlDocument = HttpConsole.DefaultHtmlResponser.LoadHtml(response);
             if (htmlDocument == null)
             {
                 return null;
