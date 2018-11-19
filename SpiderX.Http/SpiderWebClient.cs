@@ -1,34 +1,18 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net.Http;
 
 namespace SpiderX.Http
 {
-	public sealed class SpiderWebClient : IDisposable
+	public sealed class SpiderWebClient : HttpClient
 	{
-		private HttpClient _innerClient;
+		public SocketsHttpHandler InnerClientHandler { get; }
 
-		public SpiderWebClient() : this(new HttpClient())
+		public SpiderWebClient() : this(new SocketsHttpHandler())
 		{
 		}
 
-		public SpiderWebClient(HttpMessageHandler handler) : this(new HttpClient(handler))
+		public SpiderWebClient(SocketsHttpHandler handler) : base(handler)
 		{
-		}
-
-		public SpiderWebClient(HttpClient targetClient)
-		{
-			_innerClient = targetClient;
-		}
-
-		public async Task<HttpResponseMessage> GetResponse(HttpRequestMessage httpRequest)
-		{
-			return await _innerClient.SendAsync(httpRequest);
-		}
-
-		public void Dispose()
-		{
-			_innerClient?.Dispose();
+			InnerClientHandler = handler;
 		}
 	}
 }

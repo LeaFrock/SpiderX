@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SpiderX.Proxy;
 
@@ -10,11 +11,14 @@ namespace SpiderX.ProxyFetcher
 
 		public string HomePageUrl { get; protected set; }
 
-		public abstract List<SpiderProxyEntity> GetProxyEntities(string response);
+		public virtual List<SpiderProxyEntity> GetProxyEntities(string response)
+		{
+			throw new NotImplementedException();
+		}
 
 		public virtual List<SpiderProxyEntity> GetProxyEntities(Stream stream)
 		{
-			return null;
+			throw new NotImplementedException();
 		}
 	}
 }

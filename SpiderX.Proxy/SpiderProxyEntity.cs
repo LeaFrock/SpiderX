@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Net;
 
 namespace SpiderX.Proxy
 {
-	public sealed class SpiderProxyEntity : IEqualityComparer<SpiderProxyEntity>
+	public sealed class SpiderProxyEntity : IEquatable<SpiderProxyEntity>
 	{
 		public int Id { get; set; }
 
@@ -27,20 +25,6 @@ namespace SpiderX.Proxy
 
 		public int ResponseMilliseconds { get; set; } = 10000;
 
-		private Uri _address;
-
-		public Uri Address
-		{
-			get
-			{
-				if (_address == null)
-				{
-					_address = new Uri("http://" + Host + ':' + Port.ToString(CultureInfo.InvariantCulture));
-				}
-				return _address;
-			}
-		}
-
 		private SpiderProxy _value;
 
 		public IWebProxy Value
@@ -49,20 +33,17 @@ namespace SpiderX.Proxy
 			{
 				if (_value == null)
 				{
-					_value = new SpiderProxy(Address);
+					_value = new SpiderProxy(Host, Port);
 				}
 				return _value;
 			}
 		}
 
-		public bool Equals(SpiderProxyEntity x, SpiderProxyEntity y)
+		public bool Equals(SpiderProxyEntity other)
 		{
-			return x.Host == y.Host && x.Port == y.Port;
+			return Host == other.Host && Port == other.Port;
 		}
 
-		public int GetHashCode(SpiderProxyEntity obj)
-		{
-			return Address.Authority.GetHashCode();
-		}
+		public override int GetHashCode() => (Host, Port).GetHashCode();
 	}
 }

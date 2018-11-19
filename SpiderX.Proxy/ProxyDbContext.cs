@@ -52,7 +52,6 @@ namespace SpiderX.Proxy
 				e.Property(p => p.Id).ValueGeneratedOnAdd();
 				e.HasIndex(p => new { p.Host, p.Port }).IsUnique();
 				e.Property(p => p.Host).HasColumnType("VARCHAR(32)");
-				e.Ignore(p => p.Address);
 				e.Ignore(p => p.Value);
 			});
 		}

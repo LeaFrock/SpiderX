@@ -13,9 +13,6 @@ namespace SpiderX.Proxy
 			return x.Port == y.Port && x.Host == y.Host;
 		}
 
-		public int GetHashCode(SpiderProxyEntity obj)
-		{
-			return obj.Address.Authority.GetHashCode();
-		}
+		public int GetHashCode(SpiderProxyEntity obj) => obj.GetHashCode();
 	}
 }
