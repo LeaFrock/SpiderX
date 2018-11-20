@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using SpiderX.Extensions;
@@ -29,6 +28,7 @@ namespace SpiderX.ProxyFetcher
 			{
 				var entities = GetProxyEntities(webClient, InhaUrlTemplate, 10);
 				int insertCount = pa.InsertProxyEntities(entities);
+				Console.WriteLine(insertCount);
 			}
 		}
 
@@ -42,16 +42,22 @@ namespace SpiderX.ProxyFetcher
 				var responseTask = GetResponseMessageAsync(webClient, url, referer);
 				responseTask?.ContinueWith(responseMsg =>
 					{
-						using (HttpResponseMessage responseMessage = responseMsg.Result)
+						HttpResponseMessage responseMessage = responseMsg.Result;
+						if (responseMessage == null)
+						{
+							return;
+						}
+						using (responseMessage)
 						{
 							if (!responseMessage.IsSuccessStatusCode)
 							{
 								return;
 							}
 							Task<string> readTask = responseMessage.Content.ReadAsStringAsync();
-							readTask.ContinueWith(text =>
+							readTask.ContinueWith(responseText =>
 							{
-								var tempList = ApiProvider.GetProxyEntities(text.Result);
+								string text = responseText.Result;
+								var tempList = ApiProvider.GetProxyEntities(text);
 								if (!tempList.IsNullOrEmpty())
 								{
 									lock (entities)
@@ -74,9 +80,10 @@ namespace SpiderX.ProxyFetcher
 			{
 				return await webClient.SendAsync(request);
 			}
-			finally
+			catch (Exception)
 			{
 				request.Dispose();
+				return null;
 			}
 		}
 
@@ -84,24 +91,19 @@ namespace SpiderX.ProxyFetcher
 		{
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
 			request.Headers.Referrer = new Uri(referer);
-			request.Headers.Host = ApiProvider.HomePageHost;
 			return request;
 		}
 
 		private SpiderWebClient CreateWebClient()
 		{
-			SpiderWebClient client = new SpiderWebClient()
-			{
-				Timeout = TimeSpan.FromMilliseconds(5000)
-			};
+			SpiderWebClient client = SpiderWebClient.CreateDefault();
+			client.InnerClientHandler.UseProxy = false;
+			client.DefaultRequestHeaders.Host = ApiProvider.HomePageHost;
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			client.DefaultRequestHeaders.Connection.Add("keep-alive");
-			client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue() { NoCache = true };
-			client.DefaultRequestHeaders.Pragma.Add(new NameValueHeaderValue("no-cache"));
-			client.DefaultRequestHeaders.Host = ApiProvider.HomePageHost;
-			client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
+			client.DefaultRequestHeaders.Add("DNT", "1");
+			client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36");
 			return client;
 		}
 

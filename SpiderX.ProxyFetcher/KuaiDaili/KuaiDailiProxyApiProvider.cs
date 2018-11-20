@@ -4,6 +4,7 @@ using HtmlAgilityPack;
 using SpiderX.Http;
 using SpiderX.Proxy;
 using SpiderX.Tools;
+using SpiderX.Extensions;
 
 namespace SpiderX.ProxyFetcher
 {
@@ -23,7 +24,7 @@ namespace SpiderX.ProxyFetcher
 				return null;
 			}
 			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//div[contains(@id,'content')]//div[contains(@id,'list')]/table/tbody/tr");
-			if (rows == null)
+			if (rows.IsNullOrEmpty())
 			{
 				return null;
 			}
