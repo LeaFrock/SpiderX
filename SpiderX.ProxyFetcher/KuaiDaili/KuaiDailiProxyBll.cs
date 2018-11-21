@@ -14,8 +14,6 @@ namespace SpiderX.ProxyFetcher
 	{
 		internal override ProxyApiProvider ApiProvider { get; } = new KuaiDailiProxyApiProvider();
 
-		public const string InhaUrlTemplate = "https://www.kuaidaili.com/free/inha/";//High Anonimity in China
-
 		public override void Run(params string[] args)
 		{
 			Run();
@@ -25,11 +23,11 @@ namespace SpiderX.ProxyFetcher
 		{
 			base.Run();
 			ProxyAgent pa = CreateProxyAgent();
-			using (SpiderWebClient webClient = CreateWebClient())
+			using (SpiderWebClient webClient = ApiProvider.CreateWebClient())
 			{
-				var entities = GetProxyEntities(webClient, InhaUrlTemplate, 10);
+				var entities = GetProxyEntities(webClient, KuaiDailiProxyApiProvider.InhaUrlTemplate, 10);
 				int insertCount = pa.InsertProxyEntities(entities);
-				Console.WriteLine(insertCount);
+				Console.WriteLine(insertCount.ToString());
 			}
 		}
 
@@ -101,20 +99,6 @@ namespace SpiderX.ProxyFetcher
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
 			request.Headers.Referrer = new Uri(referer);
 			return request;
-		}
-
-		private SpiderWebClient CreateWebClient()
-		{
-			SpiderWebClient client = SpiderWebClient.CreateDefault();
-			client.InnerClientHandler.UseProxy = false;
-			client.DefaultRequestHeaders.Host = ApiProvider.HomePageHost;
-			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
-			client.DefaultRequestHeaders.Add("DNT", "1");
-			client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36");
-			return client;
 		}
 
 		private static string GetRequestUrl(string urlTemplate, int page) => urlTemplate + page.ToString();

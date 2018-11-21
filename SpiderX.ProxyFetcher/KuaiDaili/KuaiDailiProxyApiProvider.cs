@@ -1,19 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using HtmlAgilityPack;
+using SpiderX.Extensions;
 using SpiderX.Http;
 using SpiderX.Proxy;
 using SpiderX.Tools;
-using SpiderX.Extensions;
 
 namespace SpiderX.ProxyFetcher
 {
-	internal class KuaiDailiProxyApiProvider : ProxyApiProvider
+	internal sealed class KuaiDailiProxyApiProvider : ProxyApiProvider
 	{
 		public KuaiDailiProxyApiProvider()
 		{
 			HomePageHost = "www.kuaidaili.com";
 			HomePageUrl = "https://www.kuaidaili.com/";
+		}
+
+		public const string InhaUrlTemplate = "https://www.kuaidaili.com/free/inha/";//High Anonimity in China
+
+		public override SpiderWebClient CreateWebClient()
+		{
+			SpiderWebClient client = SpiderWebClient.CreateDefault();
+			client.InnerClientHandler.UseProxy = false;
+			client.DefaultRequestHeaders.Host = HomePageHost;
+			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
+			client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
+			client.DefaultRequestHeaders.Add("DNT", "1");
+			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
+			return client;
 		}
 
 		public override List<SpiderProxyEntity> GetProxyEntities(string response)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using SpiderX.Http;
 using SpiderX.Proxy;
 
 namespace SpiderX.ProxyFetcher
@@ -10,6 +11,8 @@ namespace SpiderX.ProxyFetcher
 		public string HomePageHost { get; protected set; }
 
 		public string HomePageUrl { get; protected set; }
+
+		public abstract SpiderWebClient CreateWebClient();
 
 		public virtual List<SpiderProxyEntity> GetProxyEntities(string response)
 		{
