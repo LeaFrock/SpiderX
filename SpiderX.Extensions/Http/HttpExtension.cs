@@ -10,6 +10,46 @@ namespace SpiderX.Extensions.Http
 {
 	public static class HttpExtension
 	{
+		public async static Task<string> ToTextAsync(this HttpResponseMessage responseMessage)
+		{
+			var content = responseMessage.Content;
+			if (content.Headers.ContentEncoding.IsNullOrEmpty())//ReadAsString directly.
+			{
+				return await responseMessage.Content.ReadAsStringAsync();
+			}
+			Stream finalStream = await content.ToStreamAsync();
+			Encoding encoding = GetEncodingByCharset(content.Headers.ContentType.CharSet);
+			using (finalStream)
+			{
+				using (StreamReader sr = new StreamReader(finalStream, encoding))
+				{
+					return await sr.ReadToEndAsync();
+				}
+			}
+		}
+
+		public async static Task<Stream> ToStreamAsync(this HttpResponseMessage responseMessage)
+		{
+			return await responseMessage.Content.ToStreamAsync();
+		}
+
+		public async static Task<Stream> ToStreamAsync(this HttpContent content)
+		{
+			Stream source = await content.ReadAsStreamAsync();
+			foreach (string s in content.Headers.ContentEncoding)
+			{
+				if (s.Equals("gzip", StringComparison.CurrentCultureIgnoreCase))
+				{
+					return new GZipStream(source, CompressionMode.Decompress);
+				}
+				if (s.Equals("deflate", StringComparison.CurrentCultureIgnoreCase))
+				{
+					return new DeflateStream(source, CompressionMode.Decompress);
+				}
+			}
+			return source;
+		}
+
 		public static string ToText(this HttpWebResponse response)
 		{
 			Stream responseStream = response.GetResponseStream();
@@ -58,54 +98,6 @@ namespace SpiderX.Extensions.Http
 			{
 				return sr.ReadToEnd();
 			}
-		}
-
-		public async static Task<string> ToTextAsync(this HttpResponseMessage responseMessage)
-		{
-			if (!responseMessage.IsSuccessStatusCode)
-			{
-				return string.Empty;
-			}
-			var content = responseMessage.Content;
-			if (content.Headers.ContentEncoding.IsNullOrEmpty())//ReadAsString directly.
-			{
-				return await responseMessage.Content.ReadAsStringAsync();
-			}
-			Stream finalStream = await content.ToStreamAsync();
-			Encoding encoding = GetEncodingByCharset(content.Headers.ContentType.CharSet);
-			using (finalStream)
-			{
-				using (StreamReader sr = new StreamReader(finalStream, encoding))
-				{
-					return await sr.ReadToEndAsync();
-				}
-			}
-		}
-
-		public async static Task<Stream> ToStreamAsync(this HttpResponseMessage responseMessage)
-		{
-			if (!responseMessage.IsSuccessStatusCode)
-			{
-				return Stream.Null;
-			}
-			return await responseMessage.Content.ToStreamAsync();
-		}
-
-		public async static Task<Stream> ToStreamAsync(this HttpContent content)
-		{
-			Stream source = await content.ReadAsStreamAsync();
-			foreach (string s in content.Headers.ContentEncoding)
-			{
-				if (s.Equals("gzip", StringComparison.CurrentCultureIgnoreCase))
-				{
-					return new GZipStream(source, CompressionMode.Decompress);
-				}
-				if (s.Equals("deflate", StringComparison.CurrentCultureIgnoreCase))
-				{
-					return new DeflateStream(source, CompressionMode.Decompress);
-				}
-			}
-			return source;
 		}
 
 		private static Encoding GetEncodingByCharset(string charset)

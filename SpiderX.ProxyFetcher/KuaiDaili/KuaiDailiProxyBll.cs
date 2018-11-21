@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +15,6 @@ namespace SpiderX.ProxyFetcher
 	{
 		internal override ProxyApiProvider ApiProvider { get; } = new KuaiDailiProxyApiProvider();
 
-		public override void Run(params string[] args)
-		{
-			Run();
-		}
-
 		public override void Run()
 		{
 			base.Run();
@@ -29,6 +25,11 @@ namespace SpiderX.ProxyFetcher
 				int insertCount = pa.InsertProxyEntities(entities);
 				Console.WriteLine(insertCount.ToString());
 			}
+		}
+
+		public override void Run(params string[] args)
+		{
+			Run();
 		}
 
 		private List<SpiderProxyEntity> GetProxyEntities(SpiderWebClient webClient, string urlTemplate, int maxPage)
@@ -53,11 +54,11 @@ namespace SpiderX.ProxyFetcher
 							{
 								return;
 							}
-							Task readTask = responseMessage.ToTextAsync()
+							responseMessage.ToStreamAsync()
 							.ContinueWith(t =>
 							{
-								string text = t.Result;
-								var tempList = ApiProvider.GetProxyEntities(text);
+								Stream stream = t.Result;
+								var tempList = ApiProvider.GetProxyEntities(stream);
 								if (!tempList.IsNullOrEmpty())
 								{
 									lock (entities)
@@ -80,7 +81,7 @@ namespace SpiderX.ProxyFetcher
 			return entities;
 		}
 
-		private async Task<HttpResponseMessage> GetResponseMessageAsync(SpiderWebClient webClient, string requestUrl, string referer)
+		private static async Task<HttpResponseMessage> GetResponseMessageAsync(SpiderWebClient webClient, string requestUrl, string referer)
 		{
 			var request = CreateRequestMessage(requestUrl, referer);
 			try
@@ -94,7 +95,7 @@ namespace SpiderX.ProxyFetcher
 			}
 		}
 
-		private HttpRequestMessage CreateRequestMessage(string requestUrl, string referer)
+		private static HttpRequestMessage CreateRequestMessage(string requestUrl, string referer)
 		{
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
 			request.Headers.Referrer = new Uri(referer);
@@ -103,6 +104,6 @@ namespace SpiderX.ProxyFetcher
 
 		private static string GetRequestUrl(string urlTemplate, int page) => urlTemplate + page.ToString();
 
-		private static string GetRefererUrl(string urlTemplate, int page) => urlTemplate + Math.Max(1, page - RandomEvent.Next(1, 5)).ToString();
+		private static string GetRefererUrl(string urlTemplate, int page) => urlTemplate + Math.Max(1, Math.Abs(page - RandomEvent.Next(-4, 5))).ToString();
 	}
 }
