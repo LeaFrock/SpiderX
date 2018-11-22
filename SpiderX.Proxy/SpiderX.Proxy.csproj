@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20181122164552_UpdateProxy.cs" />
+    <Compile Remove="Migrations\20181122165128_InitProxyEntity.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
   </ItemGroup>
 

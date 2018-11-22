@@ -76,10 +76,10 @@ namespace SpiderX.ProxyFetcher
 			string host = ipNode.InnerText.Trim();
 			HtmlNode anonymityNode = node.SelectSingleNode("./td[contains(@data-title,'匿')]");
 			string anonymityText = anonymityNode?.InnerText;
-			int anonymityDegree = (anonymityNode != null && anonymityText.Contains("高匿")) ? 3 : 0;
+			byte anonymityDegree = (byte)((anonymityText != null && anonymityText.Contains("高匿")) ? 3 : 0);
 			HtmlNode categoryNode = node.SelectSingleNode("./td[contains(@data-title,'类型')]");
 			string categoryText = categoryNode?.InnerText;
-			int category = (categoryText != null && categoryText.Contains("Https", StringComparison.CurrentCultureIgnoreCase)) ? 1 : 0;
+			byte category = (byte)((categoryText != null && categoryText.Contains("Https", StringComparison.CurrentCultureIgnoreCase)) ? 1 : 0);
 			HtmlNode locationNode = node.SelectSingleNode("./td[contains(@data-title,'位置')]");
 			string location = locationNode?.InnerText?.Trim();
 			HtmlNode responseIntervalNode = node.SelectSingleNode("./td[contains(@data-title,'响应')]");

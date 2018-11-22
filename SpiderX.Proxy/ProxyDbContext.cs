@@ -17,7 +17,7 @@ namespace SpiderX.Proxy
 
 		public DbConfig Config { get; }
 
-		public DbSet<SpiderProxyEntity> ProxyEntities { get; set; }
+		public DbSet<SpiderProxyEntity> ProxyEntity { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
@@ -49,9 +49,17 @@ namespace SpiderX.Proxy
 			modelBuilder.Entity<SpiderProxyEntity>(e =>
 			{
 				e.HasKey(p => p.Id);
-				e.Property(p => p.Id).ValueGeneratedOnAdd();
-				e.HasIndex(p => new { p.Host, p.Port }).IsUnique();
-				e.Property(p => p.Host).HasColumnType("VARCHAR(32)");
+				e.Property(p => p.Id)
+				.ValueGeneratedOnAdd();
+				e.HasIndex(p => new { p.Host, p.Port })
+				.IsUnique();
+				e.Property(p => p.Host)
+				.HasColumnType("VARCHAR(32)")
+				.IsRequired();
+				e.Property(p => p.UpdateTime)
+				.HasColumnType("DATETIME")
+				.HasDefaultValueSql("GETDATE()")
+				.IsRequired();
 				e.Ignore(p => p.Value);
 			});
 		}

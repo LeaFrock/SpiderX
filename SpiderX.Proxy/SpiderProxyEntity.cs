@@ -16,14 +16,18 @@ namespace SpiderX.Proxy
 		/// <summary>
 		/// IP类型（0Http 1Https）
 		/// </summary>
-		public int Category { get; set; }
+		public byte Category { get; set; }
 
 		/// <summary>
-		/// 匿名度（0透明 1普匿2 混淆 3高匿）
+		/// 匿名度（0透明 1普匿 2混淆 3高匿）
 		/// </summary>
-		public int AnonymityDegree { get; set; }
+		public byte AnonymityDegree { get; set; }
 
 		public int ResponseMilliseconds { get; set; } = 10000;
+
+		public DateTime UpdateTime { get; set; }
+
+		public string Source { get; set; }
 
 		private SpiderProxy _value;
 

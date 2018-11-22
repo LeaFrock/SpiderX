@@ -96,7 +96,7 @@ namespace SpiderX.ProxyFetcher
 			string location = locationNode.InnerText?.Trim();
 			HtmlNode categoryNode = tds[5];
 			string categoryText = categoryNode.InnerText;
-			int category = (categoryText != null && categoryText.Contains("HTTPS", StringComparison.CurrentCultureIgnoreCase)) ? 1 : 0;
+			byte category = (byte)((categoryText != null && categoryText.Contains("HTTPS", StringComparison.CurrentCultureIgnoreCase)) ? 1 : 0);
 			int responseMilliseconds = (int)(1000 * (requestSeconds + responseSeconds));
 			return new SpiderProxyEntity()
 			{

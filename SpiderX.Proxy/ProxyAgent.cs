@@ -18,7 +18,7 @@ namespace SpiderX.Proxy
         {
             using (var context = new ProxyDbContext(DbConfig))
             {
-                return context.ProxyEntities.ToList();
+                return context.ProxyEntity.ToList();
             }
         }
 
@@ -26,7 +26,7 @@ namespace SpiderX.Proxy
         {
             using (var context = new ProxyDbContext(DbConfig))
             {
-                return context.ProxyEntities.Where(match).ToList();
+                return context.ProxyEntity.Where(match).ToList();
             }
         }
 
@@ -38,9 +38,9 @@ namespace SpiderX.Proxy
             {
                 foreach (var entity in distinctEntities)
                 {
-                    if (!context.ProxyEntities.Any(p => p.Host == entity.Host && p.Port == entity.Port))
+                    if (!context.ProxyEntity.Any(p => p.Host == entity.Host && p.Port == entity.Port))
                     {
-                        context.ProxyEntities.Add(entity);
+                        context.ProxyEntity.Add(entity);
                         count++;
                     }
                 }
@@ -52,7 +52,7 @@ namespace SpiderX.Proxy
         {
             using (var context = new ProxyDbContext(DbConfig))
             {
-                var entity = context.ProxyEntities.Find(id);
+                var entity = context.ProxyEntity.Find(id);
                 if (entity != null)
                 {
                     update(entity);
@@ -69,7 +69,7 @@ namespace SpiderX.Proxy
             {
                 foreach (var id in distinctIds)
                 {
-                    var entity = context.ProxyEntities.Find(id);
+                    var entity = context.ProxyEntity.Find(id);
                     if (entity != null)
                     {
                         update(entity);
@@ -83,10 +83,10 @@ namespace SpiderX.Proxy
         {
             using (var context = new ProxyDbContext(DbConfig))
             {
-                var entity = context.ProxyEntities.FirstOrDefault(p => p.Host == host && p.Port == port);
+                var entity = context.ProxyEntity.FirstOrDefault(p => p.Host == host && p.Port == port);
                 if (entity != null)
                 {
-                    context.ProxyEntities.Remove(entity);
+                    context.ProxyEntity.Remove(entity);
                     return context.SaveChanges();
                 }
             }
@@ -97,10 +97,10 @@ namespace SpiderX.Proxy
         {
             using (var context = new ProxyDbContext(DbConfig))
             {
-                var entity = context.ProxyEntities.Find(id);
+                var entity = context.ProxyEntity.Find(id);
                 if (entity != null)
                 {
-                    context.ProxyEntities.Remove(entity);
+                    context.ProxyEntity.Remove(entity);
                     return context.SaveChanges();
                 }
             }

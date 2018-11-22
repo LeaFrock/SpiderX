@@ -22,11 +22,13 @@ namespace SpiderX.ProxyFetcher
 		public override void Run()
 		{
 			base.Run();
+			string caseName = ClassName;
 			ProxyAgent pa = CreateProxyAgent();
 			using (var client = ApiProvider.CreateWebClient())
 			{
-				var totalEntities = GetProxyEntities(client, IpHaiProxyApiProvider.NgUrl, IpHaiProxyApiProvider.WgUrl);
-				int insertCount = pa.InsertProxyEntities(totalEntities);
+				var entities = GetProxyEntities(client, IpHaiProxyApiProvider.NgUrl, IpHaiProxyApiProvider.WgUrl);
+				entities.ForEach(e => e.Source = caseName);
+				int insertCount = pa.InsertProxyEntities(entities);
 				Console.WriteLine(insertCount.ToString());
 			}
 		}

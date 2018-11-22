@@ -72,9 +72,9 @@ namespace SpiderX.ProxyFetcher
 			}
 			string host = tdNodes[0].InnerText.Trim();
 			string anonymityDegreeText = tdNodes[2].InnerText;
-			int anonymityDegree = anonymityDegreeText.Contains("高") ? 3 : 1;
+			byte anonymityDegree = (byte)(anonymityDegreeText.Contains("高") ? 3 : 1);
 			string categoryText = tdNodes[3].InnerText;
-			int category = categoryText.Contains("HTTPS", StringComparison.CurrentCultureIgnoreCase) ? 1 : 0;
+			byte category = (byte)(categoryText.Contains("HTTPS", StringComparison.CurrentCultureIgnoreCase) ? 1 : 0);
 			string location = tdNodes[4].InnerText.Trim();
 			string responseTimespanText = tdNodes[5].InnerText;
 			int responseMilliseconds = ParseResponseMilliseconds(responseTimespanText);

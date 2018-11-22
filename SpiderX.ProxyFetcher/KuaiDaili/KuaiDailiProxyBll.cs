@@ -18,10 +18,12 @@ namespace SpiderX.ProxyFetcher
 		public override void Run()
 		{
 			base.Run();
+			string caseName = ClassName;
 			ProxyAgent pa = CreateProxyAgent();
 			using (SpiderWebClient webClient = ApiProvider.CreateWebClient())
 			{
 				var entities = GetProxyEntities(webClient, KuaiDailiProxyApiProvider.InhaUrlTemplate, 10);
+				entities.ForEach(e => e.Source = caseName);
 				int insertCount = pa.InsertProxyEntities(entities);
 				Console.WriteLine(insertCount.ToString());
 			}

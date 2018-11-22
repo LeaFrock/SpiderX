@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Threading;
 
 namespace SpiderX.Proxy
 {
@@ -20,7 +19,7 @@ namespace SpiderX.Proxy
 			{
 				if (_local == null)
 				{
-					Interlocked.CompareExchange(ref _local, new WebProxy("127.0.0.1", 8888), null);
+					_local = new WebProxy("127.0.0.1", 8888);
 				}
 				return _local;
 			}
