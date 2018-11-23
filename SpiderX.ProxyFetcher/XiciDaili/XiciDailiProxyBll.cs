@@ -23,6 +23,10 @@ namespace SpiderX.ProxyFetcher
 			using (var webClient = ApiProvider.CreateWebClient())
 			{
 				var entities = GetProxyEntities(webClient, XiciDailiProxyApiProvider.NnUrlTemplate, 10);
+				if (entities.Count < 1)
+				{
+					return;
+				}
 				entities.ForEach(e => e.Source = caseName);
 				int insertCount = pa.InsertProxyEntities(entities);
 				Console.WriteLine(insertCount.ToString());
@@ -59,8 +63,8 @@ namespace SpiderX.ProxyFetcher
 							responseMessage.Content.ToStreamReaderAsync()
 							.ContinueWith(t =>
 							{
-								StreamReader stream = t.Result;
-								var tempList = ApiProvider.GetProxyEntities(stream);
+								StreamReader reader = t.Result;
+								var tempList = ApiProvider.GetProxyEntities(reader);
 								if (!tempList.IsNullOrEmpty())
 								{
 									lock (entities)

@@ -22,7 +22,11 @@ namespace SpiderX.ProxyFetcher
 			ProxyAgent pa = CreateProxyAgent();
 			using (SpiderWebClient webClient = ApiProvider.CreateWebClient())
 			{
-				var entities = GetProxyEntities(webClient, KuaiDailiProxyApiProvider.InhaUrlTemplate, 1);
+				var entities = GetProxyEntities(webClient, KuaiDailiProxyApiProvider.InhaUrlTemplate, 10);
+				if (entities.Count < 1)
+				{
+					return;
+				}
 				entities.ForEach(e => e.Source = caseName);
 				int insertCount = pa.InsertProxyEntities(entities);
 				Console.WriteLine(insertCount.ToString());

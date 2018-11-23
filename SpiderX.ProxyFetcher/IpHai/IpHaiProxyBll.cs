@@ -27,6 +27,10 @@ namespace SpiderX.ProxyFetcher
 			using (var client = ApiProvider.CreateWebClient())
 			{
 				var entities = GetProxyEntities(client, IpHaiProxyApiProvider.NgUrl, IpHaiProxyApiProvider.WgUrl);
+				if (entities.Count < 1)
+				{
+					return;
+				}
 				entities.ForEach(e => e.Source = caseName);
 				int insertCount = pa.InsertProxyEntities(entities);
 				Console.WriteLine(insertCount.ToString());
