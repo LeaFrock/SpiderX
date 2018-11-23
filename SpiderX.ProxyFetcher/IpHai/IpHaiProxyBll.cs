@@ -44,11 +44,11 @@ namespace SpiderX.ProxyFetcher
 					.ContinueWith(httpTask =>
 					{
 						var responseMessage = httpTask.Result;
-						responseMessage.ToStreamAsync()
+						responseMessage.Content.ToStreamReaderAsync()
 						.ContinueWith(streamTask =>
 						{
-							Stream stream = streamTask.Result;
-							var tempList = ApiProvider.GetProxyEntities(stream);
+							StreamReader reader = streamTask.Result;
+							var tempList = ApiProvider.GetProxyEntities(reader);
 							if (!tempList.IsNullOrEmpty())
 							{
 								lock (entities)

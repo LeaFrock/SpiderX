@@ -56,10 +56,10 @@ namespace SpiderX.ProxyFetcher
 							{
 								return;
 							}
-							responseMessage.ToStreamAsync()
+							responseMessage.Content.ToStreamReaderAsync()
 							.ContinueWith(t =>
 							{
-								Stream stream = t.Result;
+								StreamReader stream = t.Result;
 								var tempList = ApiProvider.GetProxyEntities(stream);
 								if (!tempList.IsNullOrEmpty())
 								{

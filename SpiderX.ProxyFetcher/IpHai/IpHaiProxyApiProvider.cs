@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using HtmlAgilityPack;
 using SpiderX.Http;
 using SpiderX.Proxy;
@@ -34,9 +33,9 @@ namespace SpiderX.ProxyFetcher
 			return client;
 		}
 
-		public override List<SpiderProxyEntity> GetProxyEntities(Stream stream)
+		public override List<SpiderProxyEntity> GetProxyEntities<T>(T responseReader)
 		{
-			var htmlDocument = HttpConsole.DefaultHtmlResponser.LoadHtml(stream);
+			var htmlDocument = HtmlTool.LoadFromTextReader(responseReader);
 			if (htmlDocument == null)
 			{
 				return null;

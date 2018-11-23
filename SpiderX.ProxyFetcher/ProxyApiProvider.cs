@@ -14,12 +14,12 @@ namespace SpiderX.ProxyFetcher
 
 		public abstract SpiderWebClient CreateWebClient();
 
-		public virtual List<SpiderProxyEntity> GetProxyEntities(string response)
+		public virtual List<SpiderProxyEntity> GetProxyEntities(string responseText)
 		{
 			throw new NotImplementedException();
 		}
 
-		public virtual List<SpiderProxyEntity> GetProxyEntities(Stream stream)
+		public virtual List<SpiderProxyEntity> GetProxyEntities<T>(T responseReader) where T : TextReader
 		{
 			throw new NotImplementedException();
 		}

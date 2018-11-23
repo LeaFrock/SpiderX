@@ -28,26 +28,41 @@ namespace SpiderX.Extensions.Http
 			}
 		}
 
-		public async static Task<Stream> ToStreamAsync(this HttpResponseMessage responseMessage)
+		public async static Task<StreamReader> ToStreamReaderAsync(this HttpContent content)
 		{
-			return await responseMessage.Content.ToStreamAsync();
+			var streamTask = content.ToStreamAsync();
+			Encoding encoding = GetEncodingByCharset(content.Headers.ContentType.CharSet);
+			Stream stream = await streamTask;
+			return new StreamReader(stream, encoding);
 		}
 
 		public async static Task<Stream> ToStreamAsync(this HttpContent content)
 		{
 			Stream source = await content.ReadAsStreamAsync();
+			/* Because HttpRequestMessage may be disposed by any tasks/threads in an async-environment,
+			 * and the stream from ReadAsStreamAsync() will be disposed at the same time,
+			 * the source-stream can't be ensured when to be disposed
+			 * and must be copied(MemoryStream is a good choice).
+			 * Otherwise ReadingStreamException may occur for the close of source-stream.
+			 */
+			MemoryStream copyStream = new MemoryStream();
+			source.CopyTo(copyStream);
+			/* After copying, put the pointer back to the beginning.
+			 * Otherwise the StreamReader.ReadToEnd() will always return string.Empty.
+			 */
+			copyStream.Seek(0, SeekOrigin.Begin);
 			foreach (string s in content.Headers.ContentEncoding)
 			{
 				if (s.Equals("gzip", StringComparison.CurrentCultureIgnoreCase))
 				{
-					return new GZipStream(source, CompressionMode.Decompress);
+					return new GZipStream(copyStream, CompressionMode.Decompress);
 				}
 				if (s.Equals("deflate", StringComparison.CurrentCultureIgnoreCase))
 				{
-					return new DeflateStream(source, CompressionMode.Decompress);
+					return new DeflateStream(copyStream, CompressionMode.Decompress);
 				}
 			}
-			return source;
+			return copyStream;
 		}
 
 		public static string ToText(this HttpWebResponse response)

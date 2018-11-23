@@ -34,11 +34,26 @@ namespace SpiderX.ProxyFetcher
 
 		public override List<SpiderProxyEntity> GetProxyEntities(string response)
 		{
-			var htmlDocument = HttpConsole.DefaultHtmlResponser.LoadHtml(response);
+			var htmlDocument = HtmlTool.LoadFromText(response);
 			if (htmlDocument == null)
 			{
 				return null;
 			}
+			return GetProxyEntities(htmlDocument);
+		}
+
+		public override List<SpiderProxyEntity> GetProxyEntities<T>(T reader)
+		{
+			var htmlDocument = HtmlTool.LoadFromTextReader(reader);
+			if (htmlDocument == null)
+			{
+				return null;
+			}
+			return GetProxyEntities(htmlDocument);
+		}
+
+		private static List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
+		{
 			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//div[contains(@id,'content')]//div[contains(@id,'list')]/table/tbody/tr");
 			if (rows.IsNullOrEmpty())
 			{

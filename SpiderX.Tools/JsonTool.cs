@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace SpiderX.Http
 {
-	public sealed class JsonResponser
+	public sealed class JsonTool
 	{
 		public JToken DeserializeObject(string text, bool throwError = false)
 		{
