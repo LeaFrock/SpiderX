@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using HtmlAgilityPack;
 
-namespace SpiderX.Http
+namespace SpiderX.Tools
 {
 	public static class HtmlTool
 	{

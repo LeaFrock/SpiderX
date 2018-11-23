@@ -3,7 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace SpiderX.Http
+namespace SpiderX.Tools
 {
 	public sealed class JsonTool
 	{
