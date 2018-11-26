@@ -1,10 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq.Expressions;
+using System.Net;
 
 namespace SpiderX.Proxy
 {
-	public interface IProxySelector
+	public interface IProxySelector<T> where T : IWebProxy
 	{
+		bool HasNextProxy { get; }
+
+		Expression<Func<SpiderProxyEntity, bool>> LoadCondition { get; }
+
+		int LoadFrom(ProxyAgent agent);
+
+		T SingleProxy();
 	}
 }

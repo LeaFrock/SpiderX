@@ -31,7 +31,7 @@ namespace SpiderX.Proxy
 
 		private SpiderProxy _value;
 
-		public IWebProxy Value
+		internal SpiderProxy Value
 		{
 			get
 			{
@@ -42,6 +42,8 @@ namespace SpiderX.Proxy
 				return _value;
 			}
 		}
+
+		public IWebProxy ReadOnlyValue => Value;
 
 		public bool Equals(SpiderProxyEntity other)
 		{
