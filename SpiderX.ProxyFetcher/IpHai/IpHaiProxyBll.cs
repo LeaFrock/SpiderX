@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,8 +31,9 @@ namespace SpiderX.ProxyFetcher
 					return;
 				}
 				entities.ForEach(e => e.Source = caseName);
+				ShowDebugInfo("CollectCount: " + entities.Count.ToString());
 				int insertCount = pa.InsertProxyEntities(entities);
-				Console.WriteLine(insertCount.ToString());
+				ShowDebugInfo("InsertCount: " + insertCount.ToString());
 			}
 		}
 

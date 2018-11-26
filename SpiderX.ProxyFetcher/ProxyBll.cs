@@ -21,5 +21,12 @@ namespace SpiderX.ProxyFetcher
 			}
 			return new ProxyAgent(conf);
 		}
+
+		internal static void ShowDebugInfo(string msg)
+		{
+#if DEBUG
+			Console.WriteLine(msg);
+#endif
+		}
 	}
 }
