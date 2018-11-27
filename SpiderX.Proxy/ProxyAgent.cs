@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using SpiderX.DataClient;
 
 namespace SpiderX.Proxy
@@ -20,8 +21,14 @@ namespace SpiderX.Proxy
 			using (var context = new ProxyDbContext(DbConfig))
 			{
 				return count > 0
-					? context.ProxyEntity.Where(predicate).OrderByDescending(e => e.UpdateTime).Take(count)
-					: context.ProxyEntity.Where(predicate);
+					? context.ProxyEntity
+					.FromSql("select * from ProxyEntity where datediff(day,UpdateTime,GETUTCDATE()) < 2;")
+					.Where(predicate)
+					.OrderByDescending(e => e.UpdateTime)
+					.Take(count)
+					: context.ProxyEntity
+					.FromSql("select * from ProxyEntity where datediff(day,UpdateTime,GETUTCDATE()) < 2;")
+					.Where(predicate);
 			}
 		}
 

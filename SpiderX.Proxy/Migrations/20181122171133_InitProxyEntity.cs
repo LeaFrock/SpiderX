@@ -49,7 +49,7 @@ namespace SpiderX.Proxy.Migrations
 					FROM INSERTED
 
 					UPDATE dbo.ProxyEntity
-					SET UpdateTime = GETDATE()
+					SET UpdateTime = GETUTCDATE()
 					WHERE Id = @Id
 				END");
 		}

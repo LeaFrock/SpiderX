@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 
 namespace SpiderX.Proxy
 {
@@ -13,9 +11,9 @@ namespace SpiderX.Proxy
 			LoadCondition = loadCondition;
 		}
 
-		private ConcurrentQueue<SpiderProxy> _queue;
+		private readonly ConcurrentQueue<SpiderProxy> _queue = new ConcurrentQueue<SpiderProxy>();
 
-		public bool HasNextProxy => _queue != null && !_queue.IsEmpty;
+		public bool HasNextProxy => !_queue.IsEmpty;
 
 		public Expression<Func<SpiderProxyEntity, bool>> LoadCondition { get; }
 
@@ -28,10 +26,9 @@ namespace SpiderX.Proxy
 			var proxyEntities = LoadCondition == null
 				? agent.SelectProxyEntities(p => p.UpdateTime > DateTime.Now.AddDays(-10))
 				: agent.SelectProxyEntities(LoadCondition);
-			var tempQueue = new ConcurrentQueue<SpiderProxy>(proxyEntities.Select(p => p.Value));
-			if (Interlocked.CompareExchange(ref _queue, tempQueue, null) != null)
+			foreach (var e in proxyEntities)
 			{
-				return -2;
+				_queue.Enqueue(e.Value);
 			}
 			return _queue.Count;
 		}
