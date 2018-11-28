@@ -8,7 +8,7 @@ using SpiderX.Proxy;
 
 namespace SpiderX.Proxy.Migrations
 {
-    [DbContext(typeof(ProxyDbContext))]
+    [DbContext(typeof(SqlServerProxyDbContext))]
     partial class ProxyDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

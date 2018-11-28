@@ -9,7 +9,7 @@ using SpiderX.Proxy;
 
 namespace SpiderX.Proxy.Migrations
 {
-    [DbContext(typeof(ProxyDbContext))]
+    [DbContext(typeof(SqlServerProxyDbContext))]
     [Migration("20181122171133_InitProxyEntity")]
     partial class InitProxyEntity
     {

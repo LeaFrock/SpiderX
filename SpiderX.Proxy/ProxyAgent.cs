@@ -21,7 +21,7 @@ namespace SpiderX.Proxy
 			Expression<Func<SpiderProxyEntity, bool>> filter = predicate == null
 				? (p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
 				: (Expression<Func<SpiderProxyEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
-			using (var context = new ProxyDbContext(DbConfig))
+			using (var context = new SqlServerProxyDbContext(DbConfig))
 			{
 				var query = context.ProxyEntity
 					   .Where(filter)
@@ -34,7 +34,7 @@ namespace SpiderX.Proxy
 		{
 			int count = 0;
 			var distinctEntities = entities.Distinct(SpiderProxyEntityComparer.Default);
-			using (var context = new ProxyDbContext(DbConfig))
+			using (var context = new SqlServerProxyDbContext(DbConfig))
 			{
 				foreach (var entity in distinctEntities)
 				{
@@ -50,7 +50,7 @@ namespace SpiderX.Proxy
 
 		public int UpdateProxyEntity(int id, Action<SpiderProxyEntity> update)
 		{
-			using (var context = new ProxyDbContext(DbConfig))
+			using (var context = new SqlServerProxyDbContext(DbConfig))
 			{
 				var entity = context.ProxyEntity.Find(id);
 				if (entity != null)
@@ -65,7 +65,7 @@ namespace SpiderX.Proxy
 		public int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyEntity> update)
 		{
 			var distinctIds = ids.Distinct();
-			using (var context = new ProxyDbContext(DbConfig))
+			using (var context = new SqlServerProxyDbContext(DbConfig))
 			{
 				foreach (var id in distinctIds)
 				{
@@ -81,7 +81,7 @@ namespace SpiderX.Proxy
 
 		public int DeleteProxyEntity(string host, int port)
 		{
-			using (var context = new ProxyDbContext(DbConfig))
+			using (var context = new SqlServerProxyDbContext(DbConfig))
 			{
 				var entity = context.ProxyEntity.FirstOrDefault(p => p.Host == host && p.Port == port);
 				if (entity != null)
@@ -95,7 +95,7 @@ namespace SpiderX.Proxy
 
 		public int DeleteProxyEntity(int id)
 		{
-			using (var context = new ProxyDbContext(DbConfig))
+			using (var context = new SqlServerProxyDbContext(DbConfig))
 			{
 				var entity = context.ProxyEntity.Find(id);
 				if (entity != null)
