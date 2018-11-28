@@ -16,19 +16,17 @@ namespace SpiderX.Proxy
 
 		public DbConfig DbConfig { get; }
 
-		public IEnumerable<SpiderProxyEntity> SelectProxyEntities(Expression<Func<SpiderProxyEntity, bool>> predicate, int count = 0)
+		public IEnumerable<SpiderProxyEntity> SelectProxyEntities(Func<SpiderProxyEntity, bool> predicate, int recentDays = 10, int count = 0)
 		{
+			Expression<Func<SpiderProxyEntity, bool>> filter = predicate == null
+				? (p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
+				: (Expression<Func<SpiderProxyEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
 			using (var context = new ProxyDbContext(DbConfig))
 			{
-				return count > 0
-					? context.ProxyEntity
-					.FromSql("select * from ProxyEntity where datediff(day,UpdateTime,GETUTCDATE()) < 2;")
-					.Where(predicate)
-					.OrderByDescending(e => e.UpdateTime)
-					.Take(count)
-					: context.ProxyEntity
-					.FromSql("select * from ProxyEntity where datediff(day,UpdateTime,GETUTCDATE()) < 2;")
-					.Where(predicate);
+				var query = context.ProxyEntity
+					   .Where(filter)
+					   .OrderByDescending(e => e.UpdateTime);
+				return count > 0 ? query.Take(count) : query;
 			}
 		}
 

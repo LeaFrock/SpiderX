@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Net;
+﻿using System.Net;
 
 namespace SpiderX.Proxy
 {
@@ -8,7 +6,7 @@ namespace SpiderX.Proxy
 	{
 		bool HasNextProxy { get; }
 
-		Expression<Func<SpiderProxyEntity, bool>> LoadCondition { get; }
+		bool CheckLoad(SpiderProxyEntity entity);
 
 		int LoadFrom(ProxyAgent agent);
 

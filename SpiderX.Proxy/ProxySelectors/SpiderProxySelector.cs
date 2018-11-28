@@ -1,41 +1,45 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq.Expressions;
 
 namespace SpiderX.Proxy
 {
 	public sealed class SpiderProxySelector : IProxySelector<SpiderProxy>
 	{
-		public SpiderProxySelector(Expression<Func<SpiderProxyEntity, bool>> loadCondition)
+		public SpiderProxySelector(Func<SpiderProxyEntity, bool> entityLoadCondition)
 		{
-			LoadCondition = loadCondition;
+			EntityLoadCondition = entityLoadCondition;
 		}
 
-		private readonly ConcurrentQueue<SpiderProxy> _queue = new ConcurrentQueue<SpiderProxy>();
+		private readonly ConcurrentQueue<SpiderProxy> _availableQueue = new ConcurrentQueue<SpiderProxy>();
 
-		public bool HasNextProxy => !_queue.IsEmpty;
+		private readonly ConcurrentQueue<SpiderProxy> _verifyingQueue = new ConcurrentQueue<SpiderProxy>();
 
-		public Expression<Func<SpiderProxyEntity, bool>> LoadCondition { get; }
+		private readonly ConcurrentQueue<SpiderProxy> _eliminatedQueue = new ConcurrentQueue<SpiderProxy>();
+
+		public bool HasNextProxy => !_availableQueue.IsEmpty;
+
+		public Func<SpiderProxyEntity, bool> EntityLoadCondition { get; }
+
+		public bool CheckLoad(SpiderProxyEntity entity) => EntityLoadCondition == null || EntityLoadCondition(entity);
 
 		public int LoadFrom(ProxyAgent agent)
 		{
-			if (HasNextProxy)
-			{
-				return -1;
-			}
-			var proxyEntities = LoadCondition == null
-				? agent.SelectProxyEntities(p => p.UpdateTime > DateTime.Now.AddDays(-10))
-				: agent.SelectProxyEntities(LoadCondition);
+			var proxyEntities = agent.SelectProxyEntities(CheckLoad, 7, 10000);
 			foreach (var e in proxyEntities)
 			{
-				_queue.Enqueue(e.Value);
+				_availableQueue.Enqueue(e.Value);
 			}
-			return _queue.Count;
+			return _availableQueue.Count;
 		}
 
 		public SpiderProxy SingleProxy()
 		{
-			throw new NotImplementedException();
+			if (_availableQueue.TryDequeue(out SpiderProxy result))
+			{
+				_availableQueue.Enqueue(result);
+				return result;
+			}
+			return null;
 		}
 	}
 }
