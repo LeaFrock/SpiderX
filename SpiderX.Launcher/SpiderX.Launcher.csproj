@@ -14,20 +14,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.8.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpiderX.BusinessBase\SpiderX.BusinessBase.csproj" />
-    <ProjectReference Include="..\SpiderX.DataClient\SpiderX.DataClient.csproj" />
-    <ProjectReference Include="..\SpiderX.Extensions\SpiderX.Extensions.csproj" />
-    <ProjectReference Include="..\SpiderX.Http\SpiderX.Http.csproj" />
-    <ProjectReference Include="..\SpiderX.Proxy\SpiderX.Proxy.csproj" />
+    <ProjectReference Include="..\SpiderX.Business\SpiderX.Business.csproj" />
+    <ProjectReference Include="..\SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj" />
   </ItemGroup>
 
   <ItemGroup>
