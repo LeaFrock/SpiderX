@@ -1,7 +1,5 @@
 ﻿using System;
 using SpiderX.BusinessBase;
-using SpiderX.DataClient;
-using SpiderX.Proxy;
 using SpiderX.Tools;
 
 namespace SpiderX.ProxyFetcher
@@ -12,17 +10,7 @@ namespace SpiderX.ProxyFetcher
 
 		internal abstract ProxyApiProvider ApiProvider { get; }
 
-		public static ProxyAgent CreateProxyAgent()
-		{
-			var conf = DbClient.Default.FindConfig("SqlServerTest", true);
-			if (conf == null)
-			{
-				throw new DbConfigNotFoundException();
-			}
-			return new ProxyAgent(conf);
-		}
-
-		internal static void ShowDebugInfo(string msg)
+		protected static void ShowDebugInfo(string msg)
 		{
 #if DEBUG
 			Console.WriteLine(msg);

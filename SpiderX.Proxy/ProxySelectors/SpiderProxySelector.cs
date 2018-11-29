@@ -22,7 +22,7 @@ namespace SpiderX.Proxy
 
 		public bool CheckLoad(SpiderProxyEntity entity) => EntityLoadCondition == null || EntityLoadCondition(entity);
 
-		public int LoadFrom(ProxyAgent agent)
+		public int LoadFrom(IProxyAgent agent)
 		{
 			var proxyEntities = agent.SelectProxyEntities(CheckLoad, 7, 10000);
 			foreach (var e in proxyEntities)

@@ -8,7 +8,7 @@ namespace SpiderX.Proxy
 
 		bool CheckLoad(SpiderProxyEntity entity);
 
-		int LoadFrom(ProxyAgent agent);
+		int LoadFrom(IProxyAgent agent);
 
 		T SingleProxy();
 	}

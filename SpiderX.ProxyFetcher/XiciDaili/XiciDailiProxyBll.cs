@@ -19,7 +19,7 @@ namespace SpiderX.ProxyFetcher
 		{
 			base.Run();
 			string caseName = ClassName;
-			ProxyAgent pa = CreateProxyAgent();
+			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
 			using (var webClient = ApiProvider.CreateWebClient())
 			{
 				var entities = GetProxyEntities(webClient, XiciDailiProxyApiProvider.NnUrlTemplate, 10);
