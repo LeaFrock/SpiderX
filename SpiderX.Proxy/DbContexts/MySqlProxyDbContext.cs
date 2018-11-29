@@ -42,7 +42,7 @@ namespace SpiderX.Proxy
 						break;
 
 					default:
-						throw new NotSupportedException(Config.Name.ToString());
+						throw new NotSupportedException(Config.Name);
 				}
 			}
 		}
