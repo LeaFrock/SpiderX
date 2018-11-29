@@ -8,7 +8,7 @@ namespace SpiderX.Proxy
 	{
 		DbConfig DbConfig { get; }
 
-		IEnumerable<SpiderProxyEntity> SelectProxyEntities(Func<SpiderProxyEntity, bool> predicate, int recentDays = 10, int count = 0);
+		IEnumerable<SpiderProxyEntity> SelectProxyEntities(Func<SpiderProxyEntity, bool> predicate, int recentDays, int count);
 
 		int InsertProxyEntities(IEnumerable<SpiderProxyEntity> entities);
 

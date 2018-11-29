@@ -4,7 +4,7 @@ namespace SpiderX.DataClient
 {
 	public sealed class DbConfigNotFoundException : Exception
 	{
-		public DbConfigNotFoundException() : this("DbConfig Not Found.")
+		public DbConfigNotFoundException() : this("Invalid ConfigName")
 		{
 		}
 
