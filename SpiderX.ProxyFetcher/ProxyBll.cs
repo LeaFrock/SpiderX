@@ -9,12 +9,5 @@ namespace SpiderX.ProxyFetcher
 		protected static Random RandomEvent => CommonTool.RandomEvent;
 
 		internal abstract ProxyApiProvider ApiProvider { get; }
-
-		protected static void ShowDebugInfo(string msg)
-		{
-#if DEBUG
-			Console.WriteLine(msg);
-#endif
-		}
 	}
 }
