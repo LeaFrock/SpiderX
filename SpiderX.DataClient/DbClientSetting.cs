@@ -1,44 +1,41 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace SpiderX.DataClient
 {
-	public sealed class DbClientSetting
+	internal class DbClientSetting
 	{
-		private static DbClientSetting _instance;
-
-		public static DbClientSetting Instance
+		public DbClientSetting(List<DbConfig> configs)
 		{
-			get
-			{
-				if (_instance == null)
-				{
-					Interlocked.CompareExchange(ref _instance, new DbClientSetting(), null);
-				}
-				return _instance;
-			}
+			_dbConfigs = configs;
 		}
 
 		private List<DbConfig> _dbConfigs;
 
 		public IReadOnlyList<DbConfig> DbConfigs => _dbConfigs;
 
-		public void InitializeConfigs(IEnumerable<DbConfig> configs)
-		{
-			if (_dbConfigs == null)
-			{
-				Interlocked.CompareExchange(ref _dbConfigs, new List<DbConfig>(configs), null);
-			}
-		}
-
-		public void ForceInitializeConfigs(IEnumerable<DbConfig> configs)
-		{
-			Interlocked.Exchange(ref _dbConfigs, new List<DbConfig>(configs));
-		}
-
 		public DbConfig FindConfig(string name, bool isTest)
 		{
 			return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
+		}
+
+		internal static DbClientSetting CreateInstance(IConfigurationRoot root)
+		{
+			var dbSections = root.GetSection(nameof(DbConfigs)).GetChildren();
+			var result = new List<DbConfig>();
+			foreach (var dbSection in dbSections)
+			{
+				DbConfig item = DbConfig.FromConfiguration(dbSection);
+				if (item != null)
+				{
+					result.Add(item);
+				}
+			}
+			if (result.Count < 1)
+			{
+				throw new DbConfigNotFoundException(nameof(CreateInstance));
+			}
+			return new DbClientSetting(result);
 		}
 	}
 }

@@ -23,10 +23,6 @@ namespace SpiderX.Launcher
 				.Build();
 			//Load CaseSettings
 			CaseSettings = cases ?? LoadCaseSettings(conf);
-			//Load DbConfigs
-			var dbConfigs = LoadDbConfigs(conf);
-			DbClientSetting.Instance.InitializeConfigs(dbConfigs);
-			//Load Other
 			if (CaseSettings.Count > 1)
 			{
 				string runCasesConcurrentlyStr = conf.GetSection(nameof(RunCasesConcurrently)).Value;
@@ -40,11 +36,13 @@ namespace SpiderX.Launcher
 			{
 				AutoClose = autoClose;
 			}
+			//Init DbClient
+			DbClient.Initialize(conf);
 		}
 
 		private static List<CaseSetting> LoadCaseSettings(IConfigurationRoot root)
 		{
-			var dbSections = root.GetSection("CaseSettings").GetChildren();
+			var dbSections = root.GetSection(nameof(CaseSettings)).GetChildren();
 			var result = new List<CaseSetting>();
 			foreach (var dbSection in dbSections)
 			{
@@ -57,25 +55,6 @@ namespace SpiderX.Launcher
 			if (result.Count < 1)
 			{
 				throw new ArgumentException("Invalid CaseSettings.");
-			}
-			return result;
-		}
-
-		private static List<DbConfig> LoadDbConfigs(IConfigurationRoot root)
-		{
-			var dbSections = root.GetSection("DbConfigs").GetChildren();
-			var result = new List<DbConfig>();
-			foreach (var dbSection in dbSections)
-			{
-				DbConfig item = DbConfig.FromConfiguration(dbSection);
-				if (item != null)
-				{
-					result.Add(item);
-				}
-			}
-			if (result.Count < 1)
-			{
-				throw new ArgumentException("Invalid DbConfigs.");
 			}
 			return result;
 		}

@@ -16,7 +16,7 @@ namespace SpiderX.Business
 
 		public override void Run()
 		{
-			var conf = DbClient.Default.FindConfig("SqlServerTest", true);
+			var conf = DbClient.FindConfig("SqlServerTest", true);
 			if (conf == null)
 			{
 				throw new DbConfigNotFoundException();

@@ -25,7 +25,7 @@ namespace SpiderX.Proxy
 
 		public static ProxyAgent<TContext> CreateInstance(string confName, bool isTest, Func<DbConfig, TContext> dbContextFunc)
 		{
-			var conf = DbClient.Default.FindConfig(confName, isTest);
+			var conf = DbClient.FindConfig(confName, isTest);
 			if (conf == null)
 			{
 				throw new DbConfigNotFoundException(confName);
