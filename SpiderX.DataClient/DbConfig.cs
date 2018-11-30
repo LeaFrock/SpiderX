@@ -18,7 +18,7 @@ namespace SpiderX.DataClient
 
 		public bool IsTest { get; set; } = true;
 
-		public static DbConfig CreateInstance(IConfiguration source)
+		public static DbConfig FromConfiguration(IConfiguration source)
 		{
 			DbConfig instance = new DbConfig();
 			string enabledStr = source.GetSection("IsEnabled").Value;
