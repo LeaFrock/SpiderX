@@ -3,7 +3,7 @@ using SpiderX.DataClient;
 
 namespace SpiderX.Proxy
 {
-	public abstract class ProxyDbContext : DbContext
+	public abstract class ProxyDbContext : DbContext, IProxyDbContext
 	{
 		public ProxyDbContext(DbConfig dbConfig) : base()
 		{

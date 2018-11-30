@@ -2,13 +2,13 @@
 
 namespace SpiderX.Proxy
 {
-	public interface IProxySelector<T> where T : IWebProxy
+	internal interface IProxySelector<T> where T : IWebProxy
 	{
 		bool HasNextProxy { get; }
 
 		bool CheckLoad(SpiderProxyEntity entity);
 
-		int LoadFrom(IProxyAgent agent);
+		int LoadFrom<TContext>(ProxyAgent<TContext> agent) where TContext : ProxyDbContext;
 
 		T SingleProxy();
 	}
