@@ -29,40 +29,42 @@ namespace SpiderX.Launcher
 
 		public void InvokeCase()
 		{
-			Type bllType = typeof(BllBase);
-			if (!bllType.IsClass || bllType.IsAbstract || bllType.IsNotPublic)
-			{
-				throw new TypeAccessException("Invalid Type: " + CaseName);
-			}
-			//Create Instance
-			object bllInstance;
+			Type bllType;
 			try
 			{
-				bllInstance = Activator.CreateInstance(bllType, false);
+				Assembly a = Assembly.Load(Namespace);
+				bllType = a.GetType(FullTypeName, false, true);
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+			if (bllType == null)
+			{
+				return;
+			}
+			if (bllType.IsAbstract || bllType.IsNotPublic || !bllType.IsSubclassOf(typeof(BllBase)))
+			{
+				throw new TypeAccessException("Invalid Type: " + FullTypeName);
+			}
+			//Create Instance
+			BllBase bllInstance;
+			try
+			{
+				bllInstance = (BllBase)Activator.CreateInstance(bllType, false);
 			}
 			catch (Exception ex)
 			{
 				throw ex;
 			}
 			//Invoke Method
-			string methodName = nameof(BllBase.Run);
 			if (Params.Length < 1)
 			{
-				MethodInfo mi = bllType.GetMethod(methodName, Type.EmptyTypes);
-				if (mi == null)
-				{
-					throw new MissingMethodException(CaseName + " Method() Not Found.");
-				}
-				mi.Invoke(bllInstance, null);
+				bllInstance.Run();
 			}
 			else
 			{
-				MethodInfo mi = bllType.GetMethod(methodName, new Type[] { typeof(string[]) });
-				if (mi == null)
-				{
-					throw new MissingMethodException(CaseName + " Method(string[]) Not Found.");
-				}
-				mi.Invoke(bllInstance, new object[] { Params });
+				bllInstance.Run(Params);
 			}
 		}
 
