@@ -10,6 +10,8 @@ namespace SpiderX.Launcher
 	{
 		public static IReadOnlyList<CaseSetting> CaseSettings { get; private set; }
 
+		public static string DefaultNamespace { get; private set; }
+
 		public static bool RunCasesConcurrently { get; private set; }
 
 		public static bool AutoClose { get; private set; } = true;
@@ -23,6 +25,7 @@ namespace SpiderX.Launcher
 				.Build();
 			//Load CaseSettings
 			CaseSettings = cases ?? LoadCaseSettings(conf);
+			DefaultNamespace = conf.GetSection(nameof(DefaultNamespace)).Value;
 			if (CaseSettings.Count > 1)
 			{
 				string runCasesConcurrentlyStr = conf.GetSection(nameof(RunCasesConcurrently)).Value;
