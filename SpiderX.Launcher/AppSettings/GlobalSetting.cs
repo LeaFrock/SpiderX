@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 using SpiderX.DataClient;
 
@@ -8,24 +7,36 @@ namespace SpiderX.Launcher
 {
 	public static class GlobalSetting
 	{
-		public static IReadOnlyList<CaseSetting> CaseSettings { get; private set; }
-
 		public static string DefaultNamespace { get; private set; }
+
+		public static IReadOnlyList<CaseSetting> CaseSettings { get; private set; }
 
 		public static bool RunCasesConcurrently { get; private set; }
 
 		public static bool AutoClose { get; private set; } = true;
 
-		internal static void Initialize(IReadOnlyList<CaseSetting> cases)
+		internal static void Initialize(IConfigurationRoot conf)
 		{
-			string filePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
-			var conf = new ConfigurationBuilder()
-				.SetBasePath(filePath)
-				.AddJsonFile("appsettings.json", true, true)
-				.Build();
-			//Load CaseSettings
-			CaseSettings = cases ?? LoadCaseSettings(conf);
 			DefaultNamespace = conf.GetSection(nameof(DefaultNamespace)).Value;
+			string autoCloseStr = conf.GetSection(nameof(AutoClose)).Value;
+			if (bool.TryParse(autoCloseStr, out bool autoClose))
+			{
+				AutoClose = autoClose;
+			}
+			//Init DbClient
+			DbClient.Initialize(conf);
+		}
+
+		internal static void LoadCaseSettings(IConfigurationRoot conf, IReadOnlyList<CaseSetting> settings = null)
+		{
+			if (settings == null || settings.Count < 1)
+			{
+				CaseSettings = LoadCaseSettings(conf);
+			}
+			else
+			{
+				CaseSettings = settings;
+			}
 			if (CaseSettings.Count > 1)
 			{
 				string runCasesConcurrentlyStr = conf.GetSection(nameof(RunCasesConcurrently)).Value;
@@ -34,13 +45,6 @@ namespace SpiderX.Launcher
 					RunCasesConcurrently = runCasesConcurrently;
 				}
 			}
-			string autoCloseStr = conf.GetSection(nameof(AutoClose)).Value;
-			if (bool.TryParse(autoCloseStr, out bool autoClose))
-			{
-				AutoClose = autoClose;
-			}
-			//Init DbClient
-			DbClient.Initialize(conf);
 		}
 
 		private static List<CaseSetting> LoadCaseSettings(IConfigurationRoot root)

@@ -91,21 +91,21 @@ namespace SpiderX.Launcher
 			return new CaseSetting(GlobalSetting.DefaultNamespace, caseName, caseParams, 0);
 		}
 
-		public static CaseSetting FromConfiguration(IConfiguration source)
+		public static CaseSetting FromConfiguration(IConfiguration conf)
 		{
-			string nameSpace = source.GetSection(nameof(Namespace)).Value;
+			string nameSpace = conf.GetSection(nameof(Namespace)).Value?.Trim();
 			if (string.IsNullOrEmpty(nameSpace))
 			{
 				return null;
 			}
-			string caseName = source.GetSection(nameof(CaseName)).Value;
-			if (string.IsNullOrEmpty(caseName))
+			string caseName = conf.GetSection(nameof(CaseName)).Value;
+			if (string.IsNullOrWhiteSpace(caseName))
 			{
 				return null;
 			}
 			string finalCaseName = CorrectCaseName(caseName);
-			string[] caseParams = source.GetSection(nameof(Params)).GetChildren().Select(p => p.Value).ToArray();
-			string vesionStr = source.GetSection(nameof(Version)).Value;
+			string[] caseParams = conf.GetSection(nameof(Params)).GetChildren().Select(p => p.Value).ToArray();
+			string vesionStr = conf.GetSection(nameof(Version)).Value?.Trim();
 			int version = 0;
 			if (!string.IsNullOrEmpty(vesionStr))
 			{
@@ -114,93 +114,46 @@ namespace SpiderX.Launcher
 			return new CaseSetting(nameSpace, finalCaseName, caseParams, version);
 		}
 
+		public static List<CaseSetting> GetListByStringCmd(string cmd)
+		{
+			string text = cmd.Trim();
+			if (string.IsNullOrEmpty(text))
+			{
+				throw new ArgumentException("Invalid Command");
+			}
+
+			string[] parts = text.Split(';');
+			List<CaseSetting> settings = new List<CaseSetting>(parts.Length);
+			string trimedPart;
+			foreach (string part in parts)
+			{
+				trimedPart = part.Trim();
+				if (trimedPart == string.Empty)
+				{
+					continue;
+				}
+				if (CheckSkipStringArg(trimedPart))
+				{
+					continue;
+				}
+				if (!trimedPart.Contains(' '))
+				{
+					settings.Add(CreateDefault(CorrectCaseName(trimedPart)));
+					continue;
+				}
+				string[] tempAry = trimedPart.Split(' ');
+				string[] caseParams = new string[tempAry.Length - 1];
+				Array.Copy(tempAry, 1, caseParams, 0, caseParams.Length);
+				var setting = CreateDefault(tempAry[0], caseParams);
+				settings.Add(setting);
+			}
+			return settings;
+		}
+
 		public static List<CaseSetting> GetListByStringArgs(string[] args)
 		{
-			List<CaseSetting> caseSettings = new List<CaseSetting>();
-			List<string> tempList = new List<string>(8);
-			bool toSkip = false;
-			int index;
-			foreach (string arg in args)
-			{
-				index = arg.IndexOf(';');
-				if (index < 0)
-				{
-					if (toSkip)
-					{
-						continue;
-					}
-					if (CheckSkipStringArg(arg))
-					{
-						toSkip = true;
-						continue;
-					}
-					tempList.Add(arg);
-				}
-				else//Exists semicolon
-				{
-					if (toSkip)
-					{
-						string rightStr = arg.Substring(index + 1);
-						if (CheckSkipStringArg(rightStr))
-						{
-							continue;
-						}
-						tempList.Add(rightStr);
-						toSkip = false;
-					}
-					else
-					{
-						string leftStr = arg.Substring(0, index);
-						switch (tempList.Count)
-						{
-							case 0:
-								string name = CorrectCaseName(leftStr);
-								caseSettings.Add(CreateDefault(name));
-								break;
-
-							case 1:
-								caseSettings.Add(CreateDefault(tempList[0], leftStr));
-								tempList.Clear();
-								break;
-
-							default:
-								string[] paramAry = new string[tempList.Count];
-								tempList.CopyTo(1, paramAry, 0, paramAry.Length - 1);
-								paramAry[paramAry.Length - 1] = leftStr;
-								var setting = CreateDefault(tempList[0], paramAry);
-								caseSettings.Add(setting);
-								tempList.Clear();
-								break;
-						}
-						if (index != arg.Length - 1)
-						{
-							string rightStr = arg.Substring(index + 1);
-							if (CheckSkipStringArg(rightStr))
-							{
-								toSkip = true;
-								continue;
-							}
-							tempList.Add(CorrectCaseName(rightStr));
-						}
-					}
-				}
-			}
-			switch (tempList.Count)
-			{
-				case 0: break;
-
-				case 1:
-					caseSettings.Add(CreateDefault(tempList[0]));
-					tempList.Clear();
-					break;
-
-				default:
-					string[] paramAry = new string[tempList.Count - 1];
-					tempList.CopyTo(1, paramAry, 0, paramAry.Length);
-					caseSettings.Add(CreateDefault(tempList[0], paramAry));
-					break;
-			}
-			return caseSettings;
+			string cmd = string.Join(' ', args);
+			return GetListByStringCmd(cmd);
 		}
 
 		private static string CorrectCaseName(string name)

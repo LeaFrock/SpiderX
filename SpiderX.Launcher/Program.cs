@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using SpiderX.Extensions;
 
 namespace SpiderX.Launcher
@@ -9,14 +11,21 @@ namespace SpiderX.Launcher
 		private static void Main(string[] args)
 		{
 			//Init GlobalSetting
+			string filePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
+			var conf = new ConfigurationBuilder()
+				.SetBasePath(filePath)
+				.AddJsonFile("appsettings.json", true, true)
+				.Build();
+			GlobalSetting.Initialize(conf);
+			//Load Cases
 			if (args.IsNullOrEmpty())
 			{
-				GlobalSetting.Initialize(null);
+				GlobalSetting.LoadCaseSettings(conf);
 			}
 			else
 			{
 				var caseSettings = CaseSetting.GetListByStringArgs(args);
-				GlobalSetting.Initialize(caseSettings);
+				GlobalSetting.LoadCaseSettings(conf, caseSettings);
 			}
 			//StartUp
 			StartUp.Run();
