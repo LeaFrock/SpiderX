@@ -14,6 +14,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="AppSettings\appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AppSettings\appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
@@ -23,12 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SpiderX.Business\SpiderX.Business.csproj" />
     <ProjectReference Include="..\SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="AppSettings\appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
