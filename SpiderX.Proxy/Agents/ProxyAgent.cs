@@ -39,7 +39,7 @@ namespace SpiderX.Proxy
 
 		public IEnumerable<SpiderProxyEntity> SelectProxyEntities(Func<SpiderProxyEntity, bool> predicate, int recentDays = 10, int count = 0)
 		{
-			Expression<Func<SpiderProxyEntity, bool>> filter = predicate == null
+			Expression<Func<SpiderProxyEntity, bool>> filter = predicate != null
 				? (p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
 				: (Expression<Func<SpiderProxyEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
 			using (var context = _dbContextCreateFunc(DbConfig))
