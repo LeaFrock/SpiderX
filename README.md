@@ -4,33 +4,33 @@ This is a simple web-crawler project based on .Net Core.
 
 ## Develop Environment |开发环境
 
-- Target Framework |运行框架: .Net Core 2.1+
+- Target Framework |运行框架: [.Net Core 2.1+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
 
-- Recommended IDE |推荐IDE: Visual Studio 2017 15.9+
+- Recommended IDE |推荐IDE: [Visual Studio 2017 15.9+](https://visualstudio.microsoft.com/zh-hans/downloads/)
 
-- Recommended Language Version |推荐语言版本: C# 7.0+
+- Recommended Language Version |推荐语言版本: [C# 7.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
 
-- Recommended ORM |推荐ORM： EntityFramework Core 2.2+
+- Recommended ORM |推荐ORM： [EntityFramework Core 2.2+](https://docs.microsoft.com/zh-cn/ef/index#pivot=efcore)
 
 ## Structure |项目结构
 
 - Launcher |启动模块
   - SpiderX.Launcher  
     An entry which includes user settings and business references.  
-    The user settings are in [appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json). The setting is quite easy to realize. Check it before running your own case.  
+    The user settings are in [appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json). The settings are quite easy to realize. Check it before running your own case.  
     While using Visual Studio in development, you can also run your case(s) by setting init-params under the 'Debug' window instead of editing the 'CaseSettings' in *appsettings.json*. The init-params read like below:
 
     - One Case: `MyCaseBll`.
-    - Multi Cases: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll`. *Cases are devided by ';'.*
+    - Multi Cases: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll`. *Cases are divided by ';'.*
     - Skip Case(s): `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll`. *Cases whose name starts with '-' or '/' will be skipped.*
 
     >包含所有用户设置和业务模块引用的入口。
     >用户设置在[appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json)里。设置项非常易懂。在运行你自己的业务前检查下该文件。
     >当使用VS开发时，你还可以在“调试”窗口下使用启动参数启动你的业务案例，而不需要编辑设置文件里的“CaseSettings”。启动参数格式如下：
 
-    >>- 单个案例: `MyCaseBll`.
-    >>- 多个案例: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll`. *案例由英文分号隔断.*
-    >>- 跳过案例: `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll`. *以'-'或'/'开头的案例会被忽略.*
+    >>- 单个案例: `MyCaseBll`
+    >>- 多个案例: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll` *//案例由英文分号隔断.*
+    >>- 跳过案例: `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll` *//以'-'或'/'开头的案例会被忽略.*
 
 - Business |业务模块
   - SpiderX.BusinessBase  
