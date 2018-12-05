@@ -15,7 +15,7 @@ This is a simple web-crawler project based on .Net Core.
 ## Structure |项目结构
 
 - Launcher |启动模块
-  - SpiderX.Launcher
+  - SpiderX.Launcher  
     An entry which includes user settings and business references.  
     The user settings are in [appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json). The setting is quite easy to realize. Check it before running your own case.  
     While using Visual Studio in development, you can also run your case(s) by setting init-params under the 'Debug' window instead of editing the 'CaseSettings' in *appsettings.json*. The init-params read like below:
@@ -33,11 +33,11 @@ This is a simple web-crawler project based on .Net Core.
     >>- 跳过案例: `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll`. *以'-'或'/'开头的案例会被忽略.*
 
 - Business |业务模块
-  - SpiderX.BusinessBase
+  - SpiderX.BusinessBase  
     Includes a simple BaseType of Business.
     >包含所有业务的基类。
 
-- SpiderX.Business
+- SpiderX.Business  
     Includes a collection of business-classes.  
     As a developer, you can also write your own project which includes the reference of 'SpiderX.BusinessBase' and just need to make your business-classes inherit the 'SpiderX.BusinessBase.BllBase'. Then put your project reference into ‘SpiderX.Launcher’.  
     To keep the code style, the name of a bussiness-class ending with 'Bll' are recommended.
@@ -46,37 +46,37 @@ This is a simple web-crawler project based on .Net Core.
     >为了保证代码风格一致，业务类命名建议统一以“Bll”结尾。
 
 - Network |通信模块
-  - SpiderX.Http
+  - SpiderX.Http  
     A wrapper of HttpClient including other codes related to Http(s).
     >基于HttpClient的封装，并且包括其他跟Http(s)相关的代码。
 
 - Proxy |代理模块
 
-  - SpiderX.ProxyFetcher
+  - SpiderX.ProxyFetcher  
     A special 'SpiderX.Business' in fact which is responsible for proxy-fetching.
     >其实是一个特殊的“SpiderX.Business”，负责获取代理。
 
-  - SpiderX.Proxy
+  - SpiderX.Proxy  
     A wrapper of WebProxy including other codes related to Proxy.
     >基于WebProxy的封装，并且包括其他跟Proxy相关的代码。
 
 - Database |数据模块
 
-  - SpiderX.DataClient
+  - SpiderX.DataClient  
     Includes codes related to DB like SqlServer & MySQL, and based on EF Core currently.
     >包含跟数据库相关的代码，目前基于EF Core.
 
 - Common-Use |通用模块
 
-  - SpiderX.Extensions
+  - SpiderX.Extensions  
     Includes all function extensions.
     >包含所有的扩展方法。
 
-  - SpiderX.Tools
+  - SpiderX.Tools  
     Includes kinds of static fields, properties and functions for common usage.
     >包含各种常用的静态字段、属性和方法。
 
-  - SpiderX.Security
+  - SpiderX.Security  
     Includes kinds of functions related to cryptography.
     >包含各种加密解密相关的方法。
 
