@@ -25,8 +25,8 @@ This is a simple web-crawler project based on .Net Core.
     - Multi Cases: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll` *//Cases are divided by ';'.*
     - Skip Case(s): `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll` *//Cases whose name starts with '-' or '/' will be skipped.*
 
-    >包含所有用户设置和业务模块引用的入口。
-    >用户设置在[appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json)里。设置项非常易懂。在运行你自己的业务前检查下配置文件。
+    >包含所有用户设置和业务模块引用的入口。  
+    >用户设置在[appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json)里，各项设置非常易懂。在运行你自己的业务前检查下配置文件。  
     >当使用VS开发时，你还可以在“调试”窗口下使用启动参数启动你的业务案例，而不需要编辑设置文件里的“CaseSettings”。启动参数格式如下：
 
     >>- 单个案例: `MyCaseBll`
@@ -43,8 +43,8 @@ This is a simple web-crawler project based on .Net Core.
     Includes kinds of business-classes.  
     As a developer, you can also write your own project which includes the reference of 'SpiderX.BusinessBase' and just make your business-classes inherit the 'SpiderX.BusinessBase.BllBase'. Then put your project reference into ‘SpiderX.Launcher’.  
     To keep the code style, the name of a bussiness-class ending with 'Bll' is recommended.
-    >包含业务类的集合。
-    >作为开发者，你也可以写自己的项目，项目中只需要引入“SpiderX.BusinessBase”，并且使你的业务类继承“BllBase”类。然后将你的项目引用加入到“SpiderX.Launcher”。
+    >包含业务类的集合。  
+    >作为开发者，你也可以写自己的项目，项目中只需要引入“SpiderX.BusinessBase”，并且使你的业务类继承“BllBase”类。然后将你的项目引用加入到“SpiderX.Launcher”。  
     >为了保证代码风格一致，业务类命名建议统一以“Bll”结尾。
 
 - Network |通信模块
