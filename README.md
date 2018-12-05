@@ -40,9 +40,9 @@ This is a simple web-crawler project based on .Net Core.
     >包含所有业务的基类。
 
   - SpiderX.Business  
-    Includes a collection of business-classes.  
-    As a developer, you can also write your own project which includes the reference of 'SpiderX.BusinessBase' and just need to make your business-classes inherit the 'SpiderX.BusinessBase.BllBase'. Then put your project reference into ‘SpiderX.Launcher’.  
-    To keep the code style, the name of a bussiness-class ending with 'Bll' are recommended.
+    Includes kinds of business-classes.  
+    As a developer, you can also write your own project which includes the reference of 'SpiderX.BusinessBase' and just make your business-classes inherit the 'SpiderX.BusinessBase.BllBase'. Then put your project reference into ‘SpiderX.Launcher’.  
+    To keep the code style, the name of a bussiness-class ending with 'Bll' is recommended.
     >包含业务类的集合。
     >作为开发者，你也可以写自己的项目，项目中只需要引入“SpiderX.BusinessBase”，并且使你的业务类继承“BllBase”类。然后将你的项目引用加入到“SpiderX.Launcher”。
     >为了保证代码风格一致，业务类命名建议统一以“Bll”结尾。
@@ -51,7 +51,7 @@ This is a simple web-crawler project based on .Net Core.
 
   - SpiderX.Http  
     A wrapper of HttpClient including other codes related to Http(s).
-    >基于HttpClient的封装，并且包括其他跟Http(s)相关的代码。
+    >基于HttpClient的封装，并且包含其他跟Http(s)相关的代码。
 
 - Proxy |代理模块
 
@@ -61,7 +61,7 @@ This is a simple web-crawler project based on .Net Core.
 
   - SpiderX.Proxy  
     A wrapper of WebProxy including other codes related to Proxy.
-    >基于WebProxy的封装，并且包括其他跟Proxy相关的代码。
+    >基于WebProxy的封装，并且包含其他跟Proxy相关的代码。
 
 - Database |数据模块
 
