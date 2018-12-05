@@ -15,17 +15,18 @@ This is a simple web-crawler project based on .Net Core.
 ## Structure |项目结构
 
 - Launcher |启动模块
+
   - SpiderX.Launcher  
     An entry which includes user settings and business references.  
-    The user settings are in [appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json). The settings are quite easy to realize. Check it before running your own case.  
+    The user settings are in [appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json) and quite easy to realize. Check the setting file(s) before running your own case.  
     While using Visual Studio in development, you can also run your case(s) by setting init-params under the 'Debug' window instead of editing the 'CaseSettings' in *appsettings.json*. The init-params read like below:
 
-    - One Case: `MyCaseBll`.
-    - Multi Cases: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll`. *Cases are divided by ';'.*
-    - Skip Case(s): `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll`. *Cases whose name starts with '-' or '/' will be skipped.*
+    - One Case: `MyCaseBll`
+    - Multi Cases: `MyFirstCaseBll;MySecondCaseBll;MyThirdCaseBll` *//Cases are divided by ';'.*
+    - Skip Case(s): `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll` *//Cases whose name starts with '-' or '/' will be skipped.*
 
     >包含所有用户设置和业务模块引用的入口。
-    >用户设置在[appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json)里。设置项非常易懂。在运行你自己的业务前检查下该文件。
+    >用户设置在[appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json)里。设置项非常易懂。在运行你自己的业务前检查下配置文件。
     >当使用VS开发时，你还可以在“调试”窗口下使用启动参数启动你的业务案例，而不需要编辑设置文件里的“CaseSettings”。启动参数格式如下：
 
     >>- 单个案例: `MyCaseBll`
@@ -33,11 +34,12 @@ This is a simple web-crawler project based on .Net Core.
     >>- 跳过案例: `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll` *//以'-'或'/'开头的案例会被忽略.*
 
 - Business |业务模块
+
   - SpiderX.BusinessBase  
     Includes a simple BaseType of Business.
     >包含所有业务的基类。
 
-- SpiderX.Business  
+  - SpiderX.Business  
     Includes a collection of business-classes.  
     As a developer, you can also write your own project which includes the reference of 'SpiderX.BusinessBase' and just need to make your business-classes inherit the 'SpiderX.BusinessBase.BllBase'. Then put your project reference into ‘SpiderX.Launcher’.  
     To keep the code style, the name of a bussiness-class ending with 'Bll' are recommended.
@@ -46,6 +48,7 @@ This is a simple web-crawler project based on .Net Core.
     >为了保证代码风格一致，业务类命名建议统一以“Bll”结尾。
 
 - Network |通信模块
+
   - SpiderX.Http  
     A wrapper of HttpClient including other codes related to Http(s).
     >基于HttpClient的封装，并且包括其他跟Http(s)相关的代码。
