@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpiderX.DataClient\SpiderX.DataClient.csproj" />
+    <ProjectReference Include="..\SpiderX.Http\SpiderX.Http.csproj" />
   </ItemGroup>
 
 </Project>

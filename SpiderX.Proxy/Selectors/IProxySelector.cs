@@ -6,6 +6,8 @@ namespace SpiderX.Proxy
 	{
 		bool HasNextProxy { get; }
 
+		SpiderProxyValidator Validator { get; }
+
 		bool CheckLoad(SpiderProxyEntity entity);
 
 		int LoadFrom<TContext>(ProxyAgent<TContext> agent) where TContext : ProxyDbContext;

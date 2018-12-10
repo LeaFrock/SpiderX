@@ -5,8 +5,9 @@ namespace SpiderX.Proxy
 {
 	public sealed class SpiderProxySelector : IProxySelector<SpiderProxy>
 	{
-		public SpiderProxySelector(Func<SpiderProxyEntity, bool> entityLoadCondition)
+		public SpiderProxySelector(SpiderProxyValidator validator, Func<SpiderProxyEntity, bool> entityLoadCondition)
 		{
+			Validator = validator;
 			EntityLoadCondition = entityLoadCondition;
 		}
 
@@ -16,9 +17,13 @@ namespace SpiderX.Proxy
 
 		private readonly ConcurrentQueue<SpiderProxy> _eliminatedQueue = new ConcurrentQueue<SpiderProxy>();
 
+		public Func<SpiderProxyEntity, bool> EntityLoadCondition { get; }
+
+		#region Interface Part
+
 		public bool HasNextProxy => !_availableQueue.IsEmpty;
 
-		public Func<SpiderProxyEntity, bool> EntityLoadCondition { get; }
+		public SpiderProxyValidator Validator { get; }
 
 		public bool CheckLoad(SpiderProxyEntity entity) => EntityLoadCondition == null || EntityLoadCondition(entity);
 
@@ -41,5 +46,7 @@ namespace SpiderX.Proxy
 			}
 			return null;
 		}
+
+		#endregion Interface Part
 	}
 }
