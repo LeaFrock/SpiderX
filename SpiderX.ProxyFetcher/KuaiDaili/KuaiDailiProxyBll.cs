@@ -75,7 +75,7 @@ namespace SpiderX.ProxyFetcher
 								}
 							}, TaskContinuationOptions.OnlyOnRanToCompletion);
 						}
-					});
+					}, TaskContinuationOptions.OnlyOnRanToCompletion);
 				Thread.Sleep(RandomEvent.Next(4000, 6000));
 			}
 			try
