@@ -73,7 +73,7 @@ namespace SpiderX.ProxyFetcher
 										entities.AddRange(tempList);
 									}
 								}
-							});
+							}, TaskContinuationOptions.OnlyOnRanToCompletion);
 						}
 					});
 				Thread.Sleep(RandomEvent.Next(4000, 6000));
