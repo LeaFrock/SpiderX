@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using SpiderX.Extensions.Http;
 
@@ -10,7 +10,7 @@ namespace SpiderX.Http
 	{
 		public SocketsHttpHandler InnerClientHandler { get; }
 
-		public SpiderWebClient() : this(new SocketsHttpHandler() { UseProxy = true })
+		public SpiderWebClient() : this(new SocketsHttpHandler() { UseProxy = true, AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })
 		{
 		}
 
@@ -25,8 +25,6 @@ namespace SpiderX.Http
 			{
 				Timeout = TimeSpan.FromMilliseconds(5000)
 			};
-			client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue() { NoCache = true };
-			client.DefaultRequestHeaders.Pragma.Add(new NameValueHeaderValue("no-cache"));
 			return client;
 		}
 
