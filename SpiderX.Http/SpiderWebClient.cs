@@ -19,16 +19,15 @@ namespace SpiderX.Http
 			InnerClientHandler = handler;
 		}
 
-		public static SpiderWebClient CreateDefault()
+		public TimeSpan RequestInterval { get; set; } = TimeSpan.FromSeconds(3);
+
+		public void SetProxy(IWebProxy proxy)
 		{
-			SpiderWebClient client = new SpiderWebClient()
-			{
-				Timeout = TimeSpan.FromMilliseconds(5000)
-			};
-			return client;
+			InnerClientHandler.UseProxy = proxy != null;
+			InnerClientHandler.Proxy = proxy;
 		}
 
-		public async Task<string> GetResponse(HttpRequestMessage requestMessage, int retryTimes, Predicate<string> passFunc, int interval = 0)
+		public async Task<string> GetResponse(HttpRequestMessage requestMessage, int retryTimes, Predicate<string> passFunc)
 		{
 			string result = null;
 			if (passFunc == null)
@@ -68,6 +67,15 @@ namespace SpiderX.Http
 				}
 			}
 			return result;
+		}
+
+		public static SpiderWebClient CreateDefault()
+		{
+			SpiderWebClient client = new SpiderWebClient()
+			{
+				Timeout = TimeSpan.FromMilliseconds(5000)
+			};
+			return client;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using SpiderX.Http;
 
 namespace SpiderX.Proxy
@@ -10,6 +9,8 @@ namespace SpiderX.Proxy
 		public SimpleProxyValidator(string urlString) : base(urlString)
 		{
 		}
+
+		private static readonly SpiderWebClientPool _clientPool = new SpiderWebClientPool();
 
 		public static readonly SimpleProxyValidator BaiduHttp = new SimpleProxyValidator("http://www.baidu.com")
 		{
@@ -37,44 +38,40 @@ namespace SpiderX.Proxy
 
 		public override bool CheckPass(IWebProxy proxy)
 		{
-			var handler = new SocketsHttpHandler()
+			var webClient = _clientPool.Discharge(proxy);
+			bool isPassed = false;
+			string responseText;
+			for (byte i = 0; i < RetryTimes + 1; i++)
 			{
-				UseProxy = true,
-				Proxy = proxy
-			};
-			using (var webClient = new SpiderWebClient(handler))
-			{
-				string responseText;
-				for (byte i = 0; i < RetryTimes + 1; i++)
+				try
 				{
-					try
-					{
-						responseText = webClient.GetStringAsync(TargetUri).Result?.Trim();
-					}
-					catch
-					{
-						continue;
-					}
-					if (string.IsNullOrEmpty(responseText))
-					{
-						continue;
-					}
-					if (!string.IsNullOrEmpty(Lastword) && !responseText.EndsWith(Lastword, LastwordComparisonType))
-					{
-						continue;
-					}
-					if (!string.IsNullOrEmpty(Firstword) && !responseText.StartsWith(Firstword, FirstwordComparisonType))
-					{
-						continue;
-					}
-					if (!string.IsNullOrEmpty(Keyword) && !responseText.Contains(Keyword, KeywordComparisonType))
-					{
-						continue;
-					}
-					return true;
+					responseText = webClient.GetStringAsync(TargetUri).Result?.Trim();
 				}
-				return false;
+				catch
+				{
+					continue;
+				}
+				if (string.IsNullOrEmpty(responseText))
+				{
+					continue;
+				}
+				if (!string.IsNullOrEmpty(Lastword) && !responseText.EndsWith(Lastword, LastwordComparisonType))
+				{
+					continue;
+				}
+				if (!string.IsNullOrEmpty(Firstword) && !responseText.StartsWith(Firstword, FirstwordComparisonType))
+				{
+					continue;
+				}
+				if (!string.IsNullOrEmpty(Keyword) && !responseText.Contains(Keyword, KeywordComparisonType))
+				{
+					continue;
+				}
+				isPassed = true;
+				break;
 			}
+			_clientPool.Recycle(webClient);
+			return isPassed;
 		}
 	}
 }

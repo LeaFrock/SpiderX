@@ -16,6 +16,9 @@ namespace SpiderX.Proxy
 
 		public Uri TargetUri { get; }
 
+		/// <summary>
+		/// Between 1 and 254
+		/// </summary>
 		public byte RetryTimes { get; set; } = 3;
 
 		public abstract bool CheckPass(IWebProxy proxy);
