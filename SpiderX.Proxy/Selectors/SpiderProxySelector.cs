@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SpiderX.Proxy
 {
 	public sealed class SpiderProxySelector : IProxySelector<SpiderProxy>
 	{
-		public SpiderProxySelector(SpiderProxyValidator validator, Func<SpiderProxyEntity, bool> entityLoadCondition)
+		public SpiderProxySelector(int degreeOfParallelism, Predicate<SpiderProxyEntity> entityLoadCondition)
 		{
-			Validator = validator;
+			DegreeOfParallelism = degreeOfParallelism;
 			EntityLoadCondition = entityLoadCondition;
 		}
 
@@ -17,24 +20,66 @@ namespace SpiderX.Proxy
 
 		private readonly ConcurrentQueue<SpiderProxy> _eliminatedQueue = new ConcurrentQueue<SpiderProxy>();
 
-		public Func<SpiderProxyEntity, bool> EntityLoadCondition { get; }
+		private int _initTimes;
+
+		public int StatusCode => _initTimes;
+
+		public int DegreeOfParallelism { get; } = 100;
+
+		public Predicate<SpiderProxyEntity> EntityLoadCondition { get; }
+
+		private void Verify()
+		{
+			Parallel.For(0, DegreeOfParallelism,
+				i =>
+				{
+					while (true)
+					{
+						VerifySingle();
+					}
+				});
+		}
+
+		private void VerifySingle()
+		{
+			if (!_verifyingQueue.TryDequeue(out SpiderProxy proxy))
+			{
+				return;
+			}
+			if (Validator.CheckPass(proxy))
+			{
+				_availableQueue.Enqueue(proxy);
+			}
+			else
+			{
+				_eliminatedQueue.Enqueue(proxy);
+			}
+		}
 
 		#region Interface Part
 
 		public bool HasNextProxy => !_availableQueue.IsEmpty;
 
-		public SpiderProxyValidator Validator { get; }
+		public SpiderProxyValidator Validator { get; set; }
 
-		public bool CheckLoad(SpiderProxyEntity entity) => EntityLoadCondition == null || EntityLoadCondition(entity);
+		public bool CheckLoad(SpiderProxyEntity entity) => EntityLoadCondition?.Invoke(entity) ?? true;
 
-		public int LoadFrom<TContext>(ProxyAgent<TContext> agent) where TContext : ProxyDbContext
+		public void Init(SpiderProxyValidator Validator, IEnumerable<SpiderProxy> proxies)
 		{
-			var proxyEntities = agent.SelectProxyEntities(CheckLoad, 7, 10000);
-			foreach (var e in proxyEntities)
+			if (Interlocked.CompareExchange(ref _initTimes, 1, 0) != 0)
 			{
-				_availableQueue.Enqueue(e.Value);
+				return;
 			}
-			return _availableQueue.Count;
+			InsertProxies(proxies);
+			Task.Factory.StartNew(Verify);
+		}
+
+		public void InsertProxies(IEnumerable<SpiderProxy> proxies)
+		{
+			foreach (var proxy in proxies)
+			{
+				_verifyingQueue.Enqueue(proxy);
+			}
 		}
 
 		public SpiderProxy SingleProxy()

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace SpiderX.Proxy
 {
@@ -6,11 +7,15 @@ namespace SpiderX.Proxy
 	{
 		bool HasNextProxy { get; }
 
-		SpiderProxyValidator Validator { get; }
+		int StatusCode { get; }
+
+		SpiderProxyValidator Validator { get; set; }
 
 		bool CheckLoad(SpiderProxyEntity entity);
 
-		int LoadFrom<TContext>(ProxyAgent<TContext> agent) where TContext : ProxyDbContext;
+		void Init(SpiderProxyValidator Validator, IEnumerable<SpiderProxy> proxies);
+
+		void InsertProxies(IEnumerable<SpiderProxy> proxies);
 
 		T SingleProxy();
 	}
