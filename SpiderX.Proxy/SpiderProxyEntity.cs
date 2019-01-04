@@ -47,6 +47,10 @@ namespace SpiderX.Proxy
 
 		public bool Equals(SpiderProxyEntity other)
 		{
+			if (other == null)
+			{
+				return false;
+			}
 			return Host == other.Host && Port == other.Port;
 		}
 

@@ -8,10 +8,17 @@ namespace SpiderX.Proxy
 {
 	public sealed class SpiderProxySelector : IProxySelector<SpiderProxy>
 	{
-		public SpiderProxySelector(int degreeOfParallelism, Predicate<SpiderProxyEntity> entityLoadCondition)
+		public SpiderProxySelector() : this(100)
 		{
+		}
+
+		public SpiderProxySelector(int degreeOfParallelism)
+		{
+			if (degreeOfParallelism < 1)
+			{
+				throw new ArgumentOutOfRangeException("degreeOfParallelism is less than 1.");
+			}
 			DegreeOfParallelism = degreeOfParallelism;
-			EntityLoadCondition = entityLoadCondition;
 		}
 
 		private readonly ConcurrentQueue<SpiderProxy> _availableQueue = new ConcurrentQueue<SpiderProxy>();
@@ -24,20 +31,28 @@ namespace SpiderX.Proxy
 
 		public int StatusCode => _initTimes;
 
-		public int DegreeOfParallelism { get; } = 100;
-
-		public Predicate<SpiderProxyEntity> EntityLoadCondition { get; }
+		public int DegreeOfParallelism { get; }
 
 		private void Verify()
 		{
-			Parallel.For(0, DegreeOfParallelism,
-				i =>
-				{
-					while (true)
+			if (DegreeOfParallelism > 1)
+			{
+				Parallel.For(0, DegreeOfParallelism,
+					i =>
 					{
-						VerifySingle();
-					}
-				});
+						while (true)
+						{
+							VerifySingle();
+						}
+					});
+			}
+			else
+			{
+				while (true)
+				{
+					VerifySingle();
+				}
+			}
 		}
 
 		private void VerifySingle()
@@ -60,21 +75,21 @@ namespace SpiderX.Proxy
 
 		public bool HasNextProxy => !_availableQueue.IsEmpty;
 
-		public SpiderProxyValidator Validator { get; set; }
+		public IProxyLoader Loader { get; set; }
 
-		public bool CheckLoad(SpiderProxyEntity entity) => EntityLoadCondition?.Invoke(entity) ?? true;
+		public IProxyValidator Validator { get; set; }
 
-		public void Init(SpiderProxyValidator Validator, IEnumerable<SpiderProxy> proxies)
+		public void Init(IProxyValidator Validator, IEnumerable<SpiderProxy> proxies)
 		{
 			if (Interlocked.CompareExchange(ref _initTimes, 1, 0) != 0)
 			{
 				return;
 			}
-			InsertProxies(proxies);
+			InsertFreshProxies(proxies);
 			Task.Factory.StartNew(Verify);
 		}
 
-		public void InsertProxies(IEnumerable<SpiderProxy> proxies)
+		public void InsertFreshProxies(IEnumerable<SpiderProxy> proxies)
 		{
 			foreach (var proxy in proxies)
 			{

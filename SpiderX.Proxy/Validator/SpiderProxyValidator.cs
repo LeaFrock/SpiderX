@@ -3,7 +3,7 @@ using System.Net;
 
 namespace SpiderX.Proxy
 {
-	public abstract class SpiderProxyValidator
+	public abstract class SpiderProxyValidator : IProxyValidator
 	{
 		public SpiderProxyValidator(string urlString) : this(new Uri(urlString))
 		{
@@ -16,9 +16,6 @@ namespace SpiderX.Proxy
 
 		public Uri TargetUri { get; }
 
-		/// <summary>
-		/// Between 1 and 254
-		/// </summary>
 		public byte RetryTimes { get; set; } = 3;
 
 		public abstract bool CheckPass(IWebProxy proxy);

@@ -4,7 +4,7 @@ using SpiderX.DataClient;
 
 namespace SpiderX.Proxy
 {
-	internal interface IProxyAgent
+	public interface IProxyAgent
 	{
 		DbConfig DbConfig { get; }
 
