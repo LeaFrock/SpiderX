@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HtmlAgilityPack;
 using SpiderX.Http;
+using SpiderX.NetworkUtil;
 using SpiderX.Proxy;
 using SpiderX.Tools;
 

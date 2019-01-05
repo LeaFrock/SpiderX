@@ -3,16 +3,17 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using SpiderX.Proxy;
 
-namespace SpiderX.Proxy
+namespace SpiderX.NetworkUtil
 {
-	public sealed class SpiderProxySelector : IProxySelector<SpiderProxy>
+	public sealed class DefaultSpiderProxySelector : SpiderProxySelectorBase
 	{
-		public SpiderProxySelector() : this(100)
+		public DefaultSpiderProxySelector() : this(100)
 		{
 		}
 
-		public SpiderProxySelector(int degreeOfParallelism)
+		public DefaultSpiderProxySelector(int degreeOfParallelism)
 		{
 			if (degreeOfParallelism < 1)
 			{
@@ -28,8 +29,6 @@ namespace SpiderX.Proxy
 		private readonly ConcurrentQueue<SpiderProxy> _eliminatedQueue = new ConcurrentQueue<SpiderProxy>();
 
 		private int _initTimes;
-
-		public int StatusCode => _initTimes;
 
 		public int DegreeOfParallelism { get; }
 
@@ -71,15 +70,13 @@ namespace SpiderX.Proxy
 			}
 		}
 
-		#region Interface Part
+		#region Override Part
 
-		public bool HasNextProxy => !_availableQueue.IsEmpty;
+		public override bool HasNextProxy => !_availableQueue.IsEmpty;
 
-		public IProxyLoader Loader { get; set; }
+		public override int StatusCode => _initTimes;
 
-		public IProxyValidator Validator { get; set; }
-
-		public void Init(IProxyValidator Validator, IEnumerable<SpiderProxy> proxies)
+		public override void Init(IProxyValidator Validator, IEnumerable<SpiderProxy> proxies)
 		{
 			if (Interlocked.CompareExchange(ref _initTimes, 1, 0) != 0)
 			{
@@ -89,7 +86,7 @@ namespace SpiderX.Proxy
 			Task.Factory.StartNew(Verify);
 		}
 
-		public void InsertFreshProxies(IEnumerable<SpiderProxy> proxies)
+		public override void InsertFreshProxies(IEnumerable<SpiderProxy> proxies)
 		{
 			foreach (var proxy in proxies)
 			{
@@ -97,7 +94,7 @@ namespace SpiderX.Proxy
 			}
 		}
 
-		public SpiderProxy SingleProxy()
+		public override SpiderProxy SingleProxy()
 		{
 			if (_availableQueue.TryDequeue(out SpiderProxy result))
 			{
@@ -107,6 +104,6 @@ namespace SpiderX.Proxy
 			return null;
 		}
 
-		#endregion Interface Part
+		#endregion Override Part
 	}
 }

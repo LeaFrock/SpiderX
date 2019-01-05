@@ -3,13 +3,13 @@ using System.Net;
 
 namespace SpiderX.Proxy
 {
-	public abstract class SpiderProxyValidator : IProxyValidator
+	public abstract class ProxyValidatorBase : IProxyValidator
 	{
-		public SpiderProxyValidator(string urlString) : this(new Uri(urlString))
+		public ProxyValidatorBase(string urlString) : this(new Uri(urlString))
 		{
 		}
 
-		public SpiderProxyValidator(Uri uri)
+		public ProxyValidatorBase(Uri uri)
 		{
 			TargetUri = uri ?? throw new ArgumentNullException();
 		}

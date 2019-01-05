@@ -34,7 +34,7 @@ namespace SpiderX.Http
 			return webClient;
 		}
 
-		public SpiderWebClient Discharge(IWebProxy webProxy)
+		public SpiderWebClient Distribute(IWebProxy webProxy)
 		{
 			SpiderWebClient webClient = null;
 			SpinWait.SpinUntil(() => _clientQueue.TryDequeue(out webClient), Timeout.Infinite);

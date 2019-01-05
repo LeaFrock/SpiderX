@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Net;
 using SpiderX.Http;
+using SpiderX.Proxy;
 
-namespace SpiderX.Proxy
+namespace SpiderX.NetworkUtil
 {
-	public sealed class SimpleProxyValidator : SpiderProxyValidator
+	public sealed class DefaultProxyValidator : ProxyValidatorBase
 	{
-		public SimpleProxyValidator(string urlString) : base(urlString)
+		public DefaultProxyValidator(string urlString) : base(urlString)
 		{
 		}
 
 		private static readonly SpiderWebClientPool _clientPool = new SpiderWebClientPool();
 
-		public static readonly SimpleProxyValidator BaiduHttp = new SimpleProxyValidator("http://www.baidu.com")
+		public static readonly DefaultProxyValidator BaiduHttp = new DefaultProxyValidator("http://www.baidu.com")
 		{
 			Lastword = "</html>",
-			Keyword = "baidu"
+			Keyword = "baidu",
+			KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
 		};
 
-		public static readonly SimpleProxyValidator BaiduHttps = new SimpleProxyValidator("https://www.baidu.com")
+		public static readonly DefaultProxyValidator BaiduHttps = new DefaultProxyValidator("https://www.baidu.com")
 		{
 			Lastword = "</html>",
-			Keyword = "baidu"
+			Keyword = "baidu",
+			KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
 		};
 
 		public string Firstword { get; set; }
@@ -38,7 +41,7 @@ namespace SpiderX.Proxy
 
 		public override bool CheckPass(IWebProxy proxy)
 		{
-			var webClient = _clientPool.Discharge(proxy);
+			var webClient = _clientPool.Distribute(proxy);
 			bool isPassed = false;
 			string responseText;
 			for (byte i = 0; i < RetryTimes + 1; i++)

@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace SpiderX.Proxy
 {
 	public interface IProxyLoader
 	{
-		bool CheckLoad(SpiderProxyEntity entity);
+		Predicate<SpiderProxyEntity> Condition { get; set; }
 
-		IList<T> Load<T>() where T : IWebProxy;
+		IList<IWebProxy> Load();
 	}
 }

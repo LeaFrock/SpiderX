@@ -14,6 +14,7 @@
     <ProjectReference Include="..\SpiderX.DataClient\SpiderX.DataClient.csproj" />
     <ProjectReference Include="..\SpiderX.Extensions\SpiderX.Extensions.csproj" />
     <ProjectReference Include="..\SpiderX.Http\SpiderX.Http.csproj" />
+    <ProjectReference Include="..\SpiderX.NetworkUtil\SpiderX.NetworkUtil.csproj" />
     <ProjectReference Include="..\SpiderX.Proxy\SpiderX.Proxy.csproj" />
     <ProjectReference Include="..\SpiderX.Tools\SpiderX.Tools.csproj" />
   </ItemGroup>

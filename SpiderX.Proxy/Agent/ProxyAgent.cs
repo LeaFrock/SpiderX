@@ -37,8 +37,12 @@ namespace SpiderX.Proxy
 
 		public DbConfig DbConfig { get; private set; }
 
-		public IEnumerable<SpiderProxyEntity> SelectProxyEntities(Func<SpiderProxyEntity, bool> predicate, int recentDays = 10, int count = 0)
+		public ICollection<SpiderProxyEntity> SelectProxyEntities(Predicate<SpiderProxyEntity> predicate, int recentDays = 10, int count = 0)
 		{
+			if (recentDays < 1)
+			{
+				recentDays = 360;
+			}
 			Expression<Func<SpiderProxyEntity, bool>> filter = predicate != null
 				? (p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
 				: (Expression<Func<SpiderProxyEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
@@ -47,7 +51,7 @@ namespace SpiderX.Proxy
 				var query = context.ProxyEntity
 					   .Where(filter)
 					   .OrderByDescending(e => e.UpdateTime);
-				return count > 0 ? query.Take(count) : query;
+				return (count > 0 ? query.Take(count) : query).ToArray();
 			}
 		}
 
