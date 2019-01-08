@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using SpiderX.Proxy;
 
-namespace SpiderX.NetworkUtil
+namespace SpiderX.Http
 {
 	public static class HttpConsole
 	{

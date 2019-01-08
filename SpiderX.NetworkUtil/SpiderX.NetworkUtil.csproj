@@ -9,4 +9,8 @@
     <ProjectReference Include="..\SpiderX.Proxy\SpiderX.Proxy.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Http\" />
+  </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SpiderX.Proxy;
 
-namespace SpiderX.NetworkUtil
+namespace SpiderX.Http.Util
 {
 	public sealed class DefaultSpiderProxySelector : SpiderProxySelectorBase
 	{

@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpiderX.Extensions\SpiderX.Extensions.csproj" />
+    <ProjectReference Include="..\SpiderX.Proxy\SpiderX.Proxy.csproj" />
   </ItemGroup>
 
 </Project>

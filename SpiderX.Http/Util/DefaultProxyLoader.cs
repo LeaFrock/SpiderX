@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using SpiderX.Proxy;
 
-namespace SpiderX.NetworkUtil
+namespace SpiderX.Http.Util
 {
 	public sealed class DefaultProxyLoader : IProxyLoader
 	{

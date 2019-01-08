@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Net;
-using SpiderX.Http;
 using SpiderX.Proxy;
 
-namespace SpiderX.NetworkUtil
+namespace SpiderX.Http.Util
 {
 	public sealed class DefaultProxyValidator : ProxyValidatorBase
 	{
