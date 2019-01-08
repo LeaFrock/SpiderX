@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using SpiderX.Proxy;
 
 namespace SpiderX.Http.Util
@@ -42,38 +44,58 @@ namespace SpiderX.Http.Util
 		{
 			var webClient = _clientPool.Distribute(proxy);
 			bool isPassed = false;
-			string responseText;
 			for (byte i = 0; i < RetryTimes + 1; i++)
 			{
-				try
+				if (CheckResponse(webClient))
 				{
-					responseText = webClient.GetStringAsync(TargetUri).Result?.Trim();
+					isPassed = true;
+					break;
 				}
-				catch
-				{
-					continue;
-				}
-				if (string.IsNullOrEmpty(responseText))
-				{
-					continue;
-				}
-				if (!string.IsNullOrEmpty(Lastword) && !responseText.EndsWith(Lastword, LastwordComparisonType))
-				{
-					continue;
-				}
-				if (!string.IsNullOrEmpty(Firstword) && !responseText.StartsWith(Firstword, FirstwordComparisonType))
-				{
-					continue;
-				}
-				if (!string.IsNullOrEmpty(Keyword) && !responseText.Contains(Keyword, KeywordComparisonType))
-				{
-					continue;
-				}
-				isPassed = true;
-				break;
 			}
 			_clientPool.Recycle(webClient);
 			return isPassed;
+		}
+
+		private bool CheckResponse(HttpClient client)
+		{
+			Task<string> responseTask = client.GetStringAsync(TargetUri);
+			Task<bool> readTask = responseTask.ContinueWith(CheckResponseTask, TaskContinuationOptions.OnlyOnRanToCompletion);
+			try
+			{
+				readTask.Wait();
+			}
+			catch
+			{
+				return false;
+			}
+			return readTask.Result;
+		}
+
+		private bool CheckResponseTask(Task<string> responseTask)
+		{
+			string text = responseTask.Result?.Trim();
+			return CheckResponseText(text);
+		}
+
+		private bool CheckResponseText(string responseText)
+		{
+			if (string.IsNullOrEmpty(responseText))
+			{
+				return false;
+			}
+			if (!string.IsNullOrEmpty(Lastword) && !responseText.EndsWith(Lastword, LastwordComparisonType))
+			{
+				return false;
+			}
+			if (!string.IsNullOrEmpty(Firstword) && !responseText.StartsWith(Firstword, FirstwordComparisonType))
+			{
+				return false;
+			}
+			if (!string.IsNullOrEmpty(Keyword) && !responseText.Contains(Keyword, KeywordComparisonType))
+			{
+				return false;
+			}
+			return true;
 		}
 	}
 }

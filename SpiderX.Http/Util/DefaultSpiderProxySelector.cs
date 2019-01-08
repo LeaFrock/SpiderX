@@ -32,25 +32,23 @@ namespace SpiderX.Http.Util
 
 		public int DegreeOfParallelism { get; }
 
-		private void Verify()
+		private void StartVerifying()
 		{
 			if (DegreeOfParallelism > 1)
 			{
-				Parallel.For(0, DegreeOfParallelism,
-					i =>
-					{
-						while (true)
-						{
-							VerifySingle();
-						}
-					});
+				Parallel.For(0, DegreeOfParallelism, VerifyContinuously);
 			}
 			else
 			{
-				while (true)
-				{
-					VerifySingle();
-				}
+				VerifyContinuously(0);
+			}
+		}
+
+		private void VerifyContinuously(int id)
+		{
+			while (true)
+			{
+				VerifySingle();
 			}
 		}
 
@@ -83,7 +81,7 @@ namespace SpiderX.Http.Util
 				return;
 			}
 			InsertFreshProxies(proxies);
-			Task.Factory.StartNew(Verify);
+			Task.Factory.StartNew(StartVerifying, TaskCreationOptions.LongRunning);
 		}
 
 		public override void InsertFreshProxies(IEnumerable<SpiderProxy> proxies)
