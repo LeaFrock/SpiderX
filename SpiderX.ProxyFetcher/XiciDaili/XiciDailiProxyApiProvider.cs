@@ -69,7 +69,7 @@ namespace SpiderX.ProxyFetcher
 			{
 				return null;
 			}
-			if (!lifeTimeText.Contains("天") || !StringTool.TryMatchDouble(lifeTimeText, out double lifeTime) || lifeTime < 45)//Only create proxies with 45d+ alive.
+			if (!lifeTimeText.Contains("天") || !StringTool.TryMatchDouble(lifeTimeText, out double lifeTime) || lifeTime < 5)//Only create proxies with 5d+ alive.
 			{
 				return null;
 			}

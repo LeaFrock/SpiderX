@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using SpiderX.Proxy;
@@ -14,14 +13,14 @@ namespace SpiderX.Http.Util
 
 		public Predicate<SpiderProxyEntity> Condition { get; set; }
 
-		public IList<IWebProxy> Load()
+		public IWebProxy[] Load()
 		{
 			var proxyEntities = ProxyAgent.SelectProxyEntities(Condition, Days, 50000);
 			if (proxyEntities.Count < 1)
 			{
 				return Array.Empty<IWebProxy>();
 			}
-			return proxyEntities.Select(e => e.ReadOnlyValue).ToList();
+			return proxyEntities.Select(e => e.ReadOnlyValue).ToArray();
 		}
 	}
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "SpiderX.Launcher": {
       "commandName": "Project",
-      "commandLineArgs": "baidu.baiduhomepage;-iphaiproxy;-kuaidailiproxy;-xicidailiproxy"
+      "commandLineArgs": "-iphaiproxy;-kuaidailiproxy;xicidailiproxy"
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace SpiderX.Proxy
@@ -8,6 +7,6 @@ namespace SpiderX.Proxy
 	{
 		Predicate<SpiderProxyEntity> Condition { get; set; }
 
-		IList<IWebProxy> Load();
+		IWebProxy[] Load();
 	}
 }

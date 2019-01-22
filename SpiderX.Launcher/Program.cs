@@ -46,7 +46,7 @@ namespace SpiderX.Launcher
 			//End
 			if (!GlobalSetting.AutoClose)
 			{
-				Console.WriteLine("Program Run Over.");
+				Console.WriteLine("Program Runs Over.");
 				Console.ReadKey();
 			}
 		}

@@ -13,24 +13,24 @@ namespace SpiderX.Proxy
 		{
 		}
 
-		public static ProxyAgent<TContext> CreateInstance(DbConfig conf, Func<DbConfig, TContext> createFunc)
+		public static ProxyAgent<TContext> CreateInstance(DbConfig conf, Func<DbConfig, TContext> dbContextFactory)
 		{
 			ProxyAgent<TContext> instance = new ProxyAgent<TContext>()
 			{
 				DbConfig = conf,
-				_dbContextCreateFunc = createFunc
+				_dbContextCreateFunc = dbContextFactory
 			};
 			return instance;
 		}
 
-		public static ProxyAgent<TContext> CreateInstance(string confName, bool isTest, Func<DbConfig, TContext> dbContextFunc)
+		public static ProxyAgent<TContext> CreateInstance(string confName, bool isTest, Func<DbConfig, TContext> dbContextFactory)
 		{
 			var conf = DbClient.FindConfig(confName, isTest);
 			if (conf == null)
 			{
 				throw new DbConfigNotFoundException(confName);
 			}
-			return CreateInstance(conf, dbContextFunc);
+			return CreateInstance(conf, dbContextFactory);
 		}
 
 		private Func<DbConfig, TContext> _dbContextCreateFunc;
