@@ -24,9 +24,11 @@ namespace SpiderX.BusinessBase
 		{
 		}
 
-		protected static void ShowDebugInfo(string msg)
+		protected static void ShowConsoleMsg(string msg)
 		{
 #if DEBUG
+			Console.WriteLine(msg);
+#else
 			Console.WriteLine(msg);
 #endif
 		}
