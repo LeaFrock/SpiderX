@@ -12,7 +12,9 @@ namespace SpiderX.Http.Util
 		{
 		}
 
-		private static readonly SpiderWebClientPool _clientPool = new SpiderWebClientPool();
+		private static readonly Lazy<SpiderWebClientPool> _clientPoolLazy = new Lazy<SpiderWebClientPool>();
+
+		public static SpiderWebClientPool ClientPool => _clientPoolLazy.Value;
 
 		public static readonly DefaultProxyValidator BaiduHttp = new DefaultProxyValidator("http://www.baidu.com")
 		{
@@ -42,7 +44,7 @@ namespace SpiderX.Http.Util
 
 		public override bool CheckPass(IWebProxy proxy)
 		{
-			var webClient = _clientPool.Distribute(proxy);
+			var webClient = ClientPool.Distribute(proxy);
 			bool isPassed = false;
 			for (byte i = 0; i < RetryTimes + 1; i++)
 			{
@@ -52,7 +54,7 @@ namespace SpiderX.Http.Util
 					break;
 				}
 			}
-			_clientPool.Recycle(webClient);
+			ClientPool.Recycle(webClient);
 			return isPassed;
 		}
 
