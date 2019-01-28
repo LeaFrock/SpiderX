@@ -2,7 +2,7 @@
   "profiles": {
     "SpiderX.Launcher": {
       "commandName": "Project",
-      "commandLineArgs": "lagou.lagou;-iphaiproxy;-kuaidailiproxy;-xicidailiproxy"
+      "commandLineArgs": "Kxdailiproxy;-lagou.lagou;-iphaiproxy;-kuaidailiproxy;-xicidailiproxy"
     }
   }
 }

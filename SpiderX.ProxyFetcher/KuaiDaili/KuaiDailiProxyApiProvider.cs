@@ -113,11 +113,8 @@ namespace SpiderX.ProxyFetcher
 
 		private static int ParseResponseMilliseconds(string text)
 		{
-			if (!StringTool.TryMatchDouble(text, out double result))
-			{
-				return 10000;
-			}
-			return (int)(result * 1000);
+			double seconds = StringTool.MatchDouble(text, 10d);
+			return (int)(seconds * 1000);
 		}
 	}
 }
