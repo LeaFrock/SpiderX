@@ -12,7 +12,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpiderX.BusinessBase\SpiderX.BusinessBase.csproj" />
+    <ProjectReference Include="..\SpiderX.Extensions\SpiderX.Extensions.csproj" />
     <ProjectReference Include="..\SpiderX.Proxy\SpiderX.Proxy.csproj" />
+    <ProjectReference Include="..\SpiderX.Tools\SpiderX.Tools.csproj" />
   </ItemGroup>
 
 </Project>
