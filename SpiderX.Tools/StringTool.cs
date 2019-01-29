@@ -14,6 +14,16 @@ namespace SpiderX.Tools
 			return TryMatchInt(text, out int result) ? result : defaultValue;
 		}
 
+		public static long MatchLong(string text, long defaultValue = 0)
+		{
+			return TryMatchLong(text, out long result) ? result : defaultValue;
+		}
+
+		public static double MatchDouble(string text, double defaultValue = 0)
+		{
+			return TryMatchDouble(text, out double result) ? result : defaultValue;
+		}
+
 		public static bool TryMatchInt(string text, out int value)
 		{
 			Match m = _doubleRegex.Match(text);
@@ -25,9 +35,15 @@ namespace SpiderX.Tools
 			return int.TryParse(m.Value, out value);
 		}
 
-		public static double MatchDouble(string text, double defaultValue = 0)
+		public static bool TryMatchLong(string text, out long value)
 		{
-			return TryMatchDouble(text, out double result) ? result : defaultValue;
+			Match m = _doubleRegex.Match(text);
+			if (!m.Success)
+			{
+				value = 0;
+				return false;
+			}
+			return long.TryParse(m.Value, out value);
 		}
 
 		public static bool TryMatchDouble(string text, out double value)
