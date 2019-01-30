@@ -60,8 +60,7 @@ namespace SpiderX.ProxyFetcher
 							{
 								return;
 							}
-							responseMessage.Content.Headers.ContentType.CharSet = "gb2312";
-							responseMessage.Content.ToStreamReaderAsync()
+							responseMessage.Content.ToHtmlReaderAsync()
 							.ContinueWith(t =>
 							{
 								StreamReader reader = t.Result;

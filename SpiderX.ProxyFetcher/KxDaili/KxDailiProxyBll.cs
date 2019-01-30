@@ -60,7 +60,7 @@ namespace SpiderX.ProxyFetcher
 							{
 								return;
 							}
-							responseMessage.Content.ToStreamReaderAsync()
+							responseMessage.Content.ToHtmlReaderAsync()
 							.ContinueWith(t =>
 							{
 								StreamReader reader = t.Result;

@@ -17,6 +17,7 @@ namespace SpiderX.ProxyFetcher
 		}
 
 		public const string CnIpUrlTemplate = "http://www.ip3366.net/free/?stype=1&page=";
+		public const string OtherIpUrlTemplate = "http://www.ip3366.net/free/?stype=3&page=";
 
 		public const string DefaultReferer = "http://www.ip3366.net/free/";
 

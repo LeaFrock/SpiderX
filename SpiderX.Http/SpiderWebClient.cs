@@ -39,7 +39,7 @@ namespace SpiderX.Http
 					{
 						continue;
 					}
-					string tempText = await rMsg.ToTextAsync();
+					string tempText = await rMsg.ToHtmlTextAsync();
 					if (string.IsNullOrEmpty(tempText))
 					{
 						continue;
@@ -57,7 +57,7 @@ namespace SpiderX.Http
 					{
 						continue;
 					}
-					string tempText = await rMsg.ToTextAsync();
+					string tempText = await rMsg.ToHtmlTextAsync();
 					if (string.IsNullOrEmpty(tempText) || !passFunc(tempText))
 					{
 						continue;

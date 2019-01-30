@@ -48,7 +48,7 @@ namespace SpiderX.ProxyFetcher
 					.ContinueWith(httpTask =>
 					{
 						var responseMessage = httpTask.Result;
-						responseMessage.Content.ToStreamReaderAsync()
+						responseMessage.Content.ToHtmlReaderAsync()
 						.ContinueWith(streamTask =>
 						{
 							StreamReader reader = streamTask.Result;

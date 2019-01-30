@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -10,7 +11,7 @@ namespace SpiderX.Extensions.Http
 {
 	public static class HttpExtension
 	{
-		public async static Task<string> ToTextAsync(this HttpResponseMessage responseMessage)
+		public async static Task<string> ToHtmlTextAsync(this HttpResponseMessage responseMessage)
 		{
 			var content = responseMessage.Content;
 			if (content.Headers.ContentEncoding.IsNullOrEmpty())//ReadAsString directly.
@@ -18,7 +19,7 @@ namespace SpiderX.Extensions.Http
 				return await responseMessage.Content.ReadAsStringAsync();
 			}
 			Stream finalStream = await content.ToStreamAsync();
-			Encoding encoding = GetEncodingByCharset(content.Headers.ContentType.CharSet);
+			Encoding encoding = Encoding.UTF8;
 			using (finalStream)
 			{
 				using (StreamReader sr = new StreamReader(finalStream, encoding))
@@ -28,18 +29,33 @@ namespace SpiderX.Extensions.Http
 			}
 		}
 
-		public async static Task<StreamReader> ToStreamReaderAsync(this HttpContent content)
+		public async static Task<StreamReader> ToHtmlReaderAsync(this HttpContent content)
 		{
-			var streamTask = content.ToStreamAsync();
-			Encoding encoding = GetEncodingByCharset(content.Headers.ContentType.CharSet);
-			Stream stream = await streamTask;
+			Stream stream = await content.ToStreamAsync();
+			string charSet = content.Headers.ContentType?.CharSet;
+			if (string.IsNullOrEmpty(charSet))
+			{
+			}
+			Encoding encoding;
+			try
+			{
+				encoding = Encoding.GetEncoding(charSet);
+			}
+			catch
+			{
+#if DEBUG
+				Debug.WriteLine($"{nameof(ToHtmlReaderAsync)}: GetEncoding[{charSet}]_Fail.");
+#endif
+				encoding = Encoding.UTF8;
+			}
+
 			return new StreamReader(stream, encoding);
 		}
 
 		public async static Task<Stream> ToStreamAsync(this HttpContent content)
 		{
 			Stream source = await content.ReadAsStreamAsync();
-			/* Because HttpRequestMessage may be disposed by any tasks/threads in an async-environment,
+			/* Because HttpRequestMessage may be disposed by any task/thread in an async-environment,
 			 * and the stream from ReadAsStreamAsync() will be disposed at the same time,
 			 * the source-stream can't be ensured when to be disposed
 			 * and must be copied(MemoryStream is a good choice).
@@ -115,20 +131,36 @@ namespace SpiderX.Extensions.Http
 			}
 		}
 
-		private static Encoding GetEncodingByCharset(string charset)
+		private static StreamReader CreateHtmlReaderByCharset(Stream stream, string charSet)
 		{
-			if (!string.IsNullOrEmpty(charset))
+			Encoding encoding;
+			if (string.IsNullOrEmpty(charSet))
 			{
-				try
+				using (var tempReader = new StreamReader(stream))
 				{
-					return Encoding.GetEncoding(charset);
-				}
-				catch
-				{
-					return Encoding.UTF8;
+					int index;
+					string line;
+					while ((line = tempReader.ReadLine()) != null)
+					{
+						index = line.IndexOf("charset=", StringComparison.CurrentCultureIgnoreCase);
+						if (index >= 0)
+						{
+						}
+					}
 				}
 			}
-			return Encoding.UTF8;
+			try
+			{
+				encoding = Encoding.GetEncoding(charSet);
+			}
+			catch
+			{
+#if DEBUG
+				Debug.WriteLine($"{nameof(ToHtmlReaderAsync)}: GetEncoding[{charSet}]_Fail.");
+#endif
+				encoding = Encoding.UTF8;
+			}
+			return new StreamReader(stream, encoding);
 		}
 	}
 }
