@@ -11,6 +11,8 @@ namespace SpiderX.Extensions.Http
 {
 	public static class HttpExtension
 	{
+		private const string HtmlCharsetPrefix = "charset=";
+
 		public async static Task<string> ToHtmlTextAsync(this HttpResponseMessage responseMessage)
 		{
 			var content = responseMessage.Content;
@@ -33,23 +35,7 @@ namespace SpiderX.Extensions.Http
 		{
 			Stream stream = await content.ToStreamAsync();
 			string charSet = content.Headers.ContentType?.CharSet;
-			if (string.IsNullOrEmpty(charSet))
-			{
-			}
-			Encoding encoding;
-			try
-			{
-				encoding = Encoding.GetEncoding(charSet);
-			}
-			catch
-			{
-#if DEBUG
-				Debug.WriteLine($"{nameof(ToHtmlReaderAsync)}: GetEncoding[{charSet}]_Fail.");
-#endif
-				encoding = Encoding.UTF8;
-			}
-
-			return new StreamReader(stream, encoding);
+			return CreateHtmlReaderByCharset(stream, charSet);
 		}
 
 		public async static Task<Stream> ToStreamAsync(this HttpContent content)
@@ -133,32 +119,73 @@ namespace SpiderX.Extensions.Http
 
 		private static StreamReader CreateHtmlReaderByCharset(Stream stream, string charSet)
 		{
-			Encoding encoding;
+			Encoding encoding = null;
 			if (string.IsNullOrEmpty(charSet))
 			{
+				var ms = new MemoryStream();
+				stream.CopyTo(ms);
+				stream.Seek(0, SeekOrigin.Begin);
+				ms.Seek(0, SeekOrigin.Begin);
 				using (var tempReader = new StreamReader(stream))
 				{
+					bool existsCharset = false;
 					int index;
 					string line;
 					while ((line = tempReader.ReadLine()) != null)
 					{
-						index = line.IndexOf("charset=", StringComparison.CurrentCultureIgnoreCase);
+						index = line.IndexOf(HtmlCharsetPrefix, StringComparison.CurrentCultureIgnoreCase);
 						if (index >= 0)
 						{
+							int nextCharIndex = index + HtmlCharsetPrefix.Length;
+							char nextChar = line[nextCharIndex];
+							if (nextChar == '"')//Such as "<meta charset="gb2312">"
+							{
+								int lastQuotIndex = line.IndexOf('"', nextCharIndex + 1);
+								if (lastQuotIndex < 0)
+								{
+									encoding = Encoding.UTF8;
+								}
+								else
+								{
+									charSet = line.Substring(nextCharIndex + 1, lastQuotIndex - nextCharIndex - 1);
+								}
+							}
+							else//Such as "<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />"
+							{
+								int lastQuotIndex = line.IndexOf('"', nextCharIndex);
+								if (lastQuotIndex < 0)
+								{
+									encoding = Encoding.UTF8;
+								}
+								else
+								{
+									charSet = line.Substring(nextCharIndex, lastQuotIndex - nextCharIndex);
+								}
+							}
+							existsCharset = true;
+							break;
 						}
 					}
+					if (!existsCharset)
+					{
+						encoding = Encoding.UTF8;
+					}
 				}
+				stream = ms;
 			}
-			try
+			if (encoding == null)
 			{
-				encoding = Encoding.GetEncoding(charSet);
-			}
-			catch
-			{
+				try
+				{
+					encoding = Encoding.GetEncoding(charSet);
+				}
+				catch
+				{
 #if DEBUG
-				Debug.WriteLine($"{nameof(ToHtmlReaderAsync)}: GetEncoding[{charSet}]_Fail.");
+					Debug.WriteLine($"{nameof(ToHtmlReaderAsync)}: GetEncoding[{charSet}]_Fail.");
 #endif
-				encoding = Encoding.UTF8;
+					encoding = Encoding.UTF8;
+				}
 			}
 			return new StreamReader(stream, encoding);
 		}
