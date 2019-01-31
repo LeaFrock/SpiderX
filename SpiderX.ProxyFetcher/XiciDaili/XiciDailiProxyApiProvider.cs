@@ -7,7 +7,7 @@ using SpiderX.Tools;
 
 namespace SpiderX.ProxyFetcher
 {
-	internal sealed class XiciDailiProxyApiProvider : ProxyApiProvider
+	internal sealed class XiciDailiProxyApiProvider : HtmlProxyApiProvider
 	{
 		public XiciDailiProxyApiProvider() : base()
 		{
@@ -31,13 +31,8 @@ namespace SpiderX.ProxyFetcher
 			return client;
 		}
 
-		public override List<SpiderProxyEntity> GetProxyEntities<T>(T reader)
+		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
-			var htmlDocument = HtmlTool.LoadFromTextReader(reader);
-			if (htmlDocument == null)
-			{
-				return null;
-			}
 			HtmlNodeCollection rows = htmlDocument.DocumentNode
 				.SelectNodes("//table[contains(@id,'ip')]//tr");//如果用Chrome或FireFox，浏览器会自动补全tbody，但此处XPath不能写作"//table[contains(@id,'ip')]/tbody//tr".
 			if (rows == null || rows.Count < 2)

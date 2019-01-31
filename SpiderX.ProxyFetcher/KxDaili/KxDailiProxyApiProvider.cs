@@ -8,7 +8,7 @@ using SpiderX.Tools;
 
 namespace SpiderX.ProxyFetcher
 {
-	internal sealed class KxDailiProxyApiProvider : ProxyApiProvider
+	internal sealed class KxDailiProxyApiProvider : HtmlProxyApiProvider
 	{
 		public KxDailiProxyApiProvider() : base()
 		{
@@ -37,27 +37,7 @@ namespace SpiderX.ProxyFetcher
 			return client;
 		}
 
-		public override List<SpiderProxyEntity> GetProxyEntities(string response)
-		{
-			var htmlDocument = HtmlTool.LoadFromText(response);
-			if (htmlDocument == null)
-			{
-				return null;
-			}
-			return GetProxyEntities(htmlDocument);
-		}
-
-		public override List<SpiderProxyEntity> GetProxyEntities<T>(T reader)
-		{
-			var htmlDocument = HtmlTool.LoadFromTextReader(reader);
-			if (htmlDocument == null)
-			{
-				return null;
-			}
-			return GetProxyEntities(htmlDocument);
-		}
-
-		private static List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
+		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
 			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes(".//tbody//tr");
 			if (rows.IsNullOrEmpty())

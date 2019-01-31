@@ -7,7 +7,7 @@ using SpiderX.Tools;
 
 namespace SpiderX.ProxyFetcher
 {
-	internal sealed class IpHaiProxyApiProvider : ProxyApiProvider
+	internal sealed class IpHaiProxyApiProvider : HtmlProxyApiProvider
 	{
 		public IpHaiProxyApiProvider() : base()
 		{
@@ -33,15 +33,10 @@ namespace SpiderX.ProxyFetcher
 			return client;
 		}
 
-		public override List<SpiderProxyEntity> GetProxyEntities<T>(T responseReader)
+		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
-			var htmlDocument = HtmlTool.LoadFromTextReader(responseReader);
-			if (htmlDocument == null)
-			{
-				return null;
-			}
 			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//table[contains(@class,'table')]/tr");
-			if (rows == null || rows.Count <= 1)
+			if (rows == null || rows.Count < 2)
 			{
 				return null;
 			}
