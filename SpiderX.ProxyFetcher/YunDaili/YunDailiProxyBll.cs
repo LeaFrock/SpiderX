@@ -22,7 +22,7 @@ namespace SpiderX.ProxyFetcher
 			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
 			using (SpiderWebClient webClient = ApiProvider.CreateWebClient())
 			{
-				var entities = GetProxyEntities(webClient, YunDailiProxyApiProvider.CnIpUrlTemplate, 1);
+				var entities = GetProxyEntities(webClient, YunDailiProxyApiProvider.CnIpUrlTemplate, 7);
 				if (entities.Count < 1)
 				{
 					return;
