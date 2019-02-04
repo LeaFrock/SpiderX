@@ -26,7 +26,7 @@ namespace SpiderX.ProxyFetcher
 			client.InnerClientHandler.UseProxy = false;
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+			client.DefaultRequestHeaders.Add("Accept-Encoding", "br");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
 			client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
 			client.DefaultRequestHeaders.Add("DNT", "1");

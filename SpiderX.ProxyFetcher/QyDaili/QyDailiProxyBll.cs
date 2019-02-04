@@ -2,7 +2,7 @@
 using SpiderX.Http;
 using SpiderX.Proxy;
 
-namespace SpiderX.ProxyFetcher.QiyunDaili
+namespace SpiderX.ProxyFetcher
 {
 	public sealed class QyDailiProxyBll : ProxyBll
 	{

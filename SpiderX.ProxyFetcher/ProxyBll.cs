@@ -70,33 +70,33 @@ namespace SpiderX.ProxyFetcher
 			{
 				tasks[i] = webClient.SendAsync(httpMethod, urls[i])
 					.ContinueWith(responseMsg =>
-					{
-						HttpResponseMessage responseMessage = responseMsg.Result;
-						if (responseMessage == null)
-						{
-							return;
-						}
-						using (responseMessage)
-						{
-							if (!responseMessage.IsSuccessStatusCode)
-							{
-								return;
-							}
-							responseMessage.Content.ToHtmlReaderAsync()
-							.ContinueWith(t =>
-							{
-								StreamReader reader = t.Result;
-								var tempList = ApiProvider.GetProxyEntities(reader);
-								if (!tempList.IsNullOrEmpty())
-								{
-									lock (entities)
-									{
-										entities.AddRange(tempList);
-									}
-								}
-							}, TaskContinuationOptions.OnlyOnRanToCompletion);
-						}
-					}, TaskContinuationOptions.OnlyOnRanToCompletion);
+				   {
+					   HttpResponseMessage responseMessage = responseMsg.Result;
+					   if (responseMessage == null)
+					   {
+						   return;
+					   }
+					   using (responseMessage)
+					   {
+						   if (!responseMessage.IsSuccessStatusCode)
+						   {
+							   return;
+						   }
+						   responseMessage.Content.ToHtmlReaderAsync()
+						   .ContinueWith(t =>
+						   {
+							   StreamReader reader = t.Result;
+							   var tempList = ApiProvider.GetProxyEntities(reader);
+							   if (!tempList.IsNullOrEmpty())
+							   {
+								   lock (entities)
+								   {
+									   entities.AddRange(tempList);
+								   }
+							   }
+						   }, TaskContinuationOptions.OnlyOnRanToCompletion);
+					   }
+				   }, TaskContinuationOptions.OnlyOnRanToCompletion);
 				Thread.Sleep(RandomEvent.Next(4000, 6000));
 			}
 			try

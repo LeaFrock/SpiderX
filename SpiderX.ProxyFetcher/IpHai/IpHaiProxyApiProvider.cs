@@ -26,7 +26,6 @@ namespace SpiderX.ProxyFetcher
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Referrer = new Uri(NgUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
 			client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
 			client.DefaultRequestHeaders.Add("DNT", "1");
@@ -41,13 +40,13 @@ namespace SpiderX.ProxyFetcher
 
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
-			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//tbody/tr");
+			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//table/tr");
 			if (rows.IsNullOrEmpty())
 			{
 				return null;
 			}
-			var entities = new List<SpiderProxyEntity>(rows.Count);
-			for (int i = 0; i < rows.Count; i++)
+			var entities = new List<SpiderProxyEntity>(rows.Count - 1);
+			for (int i = 1; i < rows.Count; i++)
 			{
 				var entity = CreateProxyEntity(rows[i]);
 				if (entity != null)
