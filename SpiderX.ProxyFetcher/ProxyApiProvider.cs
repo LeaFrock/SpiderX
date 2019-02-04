@@ -23,5 +23,7 @@ namespace SpiderX.ProxyFetcher
 		{
 			throw new NotImplementedException();
 		}
+
+		public abstract IList<string> GetRequestUrls();
 	}
 }

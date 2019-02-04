@@ -16,32 +16,45 @@ namespace SpiderX.ProxyFetcher
 			HomePageUrl = "http://www.ip3366.net/";
 		}
 
-		public const string CnIpUrlTemplate = "http://www.ip3366.net/free/?stype=1&page=";
-		public const string OtherIpUrlTemplate = "http://www.ip3366.net/free/?stype=3&page=";
+		public const string IpUrlTemplate = "http://www.ip3366.net/free/?stype={0}&page={1}";
 
-		public const string DefaultReferer = "http://www.ip3366.net/free/";
+		public const string DefaultRefererUrl = "http://www.ip3366.net/free/";
+
+		public byte MaxPage { get; } = 7;
 
 		public override SpiderWebClient CreateWebClient()
 		{
 			SpiderWebClient client = SpiderWebClient.CreateDefault();
 			client.InnerClientHandler.UseProxy = false;
 			client.DefaultRequestHeaders.Host = HomePageHost;
-			client.DefaultRequestHeaders.Referrer = new Uri(DefaultReferer);
+			client.DefaultRequestHeaders.Referrer = new Uri(DefaultRefererUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			//client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
 			client.DefaultRequestHeaders.Add("Pragma", "no-cache");
 			client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-			//client.DefaultRequestHeaders.Add("DNT", "1");
 			client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 			return client;
 		}
 
+		public override IList<string> GetRequestUrls()
+		{
+			string[] stypes = new string[] { "1", "3" };
+			List<string> urls = new List<string>(stypes.Length * MaxPage);
+			foreach (string stype in stypes)
+			{
+				for (byte i = 1; i <= MaxPage; i++)
+				{
+					urls.Add(string.Format(IpUrlTemplate, stype, i.ToString()));
+				}
+			}
+			return urls;
+		}
+
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
-			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes(".//tbody//tr");
+			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//tbody/tr");
 			if (rows.IsNullOrEmpty())
 			{
 				return null;
@@ -105,11 +118,11 @@ namespace SpiderX.ProxyFetcher
 			{
 				return string.Empty;
 			}
-			const string word = "高匿_";
-			int index = loc.IndexOf(word);
+			const string keyword = "高匿_";
+			int index = loc.IndexOf(keyword);
 			if (index >= 0)
 			{
-				return loc.Substring(index + word.Length);
+				return loc.Substring(index + keyword.Length);
 			}
 			return loc;
 		}

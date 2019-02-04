@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HtmlAgilityPack;
+using SpiderX.Extensions;
 using SpiderX.Http;
 using SpiderX.Proxy;
 using SpiderX.Tools;
@@ -33,15 +34,20 @@ namespace SpiderX.ProxyFetcher
 			return client;
 		}
 
+		public override IList<string> GetRequestUrls()
+		{
+			return new string[] { NgUrl, WgUrl };
+		}
+
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
-			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//table[contains(@class,'table')]/tr");
-			if (rows == null || rows.Count < 2)
+			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//tbody/tr");
+			if (rows.IsNullOrEmpty())
 			{
 				return null;
 			}
-			var entities = new List<SpiderProxyEntity>(rows.Count - 1);
-			for (int i = 1; i < rows.Count; i++)//Skip the ColumnName row.
+			var entities = new List<SpiderProxyEntity>(rows.Count);
+			for (int i = 0; i < rows.Count; i++)
 			{
 				var entity = CreateProxyEntity(rows[i]);
 				if (entity != null)

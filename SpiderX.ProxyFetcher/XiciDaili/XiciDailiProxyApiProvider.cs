@@ -17,11 +17,14 @@ namespace SpiderX.ProxyFetcher
 
 		public const string NnUrlTemplate = "http://www.xicidaili.com/nn/";
 
+		public byte MaxPage { get; } = 10;
+
 		public override SpiderWebClient CreateWebClient()
 		{
 			SpiderWebClient client = SpiderWebClient.CreateDefault();
 			client.InnerClientHandler.UseProxy = false;
 			client.DefaultRequestHeaders.Host = HomePageHost;
+			client.DefaultRequestHeaders.Referrer = new Uri(NnUrlTemplate);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
@@ -29,6 +32,17 @@ namespace SpiderX.ProxyFetcher
 			client.DefaultRequestHeaders.Add("DNT", "1");
 			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 			return client;
+		}
+
+		public override IList<string> GetRequestUrls()
+		{
+			string[] urls = new string[MaxPage];
+			urls[0] = NnUrlTemplate;
+			for (byte i = 1; i < MaxPage; i++)
+			{
+				urls[i] = NnUrlTemplate + (i + 1).ToString();
+			}
+			return urls;
 		}
 
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)

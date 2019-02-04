@@ -27,7 +27,21 @@ namespace SpiderX.Http
 			InnerClientHandler.Proxy = proxy;
 		}
 
-		public async Task<string> GetResponseAsync(HttpRequestMessage requestMessage, int retryTimes, Predicate<string> passFunc)
+		public async Task<HttpResponseMessage> SendAsync(HttpMethod httpMethod, string requestUrl)
+		{
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+			try
+			{
+				return await SendAsync(request);
+			}
+			catch (Exception)
+			{
+				request.Dispose();
+				return null;
+			}
+		}
+
+		public async Task<string> GetOrRetryAsync(HttpRequestMessage requestMessage, int retryTimes, Predicate<string> passFunc)
 		{
 			string result = null;
 			if (passFunc == null)

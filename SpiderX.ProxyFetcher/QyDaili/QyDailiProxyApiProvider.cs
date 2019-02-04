@@ -6,43 +6,48 @@ using SpiderX.Http;
 using SpiderX.Proxy;
 using SpiderX.Tools;
 
-namespace SpiderX.ProxyFetcher
+namespace SpiderX.ProxyFetcher.QiyunDaili
 {
-	internal sealed class KuaiDailiProxyApiProvider : HtmlProxyApiProvider
+	internal class QyDailiProxyApiProvider : HtmlProxyApiProvider
 	{
-		public KuaiDailiProxyApiProvider()
+		public QyDailiProxyApiProvider() : base()
 		{
-			HomePageHost = "www.kuaidaili.com";
-			HomePageUrl = "https://www.kuaidaili.com/";
+			HomePageHost = "www.qydaili.com";
+			HomePageUrl = "http://www.qydaili.com/";
 		}
 
-		public const string CnUrlTemplate = "https://www.kuaidaili.com/free/inha/";//High Anonimity in China
+		public const string IpUrlTemplate = "http://www.qydaili.com/free/?action={0}&page={1}";
+
+		public const string DefaultRefererUrl = "http://www.qydaili.com/free/";
 
 		public byte MaxPage { get; } = 10;
+
+		public override IList<string> GetRequestUrls()
+		{
+			string[] actions = new string[] { "china", "unchina" };
+			var urls = new List<string>(actions.Length * MaxPage);
+			foreach (var action in actions)
+			{
+				for (byte i = 0; i < MaxPage; i++)
+				{
+					urls.Add(string.Format(IpUrlTemplate, action, (i + 1).ToString()));
+				}
+			}
+			return urls;
+		}
 
 		public override SpiderWebClient CreateWebClient()
 		{
 			SpiderWebClient client = SpiderWebClient.CreateDefault();
 			client.InnerClientHandler.UseProxy = false;
 			client.DefaultRequestHeaders.Host = HomePageHost;
+			client.DefaultRequestHeaders.Referrer = new Uri(DefaultRefererUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
-			client.DefaultRequestHeaders.Add("DNT", "1");
+			client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 			return client;
-		}
-
-		public override IList<string> GetRequestUrls()
-		{
-			string[] urls = new string[MaxPage];
-			urls[0] = CnUrlTemplate;
-			for (byte i = 1; i < MaxPage; i++)
-			{
-				urls[i] = CnUrlTemplate + (i + 1).ToString() + '/';
-			}
-			return urls;
 		}
 
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
@@ -66,12 +71,12 @@ namespace SpiderX.ProxyFetcher
 
 		private static SpiderProxyEntity CreateProxyEntity(HtmlNode node)
 		{
-			HtmlNode ipNode = node.SelectSingleNode("./td[contains(@data-title,'IP')]");
+			HtmlNode ipNode = node.SelectSingleNode("./td[contains(@data-title,'IP')]/text()");
 			if (ipNode == null)
 			{
 				return null;
 			}
-			HtmlNode portNode = node.SelectSingleNode("./td[contains(@data-title,'PORT')]");
+			HtmlNode portNode = node.SelectSingleNode("./td[contains(@data-title,'PORT')]/text()");
 			if (portNode == null)
 			{
 				return null;
@@ -82,15 +87,15 @@ namespace SpiderX.ProxyFetcher
 				return null;
 			}
 			string host = ipNode.InnerText.Trim();
-			HtmlNode anonymityNode = node.SelectSingleNode("./td[contains(@data-title,'匿')]");
+			HtmlNode anonymityNode = node.SelectSingleNode("./td[contains(@data-title,'匿')]/text()");
 			string anonymityText = anonymityNode?.InnerText;
 			byte anonymityDegree = (byte)((anonymityText != null && anonymityText.Contains("高匿")) ? 3 : 0);
-			HtmlNode categoryNode = node.SelectSingleNode("./td[contains(@data-title,'类型')]");
+			HtmlNode categoryNode = node.SelectSingleNode("./td[contains(@data-title,'类型')]/text()");
 			string categoryText = categoryNode?.InnerText;
 			byte category = (byte)((categoryText != null && categoryText.Contains("Https", StringComparison.CurrentCultureIgnoreCase)) ? 1 : 0);
-			HtmlNode locationNode = node.SelectSingleNode("./td[contains(@data-title,'位置')]");
+			HtmlNode locationNode = node.SelectSingleNode("./td[contains(@data-title,'位置')]/text()");
 			string location = locationNode?.InnerText?.Trim();
-			HtmlNode responseIntervalNode = node.SelectSingleNode("./td[contains(@data-title,'响应')]");
+			HtmlNode responseIntervalNode = node.SelectSingleNode("./td[contains(@data-title,'响应')]/text()");
 			string responseIntervalText = responseIntervalNode?.InnerText;
 			int responseMilliseconds = responseIntervalText == null ? 10000 : ParseResponseMilliseconds(responseIntervalText);
 			return new SpiderProxyEntity()

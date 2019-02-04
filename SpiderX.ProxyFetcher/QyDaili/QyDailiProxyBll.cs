@@ -2,11 +2,11 @@
 using SpiderX.Http;
 using SpiderX.Proxy;
 
-namespace SpiderX.ProxyFetcher
+namespace SpiderX.ProxyFetcher.QiyunDaili
 {
-	public class KxDailiProxyBll : ProxyBll
+	public sealed class QyDailiProxyBll : ProxyBll
 	{
-		internal override ProxyApiProvider ApiProvider { get; } = new KxDailiProxyApiProvider();
+		internal override ProxyApiProvider ApiProvider => new QyDailiProxyApiProvider();
 
 		public override void Run()
 		{

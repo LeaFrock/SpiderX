@@ -20,9 +20,10 @@ namespace SpiderX.ProxyFetcher
 			base.Run();
 			string caseName = ClassName;
 			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
+			var urls = ApiProvider.GetRequestUrls();
 			using (SpiderWebClient webClient = ApiProvider.CreateWebClient())
 			{
-				var entities = GetProxyEntities(webClient, YunDailiProxyApiProvider.CnIpUrlTemplate, 7);
+				var entities = GetProxyEntities(webClient, HttpMethod.Get, urls, 200);
 				if (entities.Count < 1)
 				{
 					return;

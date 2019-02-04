@@ -16,8 +16,21 @@ namespace SpiderX.ProxyFetcher
 			HomePageUrl = "http://ip.kxdaili.com/";
 		}
 
-		public const string IpUrlTemplate = "http://ip.kxdaili.com/dailiip/1/{0}.html";
+		public const string CnUrlTemplate = "http://ip.kxdaili.com/dailiip/1/{0}.html";
+
 		public const string DefaultRefererUrl = "http://ip.kxdaili.com/dailiip.html";
+
+		public byte MaxPage { get; } = 10;
+
+		public override IList<string> GetRequestUrls()
+		{
+			string[] urls = new string[MaxPage];
+			for (byte i = 0; i < MaxPage; i++)
+			{
+				urls[i] = string.Format(CnUrlTemplate, (i + 1).ToString());
+			}
+			return urls;
+		}
 
 		public override SpiderWebClient CreateWebClient()
 		{
@@ -28,10 +41,6 @@ namespace SpiderX.ProxyFetcher
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			//client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
-			client.DefaultRequestHeaders.Add("Pragma", "no-cache");
-			client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-			//client.DefaultRequestHeaders.Add("DNT", "1");
 			client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 			return client;
@@ -39,7 +48,7 @@ namespace SpiderX.ProxyFetcher
 
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
-			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes(".//tbody//tr");
+			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//tbody/tr");
 			if (rows.IsNullOrEmpty())
 			{
 				return null;
