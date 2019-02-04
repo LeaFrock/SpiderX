@@ -15,7 +15,7 @@ namespace SpiderX.ProxyFetcher
 			var urls = ApiProvider.GetRequestUrls();
 			using (var client = ApiProvider.CreateWebClient())
 			{
-				var entities = GetProxyEntities(client, HttpMethod.Get, urls, 64);
+				var entities = GetProxyEntities(client, HttpMethod.Get, urls, urls.Count * 32);
 				if (entities.Count < 1)
 				{
 					return;
