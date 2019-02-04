@@ -8,34 +8,33 @@ using SpiderX.Tools;
 
 namespace SpiderX.ProxyFetcher
 {
-	internal sealed class IpHaiProxyApiProvider : HtmlProxyApiProvider
+	internal sealed class FeiyiProxyApiProvider : HtmlProxyApiProvider
 	{
-		public IpHaiProxyApiProvider() : base()
+		public FeiyiProxyApiProvider() : base()
 		{
-			HomePageHost = "www.iphai.com";
-			HomePageUrl = "http://www.iphai.com/";
+			HomePageHost = "www.feiyiproxy.com";
+			HomePageUrl = "http://www.feiyiproxy.com/";
 		}
 
-		public const string NgUrl = "http://www.iphai.com/free/ng";//国内高匿
-		public const string WgUrl = "http://www.iphai.com/free/wg";//国外高匿
+		public const string IpUrl = "http://www.feiyiproxy.com/?page_id=1457";
 
 		public override SpiderWebClient CreateWebClient()
 		{
 			SpiderWebClient client = SpiderWebClient.CreateDefault();
 			client.InnerClientHandler.UseProxy = false;
 			client.DefaultRequestHeaders.Host = HomePageHost;
-			client.DefaultRequestHeaders.Referrer = new Uri(NgUrl);
+			client.DefaultRequestHeaders.Referrer = new Uri(HomePageUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			client.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
-			client.DefaultRequestHeaders.Add("DNT", "1");
+			client.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+			client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 			return client;
 		}
 
 		public override IList<string> GetRequestUrls()
 		{
-			return new string[] { NgUrl, WgUrl };
+			return new string[] { IpUrl };
 		}
 
 		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
@@ -46,7 +45,7 @@ namespace SpiderX.ProxyFetcher
 				return null;
 			}
 			var entities = new List<SpiderProxyEntity>(rows.Count - 1);
-			for (int i = 1; i < rows.Count; i++)
+			for (int i = 1; i < rows.Count; i++)//Skip the columns.
 			{
 				var entity = CreateProxyEntity(rows[i]);
 				if (entity != null)
@@ -60,7 +59,7 @@ namespace SpiderX.ProxyFetcher
 		private static SpiderProxyEntity CreateProxyEntity(HtmlNode trNode)
 		{
 			var tdNodes = trNode.SelectNodes("./td");
-			if (tdNodes == null || tdNodes.Count < 6)
+			if (tdNodes == null || tdNodes.Count < 8)
 			{
 				return null;
 			}
@@ -71,13 +70,12 @@ namespace SpiderX.ProxyFetcher
 			}
 			string host = tdNodes[0].InnerText.Trim();
 			string anonymityDegreeText = tdNodes[2].InnerText;
-			byte anonymityDegree = (byte)(anonymityDegreeText.Contains("高") ? 3 : 1);
+			byte anonymityDegree = GetAnonymityDegreeFromText(anonymityDegreeText);
 			string categoryText = tdNodes[3].InnerText;
 			byte category = (byte)(categoryText.Contains("HTTPS", StringComparison.CurrentCultureIgnoreCase) ? 1 : 0);
-			string location = tdNodes[4].InnerText.Trim();
-			string responseTimespanText = tdNodes[5].InnerText;
+			string location = tdNodes[4].InnerText?.Trim() + ' ' + tdNodes[5].InnerText?.Trim();
+			string responseTimespanText = tdNodes[6].InnerText;
 			int responseMilliseconds = ParseResponseMilliseconds(responseTimespanText);
-			//if(...)return null;
 			SpiderProxyEntity entity = new SpiderProxyEntity()
 			{
 				Host = host,
@@ -88,6 +86,22 @@ namespace SpiderX.ProxyFetcher
 				ResponseMilliseconds = responseMilliseconds
 			};
 			return entity;
+		}
+
+		private static byte GetAnonymityDegreeFromText(string text)
+		{
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				if (text.Contains("高匿"))
+				{
+					return 3;
+				}
+				if (text.Contains("普匿"))
+				{
+					return 1;
+				}
+			}
+			return 0;
 		}
 
 		private static int ParseResponseMilliseconds(string text)
