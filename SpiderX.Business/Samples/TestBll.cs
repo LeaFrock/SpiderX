@@ -5,7 +5,7 @@ using SpiderX.BusinessBase;
 using SpiderX.DataClient;
 using SpiderX.Proxy;
 
-namespace SpiderX.Business
+namespace SpiderX.Business.Samples
 {
 	public sealed class TestBll : BllBase
 	{
