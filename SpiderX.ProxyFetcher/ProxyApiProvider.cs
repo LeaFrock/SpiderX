@@ -12,6 +12,17 @@ namespace SpiderX.ProxyFetcher
 
 		public string HomePageUrl { get; protected set; }
 
+		public virtual string GetRequestUrl()
+		{
+			return GetRequestUrls()[0];
+		}
+
+		/// <summary>
+		/// Get total requestUrls. Cannot return Null or Empty.
+		/// </summary>
+		/// <returns></returns>
+		public abstract IList<string> GetRequestUrls();
+
 		public abstract SpiderWebClient CreateWebClient();
 
 		public virtual List<SpiderProxyEntity> GetProxyEntities(string responseText)
@@ -23,7 +34,5 @@ namespace SpiderX.ProxyFetcher
 		{
 			throw new NotImplementedException();
 		}
-
-		public abstract IList<string> GetRequestUrls();
 	}
 }

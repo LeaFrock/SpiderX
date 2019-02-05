@@ -36,19 +36,19 @@ namespace SpiderX.ProxyFetcher
 						{
 							return;
 						}
-						responseMessage.Content.ToHtmlReaderAsync()
+						var entityTask = responseMessage.Content.ToHtmlReaderAsync()
 						.ContinueWith(t =>
 						{
 							StreamReader reader = t.Result;
-							var tempList = ApiProvider.GetProxyEntities(reader);
-							if (!tempList.IsNullOrEmpty())
-							{
-								lock (entities)
-								{
-									entities.AddRange(tempList);
-								}
-							}
+							entities = ApiProvider.GetProxyEntities(reader);
 						}, TaskContinuationOptions.OnlyOnRanToCompletion);
+						try
+						{
+							entityTask.Wait(10000);
+						}
+						catch
+						{
+						}
 					}
 				}, TaskContinuationOptions.OnlyOnRanToCompletion);
 			try
