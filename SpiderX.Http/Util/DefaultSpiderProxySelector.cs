@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SpiderX.Proxy;
+using SpiderX.Tools;
 
 namespace SpiderX.Http.Util
 {
@@ -56,6 +57,7 @@ namespace SpiderX.Http.Util
 		{
 			if (!_verifyingQueue.TryDequeue(out SpiderProxy proxy))
 			{
+				Thread.Sleep(CommonTool.RandomEvent.Next(3000, 7000));//Prevent high CPU occupancy.
 				return;
 			}
 			if (Validator.CheckPass(proxy))

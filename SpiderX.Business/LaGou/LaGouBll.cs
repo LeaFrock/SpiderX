@@ -4,7 +4,7 @@ using SpiderX.Tools;
 
 namespace SpiderX.Business.LaGou
 {
-	public sealed class LaGouBll : BllBase
+	public sealed partial class LaGouBll : BllBase
 	{
 		public override void Run()
 		{

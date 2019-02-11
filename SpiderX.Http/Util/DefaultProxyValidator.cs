@@ -14,7 +14,7 @@ namespace SpiderX.Http.Util
 
 		private static readonly Lazy<SpiderWebClientPool> _clientPoolLazy = new Lazy<SpiderWebClientPool>();
 
-		public static SpiderWebClientPool ClientPool => _clientPoolLazy.Value;
+		internal static SpiderWebClientPool ClientPool => _clientPoolLazy.Value;
 
 		public static readonly DefaultProxyValidator BaiduHttp = new DefaultProxyValidator("http://www.baidu.com")
 		{
