@@ -63,7 +63,7 @@ namespace SpiderX.Proxy
 			{
 				foreach (var entity in distinctEntities)
 				{
-					if (!context.ProxyEntity.Any(p => p.Host == entity.Host && p.Port == entity.Port))
+					if (!context.ProxyEntity.Any(p => p.Port == entity.Port && p.Host == entity.Host))
 					{
 						context.ProxyEntity.Add(entity);
 						count++;
