@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SpiderX.Http;
 using SpiderX.Proxy;
+using SpiderX.Tools;
 
 namespace SpiderX.ProxyFetcher
 {
@@ -73,15 +73,7 @@ namespace SpiderX.ProxyFetcher
 
 		private static SpiderProxyEntity CreateProxyEntity(string text)
 		{
-			JToken item;
-			try
-			{
-				item = JsonConvert.DeserializeObject<JToken>(text);
-			}
-			catch
-			{
-				return null;
-			}
+			JToken item = JsonTool.DeserializeObject(text);
 			if (item == null || !item.Any())
 			{
 				return null;

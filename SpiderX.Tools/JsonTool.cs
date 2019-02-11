@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,25 +8,25 @@ namespace SpiderX.Tools
 {
 	public sealed class JsonTool
 	{
-		public JToken DeserializeObject(string text, bool throwError = false)
+		public static JToken DeserializeObject(string text, bool throwError = false)
 		{
 			JToken result;
 			try
 			{
 				result = JsonConvert.DeserializeObject<JToken>(text);
 			}
-			catch
+			catch (Exception ex)
 			{
 				if (throwError)
 				{
-					throw;
+					throw ex;
 				}
 				return null;
 			}
 			return result;
 		}
 
-		public JToken DeserializeObject(Stream stream, Encoding encoding, bool throwError = false)
+		public static JToken DeserializeObject(Stream stream, Encoding encoding, bool throwError = false)
 		{
 			JsonSerializer ser = JsonSerializer.CreateDefault();
 			using (StreamReader sr = new StreamReader(stream, encoding))
@@ -36,11 +37,11 @@ namespace SpiderX.Tools
 					{
 						return ser.Deserialize<JToken>(jtr);
 					}
-					catch
+					catch (Exception ex)
 					{
 						if (throwError)
 						{
-							throw;
+							throw ex;
 						}
 						return null;
 					}
@@ -48,25 +49,25 @@ namespace SpiderX.Tools
 			}
 		}
 
-		public JArray DeserializeArray(string text, bool throwError = false)
+		public static JArray DeserializeArray(string text, bool throwError = false)
 		{
 			JArray result;
 			try
 			{
 				result = JsonConvert.DeserializeObject<JArray>(text);
 			}
-			catch
+			catch (Exception ex)
 			{
 				if (throwError)
 				{
-					throw;
+					throw ex;
 				}
 				return null;
 			}
 			return result;
 		}
 
-		public JArray DeserializeArray(Stream stream, Encoding encoding)
+		public static JArray DeserializeArray(Stream stream, Encoding encoding)
 		{
 			JArray result = new JArray();
 			JsonSerializer ser = JsonSerializer.CreateDefault();
