@@ -19,9 +19,9 @@ namespace SpiderX.ProxyFetcher
 
 		internal abstract ProxyApiProvider ApiProvider { get; }
 
-		protected List<SpiderProxyEntity> GetProxyEntities(SpiderWebClient webClient, HttpMethod httpMethod, string url)
+		protected List<SpiderProxyUriEntity> GetProxyEntities(SpiderWebClient webClient, HttpMethod httpMethod, string url)
 		{
-			List<SpiderProxyEntity> entities = null;
+			List<SpiderProxyUriEntity> entities = null;
 			Task task = webClient.SendAsync(httpMethod, url)
 				.ContinueWith(responseMsg =>
 				{
@@ -58,12 +58,12 @@ namespace SpiderX.ProxyFetcher
 			catch
 			{
 			}
-			return entities ?? new List<SpiderProxyEntity>(0);
+			return entities ?? new List<SpiderProxyUriEntity>(0);
 		}
 
-		protected List<SpiderProxyEntity> GetProxyEntities(SpiderWebClient webClient, HttpMethod httpMethod, IList<string> urls, int estimatedCount = 0)
+		protected List<SpiderProxyUriEntity> GetProxyEntities(SpiderWebClient webClient, HttpMethod httpMethod, IList<string> urls, int estimatedCount = 0)
 		{
-			var entities = estimatedCount > 0 ? new List<SpiderProxyEntity>(estimatedCount) : new List<SpiderProxyEntity>();
+			var entities = estimatedCount > 0 ? new List<SpiderProxyUriEntity>(estimatedCount) : new List<SpiderProxyUriEntity>();
 			int urlCount = urls.Count;
 			Task[] tasks = new Task[urlCount];
 			for (int i = 0; i < urlCount; i++)

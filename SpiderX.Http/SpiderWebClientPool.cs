@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Net;
 using System.Threading;
 
 namespace SpiderX.Http
@@ -25,7 +24,7 @@ namespace SpiderX.Http
 
 		private readonly ConcurrentQueue<SpiderWebClient> _clientQueue = new ConcurrentQueue<SpiderWebClient>();
 
-		public SpiderWebClient DischargeOnce(IWebProxy webProxy)
+		public SpiderWebClient DischargeOnce(Uri webProxy)
 		{
 			if (_clientQueue.TryDequeue(out SpiderWebClient webClient))
 			{
@@ -34,7 +33,7 @@ namespace SpiderX.Http
 			return webClient;
 		}
 
-		public SpiderWebClient Distribute(IWebProxy webProxy)
+		public SpiderWebClient Distribute(Uri webProxy)
 		{
 			SpiderWebClient webClient = null;
 			SpinWait.SpinUntil(() => _clientQueue.TryDequeue(out webClient), Timeout.Infinite);

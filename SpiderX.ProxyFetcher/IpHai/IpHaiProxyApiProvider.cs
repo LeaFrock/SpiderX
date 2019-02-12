@@ -38,14 +38,14 @@ namespace SpiderX.ProxyFetcher
 			return new string[] { NgUrl, WgUrl };
 		}
 
-		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
+		protected override List<SpiderProxyUriEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
 			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//table//tr");
 			if (rows.IsNullOrEmpty())
 			{
 				return null;
 			}
-			var entities = new List<SpiderProxyEntity>(rows.Count - 1);
+			var entities = new List<SpiderProxyUriEntity>(rows.Count - 1);
 			for (int i = 1; i < rows.Count; i++)
 			{
 				var entity = CreateProxyEntity(rows[i]);
@@ -57,7 +57,7 @@ namespace SpiderX.ProxyFetcher
 			return entities;
 		}
 
-		private static SpiderProxyEntity CreateProxyEntity(HtmlNode trNode)
+		private static SpiderProxyUriEntity CreateProxyEntity(HtmlNode trNode)
 		{
 			var tdNodes = trNode.SelectNodes("./td");
 			if (tdNodes == null || tdNodes.Count < 6)
@@ -78,7 +78,7 @@ namespace SpiderX.ProxyFetcher
 			string responseTimespanText = tdNodes[5].InnerText;
 			int responseMilliseconds = ParseResponseMilliseconds(responseTimespanText);
 			//if(...)return null;
-			SpiderProxyEntity entity = new SpiderProxyEntity()
+			SpiderProxyUriEntity entity = new SpiderProxyUriEntity()
 			{
 				Host = host,
 				Port = port,

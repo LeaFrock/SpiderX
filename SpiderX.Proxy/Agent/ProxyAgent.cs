@@ -37,15 +37,15 @@ namespace SpiderX.Proxy
 
 		public DbConfig DbConfig { get; private set; }
 
-		public ICollection<SpiderProxyEntity> SelectProxyEntities(Predicate<SpiderProxyEntity> predicate, int recentDays = 10, int count = 0)
+		public ICollection<SpiderProxyUriEntity> SelectProxyEntities(Predicate<SpiderProxyUriEntity> predicate, int recentDays = 10, int count = 0)
 		{
 			if (recentDays < 1)
 			{
 				recentDays = 360;
 			}
-			Expression<Func<SpiderProxyEntity, bool>> filter = predicate != null
+			Expression<Func<SpiderProxyUriEntity, bool>> filter = predicate != null
 				? (p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
-				: (Expression<Func<SpiderProxyEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
+				: (Expression<Func<SpiderProxyUriEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
 			using (var context = _dbContextCreateFunc(DbConfig))
 			{
 				var query = context.ProxyEntity
@@ -55,7 +55,7 @@ namespace SpiderX.Proxy
 			}
 		}
 
-		public int InsertProxyEntities(IEnumerable<SpiderProxyEntity> entities)
+		public int InsertProxyEntities(IEnumerable<SpiderProxyUriEntity> entities)
 		{
 			int count = 0;
 			var distinctEntities = entities.Distinct(SpiderProxyEntityComparer.Default);
@@ -73,7 +73,7 @@ namespace SpiderX.Proxy
 			}
 		}
 
-		public int UpdateProxyEntity(int id, Action<SpiderProxyEntity> update)
+		public int UpdateProxyEntity(int id, Action<SpiderProxyUriEntity> update)
 		{
 			using (var context = _dbContextCreateFunc(DbConfig))
 			{
@@ -87,7 +87,7 @@ namespace SpiderX.Proxy
 			return 0;
 		}
 
-		public int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyEntity> update)
+		public int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyUriEntity> update)
 		{
 			var distinctIds = ids.Distinct();
 			using (var context = _dbContextCreateFunc(DbConfig))

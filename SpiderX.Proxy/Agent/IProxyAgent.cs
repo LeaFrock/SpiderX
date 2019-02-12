@@ -8,13 +8,13 @@ namespace SpiderX.Proxy
 	{
 		DbConfig DbConfig { get; }
 
-		ICollection<SpiderProxyEntity> SelectProxyEntities(Predicate<SpiderProxyEntity> predicate, int recentDays, int count);
+		ICollection<SpiderProxyUriEntity> SelectProxyEntities(Predicate<SpiderProxyUriEntity> predicate, int recentDays, int count);
 
-		int InsertProxyEntities(IEnumerable<SpiderProxyEntity> entities);
+		int InsertProxyEntities(IEnumerable<SpiderProxyUriEntity> entities);
 
-		int UpdateProxyEntity(int id, Action<SpiderProxyEntity> update);
+		int UpdateProxyEntity(int id, Action<SpiderProxyUriEntity> update);
 
-		int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyEntity> update);
+		int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyUriEntity> update);
 
 		int DeleteProxyEntity(int id);
 

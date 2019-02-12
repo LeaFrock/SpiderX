@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Net;
 
 namespace SpiderX.Proxy
 {
-	public sealed class SpiderProxyEntity : IEquatable<SpiderProxyEntity>
+	public sealed class SpiderProxyUriEntity : IEquatable<SpiderProxyUriEntity>
 	{
 		public int Id { get; set; }
 
@@ -29,23 +28,21 @@ namespace SpiderX.Proxy
 
 		public string Source { get; set; }
 
-		private SpiderProxy _value;
+		private Uri _value;
 
-		internal SpiderProxy Value
+		public Uri Value
 		{
 			get
 			{
 				if (_value == null)
 				{
-					_value = new SpiderProxy(Host, Port);
+					_value = new Uri(Host + ':' + Port, UriKind.Relative);
 				}
 				return _value;
 			}
 		}
 
-		public IWebProxy ReadOnlyValue => Value;
-
-		public bool Equals(SpiderProxyEntity other)
+		public bool Equals(SpiderProxyUriEntity other)
 		{
 			if (other == null)
 			{

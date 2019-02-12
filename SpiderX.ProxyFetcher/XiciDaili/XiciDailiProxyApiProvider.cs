@@ -44,7 +44,7 @@ namespace SpiderX.ProxyFetcher
 			return urls;
 		}
 
-		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
+		protected override List<SpiderProxyUriEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
 			HtmlNodeCollection rows = htmlDocument.DocumentNode
 				.SelectNodes("//table[contains(@id,'ip')]//tr");//如果用Chrome或FireFox，浏览器会自动补全tbody，但此处XPath不能写作"//table[contains(@id,'ip')]/tbody//tr".
@@ -52,7 +52,7 @@ namespace SpiderX.ProxyFetcher
 			{
 				return null;
 			}
-			var entities = new List<SpiderProxyEntity>(rows.Count - 1);//Skip the row of ColumnNames.
+			var entities = new List<SpiderProxyUriEntity>(rows.Count - 1);//Skip the row of ColumnNames.
 			for (int i = 1; i < rows.Count; i++)
 			{
 				var entity = CreateProxyEntity(rows[i]);
@@ -64,7 +64,7 @@ namespace SpiderX.ProxyFetcher
 			return entities;
 		}
 
-		private static SpiderProxyEntity CreateProxyEntity(HtmlNode node)
+		private static SpiderProxyUriEntity CreateProxyEntity(HtmlNode node)
 		{
 			HtmlNodeCollection tds = node.SelectNodes("./td");
 			if (tds == null || tds.Count < 10)
@@ -105,7 +105,7 @@ namespace SpiderX.ProxyFetcher
 			string categoryText = categoryNode.InnerText;
 			byte category = (byte)((categoryText != null && categoryText.Contains("HTTPS", StringComparison.CurrentCultureIgnoreCase)) ? 1 : 0);
 			int responseMilliseconds = (int)(1000 * (requestSeconds + responseSeconds));
-			return new SpiderProxyEntity()
+			return new SpiderProxyUriEntity()
 			{
 				Host = host,
 				Port = port,

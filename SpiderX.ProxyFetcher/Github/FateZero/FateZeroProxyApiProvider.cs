@@ -53,9 +53,9 @@ namespace SpiderX.ProxyFetcher
 			return new string[] { IpUrl };
 		}
 
-		public override List<SpiderProxyEntity> GetProxyEntities<T>(T responseReader)
+		public override List<SpiderProxyUriEntity> GetProxyEntities<T>(T responseReader)
 		{
-			List<SpiderProxyEntity> entities = new List<SpiderProxyEntity>(512);
+			List<SpiderProxyUriEntity> entities = new List<SpiderProxyUriEntity>(512);
 			using (responseReader)
 			{
 				string line;
@@ -71,7 +71,7 @@ namespace SpiderX.ProxyFetcher
 			return entities;
 		}
 
-		private static SpiderProxyEntity CreateProxyEntity(string text)
+		private static SpiderProxyUriEntity CreateProxyEntity(string text)
 		{
 			JToken item = JsonTool.DeserializeObject(text);
 			if (item == null || !item.Any())
@@ -110,7 +110,7 @@ namespace SpiderX.ProxyFetcher
 			}
 			string anonymityText = item.Value<string>("anonymity");
 			byte anonymityDegree = GetAnonymityDegreeFromText(anonymityText);
-			return new SpiderProxyEntity()
+			return new SpiderProxyUriEntity()
 			{
 				Host = host,
 				Port = port,

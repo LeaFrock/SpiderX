@@ -21,10 +21,10 @@ namespace SpiderX.Http
 
 		public TimeSpan RequestInterval { get; set; } = TimeSpan.FromSeconds(3);
 
-		public void SetProxy(IWebProxy proxy)
+		public void SetProxy(Uri proxy)
 		{
 			InnerClientHandler.UseProxy = proxy != null;
-			InnerClientHandler.Proxy = proxy;
+			InnerClientHandler.Proxy = new WebProxy(proxy);
 		}
 
 		public async Task<HttpResponseMessage> SendAsync(HttpMethod httpMethod, string requestUrl)

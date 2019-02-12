@@ -51,14 +51,14 @@ namespace SpiderX.ProxyFetcher
 			return urls;
 		}
 
-		protected override List<SpiderProxyEntity> GetProxyEntities(HtmlDocument htmlDocument)
+		protected override List<SpiderProxyUriEntity> GetProxyEntities(HtmlDocument htmlDocument)
 		{
 			HtmlNodeCollection rows = htmlDocument.DocumentNode.SelectNodes("//tbody/tr");
 			if (rows.IsNullOrEmpty())
 			{
 				return null;
 			}
-			var entities = new List<SpiderProxyEntity>(rows.Count);
+			var entities = new List<SpiderProxyUriEntity>(rows.Count);
 			for (int i = 0; i < rows.Count; i++)
 			{
 				var entity = CreateProxyEntity(rows[i]);
@@ -70,7 +70,7 @@ namespace SpiderX.ProxyFetcher
 			return entities;
 		}
 
-		private static SpiderProxyEntity CreateProxyEntity(HtmlNode node)
+		private static SpiderProxyUriEntity CreateProxyEntity(HtmlNode node)
 		{
 			var tdNodes = node.SelectNodes("./td");
 			if (tdNodes == null || tdNodes.Count != 7)
@@ -100,7 +100,7 @@ namespace SpiderX.ProxyFetcher
 			HtmlNode responseIntervalNode = tdNodes[5];
 			string responseIntervalText = responseIntervalNode?.InnerText;
 			int responseMilliseconds = responseIntervalText == null ? 10000 : ParseResponseMilliseconds(responseIntervalText);
-			return new SpiderProxyEntity()
+			return new SpiderProxyUriEntity()
 			{
 				Host = host,
 				Port = port,

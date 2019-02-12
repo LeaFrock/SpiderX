@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SpiderX.Proxy;
 
 namespace SpiderX.Http.Util
 {
-	public sealed class DefaultProxyValidator : ProxyValidatorBase
+	public sealed class DefaultProxyUriValidator : ProxyUriValidatorBase
 	{
-		public DefaultProxyValidator(string urlString) : base(urlString)
+		public DefaultProxyUriValidator(string urlString) : base(urlString)
 		{
 		}
 
@@ -16,14 +15,14 @@ namespace SpiderX.Http.Util
 
 		internal static SpiderWebClientPool ClientPool => _clientPoolLazy.Value;
 
-		public static readonly DefaultProxyValidator BaiduHttp = new DefaultProxyValidator("http://www.baidu.com")
+		public static readonly DefaultProxyUriValidator BaiduHttp = new DefaultProxyUriValidator("http://www.baidu.com")
 		{
 			Lastword = "</html>",
 			Keyword = "baidu",
 			KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
 		};
 
-		public static readonly DefaultProxyValidator BaiduHttps = new DefaultProxyValidator("https://www.baidu.com")
+		public static readonly DefaultProxyUriValidator BaiduHttps = new DefaultProxyUriValidator("https://www.baidu.com")
 		{
 			Lastword = "</html>",
 			Keyword = "baidu",
@@ -42,7 +41,7 @@ namespace SpiderX.Http.Util
 
 		public StringComparison LastwordComparisonType { get; set; }
 
-		public override bool CheckPass(IWebProxy proxy)
+		public override bool CheckPass(Uri proxy)
 		{
 			var webClient = ClientPool.Distribute(proxy);
 			bool isPassed = false;

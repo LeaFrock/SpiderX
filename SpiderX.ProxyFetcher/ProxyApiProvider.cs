@@ -25,12 +25,12 @@ namespace SpiderX.ProxyFetcher
 
 		public abstract SpiderWebClient CreateWebClient();
 
-		public virtual List<SpiderProxyEntity> GetProxyEntities(string responseText)
+		public virtual List<SpiderProxyUriEntity> GetProxyEntities(string responseText)
 		{
 			throw new NotImplementedException();
 		}
 
-		public virtual List<SpiderProxyEntity> GetProxyEntities<T>(T responseReader) where T : TextReader
+		public virtual List<SpiderProxyUriEntity> GetProxyEntities<T>(T responseReader) where T : TextReader
 		{
 			throw new NotImplementedException();
 		}

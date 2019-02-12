@@ -49,7 +49,7 @@ namespace SpiderX.Proxy
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<SpiderProxyEntity>(e =>
+			modelBuilder.Entity<SpiderProxyUriEntity>(e =>
 			{
 				e.HasKey(p => p.Id);
 				e.Property(p => p.Id)
