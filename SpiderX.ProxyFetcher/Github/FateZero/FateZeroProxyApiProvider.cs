@@ -33,7 +33,6 @@ namespace SpiderX.ProxyFetcher
 		public override SpiderWebClient CreateWebClient()
 		{
 			SpiderWebClient client = SpiderWebClient.CreateDefault();
-			client.InnerClientHandler.UseProxy = false;
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "br");

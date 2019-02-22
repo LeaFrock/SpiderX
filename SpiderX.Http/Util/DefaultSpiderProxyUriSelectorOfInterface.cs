@@ -12,7 +12,7 @@ namespace SpiderX.Http.Util
 
 		public override int StatusCode => _initTimes;
 
-		public override void Init(IProxyUriValidator Validator, IEnumerable<Uri> proxies)
+		public override void Init(IProxyValidator Validator, IEnumerable<Uri> proxies)
 		{
 			if (Interlocked.CompareExchange(ref _initTimes, 1, 0) != 0)
 			{

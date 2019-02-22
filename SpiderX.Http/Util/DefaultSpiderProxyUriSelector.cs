@@ -58,14 +58,14 @@ namespace SpiderX.Http.Util
 				Thread.Sleep(CommonTool.RandomEvent.Next(3000, 7000));//Prevent high CPU occupancy.
 				return;
 			}
-			if (Validator.CheckPass(proxy))
-			{
-				_availableQueue.Enqueue(proxy);
-			}
-			else
-			{
-				_eliminatedQueue.Enqueue(proxy);
-			}
+			//if (Validator.CheckPass(proxy))
+			//{
+			//	_availableQueue.Enqueue(proxy);
+			//}
+			//else
+			//{
+			//	_eliminatedQueue.Enqueue(proxy);
+			//}
 		}
 	}
 }

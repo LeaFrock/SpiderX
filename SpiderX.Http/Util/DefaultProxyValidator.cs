@@ -5,24 +5,20 @@ using SpiderX.Proxy;
 
 namespace SpiderX.Http.Util
 {
-	public sealed class DefaultProxyUriValidator : ProxyUriValidatorBase
+	public sealed class DefaultProxyValidator : ProxyValidatorBase
 	{
-		public DefaultProxyUriValidator(string urlString) : base(urlString)
+		public DefaultProxyValidator(string urlString) : base(urlString)
 		{
 		}
 
-		private static readonly Lazy<SpiderWebClientPool> _clientPoolLazy = new Lazy<SpiderWebClientPool>();
-
-		internal static SpiderWebClientPool ClientPool => _clientPoolLazy.Value;
-
-		public static readonly DefaultProxyUriValidator BaiduHttp = new DefaultProxyUriValidator("http://www.baidu.com")
+		public static readonly DefaultProxyValidator BaiduHttp = new DefaultProxyValidator("http://www.baidu.com")
 		{
 			Lastword = "</html>",
 			Keyword = "baidu",
 			KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
 		};
 
-		public static readonly DefaultProxyUriValidator BaiduHttps = new DefaultProxyUriValidator("https://www.baidu.com")
+		public static readonly DefaultProxyValidator BaiduHttps = new DefaultProxyValidator("https://www.baidu.com")
 		{
 			Lastword = "</html>",
 			Keyword = "baidu",
@@ -41,40 +37,14 @@ namespace SpiderX.Http.Util
 
 		public StringComparison LastwordComparisonType { get; set; }
 
-		public override bool CheckPass(Uri proxy)
+		public override bool CheckPass(HttpResponseMessage response)
 		{
-			var webClient = ClientPool.Distribute(proxy);
-			bool isPassed = false;
-			for (byte i = 0; i < RetryTimes + 1; i++)
-			{
-				if (CheckResponse(webClient))
-				{
-					isPassed = true;
-					break;
-				}
-			}
-			ClientPool.Recycle(webClient);
-			return isPassed;
-		}
-
-		private bool CheckResponse(HttpClient client)
-		{
-			Task<string> responseTask = client.GetStringAsync(TargetUri);
-			Task<bool> readTask = responseTask.ContinueWith(CheckResponseTask, TaskContinuationOptions.OnlyOnRanToCompletion);
-			try
-			{
-				readTask.Wait();
-			}
-			catch
-			{
-				return false;
-			}
-			return readTask.Result;
+			return base.CheckPass(response);
 		}
 
 		private bool CheckResponseTask(Task<string> responseTask)
 		{
-			string text = responseTask.Result?.Trim();
+			string text = responseTask.ConfigureAwait(false).GetAwaiter().GetResult();
 			return CheckResponseText(text);
 		}
 

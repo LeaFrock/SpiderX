@@ -8,23 +8,23 @@ namespace SpiderX.Http
 {
 	public sealed class SpiderWebClient : HttpClient
 	{
-		public SocketsHttpHandler InnerClientHandler { get; }
+		private SocketsHttpHandler _innerHandler;
 
-		public SpiderWebClient() : this(new SocketsHttpHandler() { UseProxy = true, AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })
+		public SpiderWebClient() : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })
 		{
 		}
 
 		public SpiderWebClient(SocketsHttpHandler handler) : base(handler)
 		{
-			InnerClientHandler = handler;
+			_innerHandler = handler;
 		}
 
 		public TimeSpan RequestInterval { get; set; } = TimeSpan.FromSeconds(3);
 
-		public void SetProxy(Uri proxy)
+		public void RegisterWebProxy(IWebProxy proxy)
 		{
-			InnerClientHandler.UseProxy = proxy != null;
-			InnerClientHandler.Proxy = new WebProxy(proxy);
+			_innerHandler.Proxy = proxy ?? throw new ArgumentNullException();
+			_innerHandler.UseProxy = true;
 		}
 
 		public async Task<HttpResponseMessage> SendAsync(HttpMethod httpMethod, string requestUrl)

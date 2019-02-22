@@ -9,9 +9,9 @@ namespace SpiderX.Proxy
 
 		public virtual int StatusCode { get; }
 
-		public virtual IProxyUriValidator Validator { get; set; }
+		public virtual IProxyValidator Validator { get; set; }
 
-		public abstract void Init(IProxyUriValidator Validator, IEnumerable<Uri> proxies);
+		public abstract void Init(IProxyValidator Validator, IEnumerable<Uri> proxies);
 
 		public abstract void InsertFreshProxies(IEnumerable<Uri> proxies);
 

@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace SpiderX.Proxy
 {
-	public interface IProxyUriValidator
+	public interface IProxyValidator
 	{
 		Uri TargetUri { get; }
 
 		byte RetryTimes { get; set; }
 
-		bool CheckPass(Uri proxyUri);
+		bool CheckPass(HttpResponseMessage response);
 	}
 }
