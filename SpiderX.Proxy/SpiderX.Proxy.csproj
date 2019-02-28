@@ -18,4 +18,8 @@
     <ProjectReference Include="..\SpiderX.DataClient\SpiderX.DataClient.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

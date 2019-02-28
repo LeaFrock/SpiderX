@@ -12,6 +12,6 @@ namespace SpiderX.Proxy
 
 		public DbConfig Config { get; }
 
-		public DbSet<SpiderProxyUriEntity> ProxyEntity { get; set; }
+		public DbSet<SpiderProxyUriEntity> ProxyUriEntities { get; set; }
 	}
 }

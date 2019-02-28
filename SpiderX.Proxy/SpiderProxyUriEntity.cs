@@ -36,7 +36,7 @@ namespace SpiderX.Proxy
 			{
 				if (_value == null)
 				{
-					_value = new Uri(Host + ':' + Port, UriKind.Relative);
+					_value = new Uri($"http://{Host}:{Port.ToString()}", UriKind.Absolute);
 				}
 				return _value;
 			}

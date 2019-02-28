@@ -48,7 +48,7 @@ namespace SpiderX.Proxy
 				: (Expression<Func<SpiderProxyUriEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
 			using (var context = _dbContextCreateFunc(DbConfig))
 			{
-				var query = context.ProxyEntity
+				var query = context.ProxyUriEntities
 					   .Where(filter)
 					   .OrderByDescending(e => e.UpdateTime);
 				return (count > 0 ? query.Take(count) : query).ToArray();
@@ -63,9 +63,9 @@ namespace SpiderX.Proxy
 			{
 				foreach (var entity in distinctEntities)
 				{
-					if (!context.ProxyEntity.Any(p => p.Port == entity.Port && p.Host == entity.Host))
+					if (!context.ProxyUriEntities.Any(p => p.Port == entity.Port && p.Host == entity.Host))
 					{
-						context.ProxyEntity.Add(entity);
+						context.ProxyUriEntities.Add(entity);
 						count++;
 					}
 				}
@@ -77,7 +77,7 @@ namespace SpiderX.Proxy
 		{
 			using (var context = _dbContextCreateFunc(DbConfig))
 			{
-				var entity = context.ProxyEntity.Find(id);
+				var entity = context.ProxyUriEntities.Find(id);
 				if (entity != null)
 				{
 					update(entity);
@@ -94,7 +94,7 @@ namespace SpiderX.Proxy
 			{
 				foreach (var id in distinctIds)
 				{
-					var entity = context.ProxyEntity.Find(id);
+					var entity = context.ProxyUriEntities.Find(id);
 					if (entity != null)
 					{
 						update(entity);
@@ -108,10 +108,10 @@ namespace SpiderX.Proxy
 		{
 			using (var context = _dbContextCreateFunc(DbConfig))
 			{
-				var entity = context.ProxyEntity.FirstOrDefault(p => p.Host == host && p.Port == port);
+				var entity = context.ProxyUriEntities.FirstOrDefault(p => p.Host == host && p.Port == port);
 				if (entity != null)
 				{
-					context.ProxyEntity.Remove(entity);
+					context.ProxyUriEntities.Remove(entity);
 					return context.SaveChanges();
 				}
 			}
@@ -122,10 +122,10 @@ namespace SpiderX.Proxy
 		{
 			using (var context = _dbContextCreateFunc(DbConfig))
 			{
-				var entity = context.ProxyEntity.Find(id);
+				var entity = context.ProxyUriEntities.Find(id);
 				if (entity != null)
 				{
-					context.ProxyEntity.Remove(entity);
+					context.ProxyUriEntities.Remove(entity);
 					return context.SaveChanges();
 				}
 			}

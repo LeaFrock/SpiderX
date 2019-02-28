@@ -9,7 +9,7 @@ namespace SpiderX.Proxy
 
 		public SpiderWebProxy(IProxyUriSelector selector)
 		{
-			_selector = selector;
+			_selector = selector ?? throw new ArgumentNullException(nameof(IProxyUriSelector));
 		}
 
 		public ICredentials Credentials { get; set; }
