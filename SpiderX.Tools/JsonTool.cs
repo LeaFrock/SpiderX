@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
@@ -8,12 +9,12 @@ namespace SpiderX.Tools
 {
 	public sealed class JsonTool
 	{
-		public static JToken DeserializeObject(string text, bool throwError = false)
+		public static T DeserializeObject<T>(string text, bool throwError = false) where T : class, IEnumerable<JToken>
 		{
-			JToken result;
+			T result;
 			try
 			{
-				result = JsonConvert.DeserializeObject<JToken>(text);
+				result = JsonConvert.DeserializeObject<T>(text);
 			}
 			catch (Exception ex)
 			{
@@ -47,24 +48,6 @@ namespace SpiderX.Tools
 					}
 				}
 			}
-		}
-
-		public static JArray DeserializeArray(string text, bool throwError = false)
-		{
-			JArray result;
-			try
-			{
-				result = JsonConvert.DeserializeObject<JArray>(text);
-			}
-			catch (Exception ex)
-			{
-				if (throwError)
-				{
-					throw ex;
-				}
-				return null;
-			}
-			return result;
 		}
 
 		public static JArray DeserializeArray(Stream stream, Encoding encoding)
