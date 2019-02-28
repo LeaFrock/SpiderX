@@ -21,7 +21,7 @@ namespace SpiderX.ProxyFetcher
 
 		public override SpiderWebClient CreateWebClient()
 		{
-			SpiderWebClient client = SpiderWebClient.CreateDefault();
+			SpiderWebClient client = new SpiderWebClient();
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Referrer = new Uri(NgUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");

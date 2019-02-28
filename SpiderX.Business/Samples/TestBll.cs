@@ -22,7 +22,7 @@ namespace SpiderX.Business.Samples
 				throw new DbConfigNotFoundException();
 			}
 			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance(conf, c => new SqlServerProxyDbContext(c));
-			var entities = pa.SelectProxyEntities(p => p.Category == 1);
+			var entities = pa.SelectProxyEntities(p => p.Category == 1, 360);
 		}
 	}
 }

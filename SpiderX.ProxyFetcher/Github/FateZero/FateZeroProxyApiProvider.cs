@@ -32,7 +32,7 @@ namespace SpiderX.ProxyFetcher
 
 		public override SpiderWebClient CreateWebClient()
 		{
-			SpiderWebClient client = SpiderWebClient.CreateDefault();
+			SpiderWebClient client = new SpiderWebClient();
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "br");
@@ -72,7 +72,7 @@ namespace SpiderX.ProxyFetcher
 
 		private static SpiderProxyUriEntity CreateProxyEntity(string text)
 		{
-			JToken item = JsonTool.DeserializeObject(text);
+			JToken item = JsonTool.DeserializeObject<JToken>(text);
 			if (item == null || !item.Any())
 			{
 				return null;
