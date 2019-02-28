@@ -8,28 +8,27 @@ namespace SpiderX.Http
 {
 	public sealed class SpiderWebClient : HttpClient
 	{
-		private SocketsHttpHandler _innerHandler;
+		private readonly SocketsHttpHandler _innerHandler;
 
 		public SpiderWebClient() : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })
+		{
+		}
+
+		public SpiderWebClient(IWebProxy proxy) : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, UseProxy = true, Proxy = proxy })
 		{
 		}
 
 		public SpiderWebClient(SocketsHttpHandler handler) : base(handler)
 		{
 			_innerHandler = handler;
+			Timeout = TimeSpan.FromMilliseconds(5000);
 		}
 
 		public TimeSpan RequestInterval { get; set; } = TimeSpan.FromSeconds(3);
 
-		public void RegisterWebProxy(IWebProxy proxy)
-		{
-			_innerHandler.Proxy = proxy ?? throw new ArgumentNullException();
-			_innerHandler.UseProxy = true;
-		}
-
 		public async Task<HttpResponseMessage> SendAsync(HttpMethod httpMethod, string requestUrl)
 		{
-			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+			HttpRequestMessage request = new HttpRequestMessage(httpMethod, requestUrl);
 			try
 			{
 				return await SendAsync(request);
@@ -41,55 +40,29 @@ namespace SpiderX.Http
 			}
 		}
 
-		public async Task<string> GetOrRetryAsync(HttpRequestMessage requestMessage, int retryTimes, Predicate<string> passFunc)
+		public async Task<string> SendOrRetryAsync(HttpRequestMessage requestMessage, ResponseValidatorBase validator)
 		{
 			string result = null;
-			if (passFunc == null)
+			if (validator == null)
 			{
-				for (int i = 0; i < retryTimes; i++)
-				{
-					var rMsg = await SendAsync(requestMessage);
-					if (rMsg == null || !rMsg.IsSuccessStatusCode)
-					{
-						continue;
-					}
-					string tempText = await rMsg.ToHtmlTextAsync();
-					if (string.IsNullOrEmpty(tempText))
-					{
-						continue;
-					}
-					result = tempText;
-					break;
-				}
+				validator = ResponseValidatorBase.Base;
 			}
-			else
+			for (int i = 0; i < validator.RetryTimes + 1; i++)
 			{
-				for (int i = 0; i < retryTimes; i++)
+				var rMsg = await SendAsync(requestMessage);
+				if (rMsg == null || !rMsg.IsSuccessStatusCode)
 				{
-					var rMsg = await SendAsync(requestMessage);
-					if (rMsg == null || !rMsg.IsSuccessStatusCode)
-					{
-						continue;
-					}
-					string tempText = await rMsg.ToHtmlTextAsync();
-					if (string.IsNullOrEmpty(tempText) || !passFunc(tempText))
-					{
-						continue;
-					}
-					result = tempText;
-					break;
+					continue;
 				}
+				string tempText = await rMsg.ToTextAsync();
+				if (!validator.CheckPass(tempText))
+				{
+					continue;
+				}
+				result = tempText;
+				break;
 			}
 			return result;
-		}
-
-		public static SpiderWebClient CreateDefault()
-		{
-			SpiderWebClient client = new SpiderWebClient()
-			{
-				Timeout = TimeSpan.FromMilliseconds(5000)
-			};
-			return client;
 		}
 	}
 }

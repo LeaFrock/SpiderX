@@ -18,7 +18,8 @@ namespace SpiderX.Extensions.Http
 			var content = responseMessage.Content;
 			if (content.Headers.ContentEncoding.IsNullOrEmpty())//ReadAsString directly.
 			{
-				return await responseMessage.Content.ReadAsStringAsync();
+				string text = await responseMessage.Content.ReadAsStringAsync();
+				return text?.Trim();
 			}
 			Stream finalStream = await content.ToStreamAsync();
 			Encoding encoding = Encoding.UTF8;
@@ -26,7 +27,8 @@ namespace SpiderX.Extensions.Http
 			{
 				using (StreamReader sr = new StreamReader(finalStream, encoding))
 				{
-					return await sr.ReadToEndAsync();
+					string text = await sr.ReadToEndAsync();
+					return text?.Trim();
 				}
 			}
 		}

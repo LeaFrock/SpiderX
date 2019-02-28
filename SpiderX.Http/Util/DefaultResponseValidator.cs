@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SpiderX.Proxy;
 
 namespace SpiderX.Http.Util
 {
-	public sealed class DefaultProxyValidator : ProxyValidatorBase
+	public sealed class DefaultResponseValidator : ResponseValidatorBase
 	{
-		public DefaultProxyValidator(string urlString) : base(urlString)
-		{
-		}
+		//public static readonly DefaultResponseValidator BaiduHttp = new DefaultResponseValidator("http://www.baidu.com")
+		//{
+		//	Lastword = "</html>",
+		//	Keyword = "baidu",
+		//	KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
+		//};
 
-		public static readonly DefaultProxyValidator BaiduHttp = new DefaultProxyValidator("http://www.baidu.com")
-		{
-			Lastword = "</html>",
-			Keyword = "baidu",
-			KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
-		};
-
-		public static readonly DefaultProxyValidator BaiduHttps = new DefaultProxyValidator("https://www.baidu.com")
-		{
-			Lastword = "</html>",
-			Keyword = "baidu",
-			KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
-		};
+		//public static readonly DefaultResponseValidator BaiduHttps = new DefaultResponseValidator("https://www.baidu.com")
+		//{
+		//	Lastword = "</html>",
+		//	Keyword = "baidu",
+		//	KeywordComparisonType = StringComparison.CurrentCultureIgnoreCase
+		//};
 
 		public string Firstword { get; set; }
 
@@ -37,7 +32,7 @@ namespace SpiderX.Http.Util
 
 		public StringComparison LastwordComparisonType { get; set; }
 
-		public override bool CheckPass(HttpResponseMessage response)
+		public override bool CheckPass(string response)
 		{
 			return base.CheckPass(response);
 		}

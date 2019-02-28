@@ -27,9 +27,13 @@ namespace SpiderX.Http.Util
 
 		private readonly ConcurrentQueue<Uri> _eliminatedQueue = new ConcurrentQueue<Uri>();
 
+		private readonly ConcurrentDictionary<Uri, DateTime> _latestUseTimeRecords = new ConcurrentDictionary<Uri, DateTime>();
+
 		private int _initTimes;
 
 		public int DegreeOfParallelism { get; }
+
+		public TimeSpan ProxyUriInterval { get; set; } = TimeSpan.Zero;
 
 		private void StartVerifying()
 		{

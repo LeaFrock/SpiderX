@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SpiderX.Proxy;
+using SpiderX.Tools;
 
 namespace SpiderX.Http.Util
 {
@@ -12,7 +13,7 @@ namespace SpiderX.Http.Util
 
 		public override int StatusCode => _initTimes;
 
-		public override void Init(IProxyValidator Validator, IEnumerable<Uri> proxies)
+		public override void Init(IEnumerable<Uri> proxies)
 		{
 			if (Interlocked.CompareExchange(ref _initTimes, 1, 0) != 0)
 			{
@@ -32,12 +33,36 @@ namespace SpiderX.Http.Util
 
 		public override Uri SingleProxyUri()
 		{
-			if (_availableQueue.TryDequeue(out Uri result))
+			if (ProxyUriInterval <= TimeSpan.Zero)
 			{
-				_availableQueue.Enqueue(result);
-				return result;
+				while (true)
+				{
+					if (_availableQueue.TryDequeue(out Uri uri))
+					{
+						_availableQueue.Enqueue(uri);
+						return uri;
+					}
+					Thread.Sleep(CommonTool.RandomEvent.Next(3000, 7000));
+				}
 			}
-			return null;
+			else
+			{
+				while (true)
+				{
+					if (_availableQueue.TryDequeue(out Uri uri))
+					{
+						_availableQueue.Enqueue(uri);
+						DateTime dt = _latestUseTimeRecords.GetOrAdd(uri, DateTime.MinValue);
+						DateTime now = DateTime.Now;
+						if (now > dt.Add(ProxyUriInterval))
+						{
+							_latestUseTimeRecords.TryUpdate(uri, now, now);
+							return uri;
+						}
+					}
+					Thread.Sleep(CommonTool.RandomEvent.Next(3000, 7000));
+				}
+			}
 		}
 	}
 }
