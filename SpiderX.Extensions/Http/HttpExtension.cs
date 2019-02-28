@@ -13,7 +13,7 @@ namespace SpiderX.Extensions.Http
 	{
 		private const string HtmlCharsetPrefix = "charset=";
 
-		public async static Task<string> ToHtmlTextAsync(this HttpResponseMessage responseMessage)
+		public async static Task<string> ToTextAsync(this HttpResponseMessage responseMessage)
 		{
 			var content = responseMessage.Content;
 			if (content.Headers.ContentEncoding.IsNullOrEmpty())//ReadAsString directly.
