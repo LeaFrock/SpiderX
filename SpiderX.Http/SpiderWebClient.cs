@@ -29,15 +29,33 @@ namespace SpiderX.Http
 		public async Task<HttpResponseMessage> SendAsync(HttpMethod httpMethod, string requestUrl)
 		{
 			HttpRequestMessage request = new HttpRequestMessage(httpMethod, requestUrl);
-			try
+			return await SendAsync(request, true);
+		}
+
+		public async Task<string> GetOrRetryAsync(Uri uri, ResponseValidatorBase validator)
+		{
+			if (validator == null)
 			{
-				return await SendAsync(request);
+				validator = ResponseValidatorBase.Base;
 			}
-			catch (Exception)
+			string result = null;
+			for (int i = 0; i < validator.RetryTimes + 1; i++)
 			{
-				request.Dispose();
-				return null;
+				try
+				{
+					result = await GetStringAsync(uri);
+				}
+				catch (Exception)
+				{
+					result = null;
+					continue;
+				}
+				if (string.IsNullOrWhiteSpace(result))
+				{
+					continue;
+				}
 			}
+			return result?.Trim();
 		}
 
 		public async Task<string> SendOrRetryAsync(HttpRequestMessage requestMessage, ResponseValidatorBase validator)
@@ -47,9 +65,10 @@ namespace SpiderX.Http
 			{
 				validator = ResponseValidatorBase.Base;
 			}
+			HttpResponseMessage rMsg;
 			for (int i = 0; i < validator.RetryTimes + 1; i++)
 			{
-				var rMsg = await SendAsync(requestMessage);
+				rMsg = await SendAsync(requestMessage, false);
 				if (rMsg == null || !rMsg.IsSuccessStatusCode)
 				{
 					continue;
@@ -62,7 +81,27 @@ namespace SpiderX.Http
 				result = tempText;
 				break;
 			}
+			if (result == null)
+			{
+				requestMessage.Dispose();
+			}
 			return result;
+		}
+
+		private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, bool disposeRequestIfFail)
+		{
+			try
+			{
+				return await SendAsync(request);
+			}
+			catch (Exception)
+			{
+				if (disposeRequestIfFail)
+				{
+					request.Dispose();
+				}
+				return null;
+			}
 		}
 	}
 }
