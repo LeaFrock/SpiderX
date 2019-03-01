@@ -43,19 +43,20 @@ namespace SpiderX.Http
 			{
 				try
 				{
-					result = await GetStringAsync(uri);
+					var text = await GetStringAsync(uri);
+					result = text?.Trim();
 				}
 				catch (Exception)
 				{
 					result = null;
 					continue;
 				}
-				if (string.IsNullOrWhiteSpace(result))
+				if (validator.CheckPass(result))
 				{
-					continue;
+					break;
 				}
 			}
-			return result?.Trim();
+			return result;
 		}
 
 		public async Task<string> SendOrRetryAsync(HttpRequestMessage requestMessage, ResponseValidatorBase validator)
@@ -73,13 +74,12 @@ namespace SpiderX.Http
 				{
 					continue;
 				}
-				string tempText = await rMsg.ToTextAsync();
-				if (!validator.CheckPass(tempText))
+				string tempText = (await rMsg.ToTextAsync())?.Trim();
+				if (validator.CheckPass(tempText))
 				{
-					continue;
+					result = tempText;
+					break;
 				}
-				result = tempText;
-				break;
 			}
 			if (result == null)
 			{

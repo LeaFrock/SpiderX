@@ -17,7 +17,7 @@
 
 		public virtual bool CheckPass(string responseText)
 		{
-			return !string.IsNullOrEmpty(responseText);
+			return string.IsNullOrWhiteSpace(responseText);
 		}
 	}
 }

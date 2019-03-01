@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SpiderX.BusinessBase;
 using SpiderX.DataClient;
 using SpiderX.Http;
+using SpiderX.Http.Util;
 using SpiderX.Proxy;
 
 namespace SpiderX.Business.Samples
