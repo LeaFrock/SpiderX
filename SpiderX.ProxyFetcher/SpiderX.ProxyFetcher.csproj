@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.9.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.9.1" />
   </ItemGroup>
 
   <ItemGroup>
