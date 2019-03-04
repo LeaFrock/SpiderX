@@ -12,9 +12,11 @@ namespace SpiderX.Http.Util
 
 		public Predicate<SpiderProxyUriEntity> Condition { get; set; }
 
+		public int MaxCount { get; set; }
+
 		public Uri[] Load()
 		{
-			var proxyEntities = ProxyAgent.SelectProxyEntities(Condition, Days, 50000);
+			var proxyEntities = ProxyAgent.SelectProxyEntities(Condition, Days, MaxCount);
 			if (proxyEntities.Count < 1)
 			{
 				return Array.Empty<Uri>();

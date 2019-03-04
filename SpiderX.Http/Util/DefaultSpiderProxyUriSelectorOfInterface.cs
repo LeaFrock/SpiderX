@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using SpiderX.Proxy;
 using SpiderX.Tools;
 
@@ -9,7 +8,7 @@ namespace SpiderX.Http.Util
 {
 	public sealed partial class DefaultSpiderProxyUriSelector : SpiderProxyUriSelectorBase
 	{
-		public override bool HasNextProxy => !_availableQueue.IsEmpty;
+		public override bool HasNextProxy => !_internalQueue.IsEmpty;
 
 		public override int StatusCode => _initTimes;
 
@@ -20,14 +19,13 @@ namespace SpiderX.Http.Util
 				return;
 			}
 			InsertFreshProxies(proxies);
-			Task.Factory.StartNew(StartVerifying, TaskCreationOptions.LongRunning);
 		}
 
 		public override void InsertFreshProxies(IEnumerable<Uri> proxies)
 		{
 			foreach (var proxy in proxies)
 			{
-				_verifyingQueue.Enqueue(proxy);
+				_internalQueue.Enqueue(proxy);
 			}
 		}
 
@@ -37,9 +35,9 @@ namespace SpiderX.Http.Util
 			{
 				while (true)
 				{
-					if (_availableQueue.TryDequeue(out Uri uri))
+					if (_internalQueue.TryDequeue(out Uri uri))
 					{
-						_availableQueue.Enqueue(uri);
+						_internalQueue.Enqueue(uri);
 						return uri;
 					}
 					Thread.Sleep(CommonTool.RandomEvent.Next(3000, 7000));
@@ -49,9 +47,9 @@ namespace SpiderX.Http.Util
 			{
 				while (true)
 				{
-					if (_availableQueue.TryDequeue(out Uri uri))
+					if (_internalQueue.TryDequeue(out Uri uri))
 					{
-						_availableQueue.Enqueue(uri);
+						_internalQueue.Enqueue(uri);
 						DateTime dt = _latestUseTimeRecords.GetOrAdd(uri, DateTime.MinValue);
 						DateTime now = DateTime.Now;
 						if (now > dt.Add(ProxyUriInterval))

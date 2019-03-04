@@ -19,5 +19,10 @@ namespace SpiderX.Http
 			selector.Init(proxies);
 			return new SpiderWebProxy(selector);
 		}
+
+		public static SpiderWebProxy CreateSpiderWebProxy<T>(Func<T> uriSelectorFactory) where T : IProxyUriSelector
+		{
+			return new SpiderWebProxy(uriSelectorFactory());
+		}
 	}
 }

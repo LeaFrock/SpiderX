@@ -21,15 +21,18 @@ namespace SpiderX.Business.Samples
 			base.Run();
 			using (var client = CreateWebClient())
 			{
-				Task t = client.GetStringAsync(HomePageUrl)
-					.ContinueWith(r => ShowConsoleMsg(r.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
-				try
+				for (int i = 0; i < 10; i++)
 				{
-					t.Wait();
-				}
-				catch (Exception ex)
-				{
-					ShowConsoleMsg(ex.Message);
+					Task t = client.GetStringAsync(HomePageUrl)
+						.ContinueWith(r => ShowConsoleMsg(r.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+					try
+					{
+						t.Wait();
+					}
+					catch (Exception ex)
+					{
+						ShowConsoleMsg(ex.Message);
+					}
 				}
 			}
 		}
