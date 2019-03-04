@@ -7,6 +7,6 @@ namespace SpiderX.Tools
 		/// <summary>
 		/// Use for local web debugging tools, like Fiddler etc.
 		/// </summary>
-		public readonly static IWebProxy Local = new WebProxy("http://localhost", 8888);
+		public readonly static IWebProxy Local = new WebProxy("localhost", 8888);
 	}
 }
