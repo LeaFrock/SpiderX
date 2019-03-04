@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using SpiderX.Extensions.Http;
 
@@ -39,51 +40,102 @@ namespace SpiderX.Http
 				validator = ResponseValidatorBase.Base;
 			}
 			string result = null;
-			for (int i = 0; i < validator.RetryTimes + 1; i++)
+			if (RequestInterval > TimeSpan.Zero)
 			{
-				try
+				for (int i = 0; i < validator.RetryTimes + 1; i++)
 				{
-					var text = await GetStringAsync(uri);
-					result = text?.Trim();
+					try
+					{
+						var text = await GetStringAsync(uri);
+						result = text?.Trim();
+					}
+					catch (Exception)
+					{
+						result = null;
+						Thread.Sleep(RequestInterval);
+						continue;
+					}
+					if (validator.CheckPass(result))
+					{
+						break;
+					}
+					Thread.Sleep(RequestInterval);
 				}
-				catch (Exception)
+			}
+			else
+			{
+				for (int i = 0; i < validator.RetryTimes + 1; i++)
 				{
-					result = null;
-					continue;
-				}
-				if (validator.CheckPass(result))
-				{
-					break;
+					try
+					{
+						var text = await GetStringAsync(uri);
+						result = text?.Trim();
+					}
+					catch (Exception)
+					{
+						result = null;
+						continue;
+					}
+					if (validator.CheckPass(result))
+					{
+						break;
+					}
 				}
 			}
 			return result;
 		}
 
-		public async Task<string> SendOrRetryAsync(HttpRequestMessage requestMessage, ResponseValidatorBase validator)
+		public async Task<string> SendOrRetryAsync(HttpRequestMessage requestMessage, ResponseValidatorBase validator, bool disposeRequestIfFail = true)
 		{
 			string result = null;
 			if (validator == null)
 			{
 				validator = ResponseValidatorBase.Base;
 			}
-			HttpResponseMessage rMsg;
-			for (int i = 0; i < validator.RetryTimes + 1; i++)
+			HttpResponseMessage responseMessage = null;
+			if (RequestInterval > TimeSpan.Zero)
 			{
-				rMsg = await SendAsync(requestMessage, false);
-				if (rMsg == null || !rMsg.IsSuccessStatusCode)
+				for (int i = 0; i < validator.RetryTimes + 1; i++)
 				{
-					continue;
+					responseMessage = await SendAsync(requestMessage, false);
+					if (responseMessage == null || !responseMessage.IsSuccessStatusCode)
+					{
+						Thread.Sleep(RequestInterval);
+						continue;
+					}
+					string tempText = (await responseMessage.ToTextAsync())?.Trim();
+					if (validator.CheckPass(tempText))
+					{
+						result = tempText;
+						break;
+					}
+					Thread.Sleep(RequestInterval);
 				}
-				string tempText = (await rMsg.ToTextAsync())?.Trim();
-				if (validator.CheckPass(tempText))
+			}
+			else
+			{
+				for (int i = 0; i < validator.RetryTimes + 1; i++)
 				{
-					result = tempText;
-					break;
+					responseMessage = await SendAsync(requestMessage, false);
+					if (responseMessage == null || !responseMessage.IsSuccessStatusCode)
+					{
+						continue;
+					}
+					string tempText = (await responseMessage.ToTextAsync())?.Trim();
+					if (validator.CheckPass(tempText))
+					{
+						result = tempText;
+						break;
+					}
 				}
 			}
 			if (result == null)
 			{
-				requestMessage.Dispose();
+				if (disposeRequestIfFail)
+				{
+					requestMessage.Dispose();
+				}
+				responseMessage?.Dispose();
 			}
 			return result;
 		}
