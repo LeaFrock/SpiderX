@@ -43,8 +43,6 @@ namespace SpiderX.Business.LaGou
 
 		private abstract class CollectorBase
 		{
-			public
-
 			public abstract void Collect();
 		}
 	}
