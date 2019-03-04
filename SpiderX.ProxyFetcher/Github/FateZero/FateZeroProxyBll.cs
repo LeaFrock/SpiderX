@@ -12,7 +12,7 @@ namespace SpiderX.ProxyFetcher
 			base.Run();
 			string caseName = ClassName;
 			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
-			var url = ApiProvider.GetRequestUrl();
+			string url = ApiProvider.GetRequestUrl();
 			using (var client = ApiProvider.CreateWebClient())
 			{
 				var entities = GetProxyEntities(client, HttpMethod.Get, url);

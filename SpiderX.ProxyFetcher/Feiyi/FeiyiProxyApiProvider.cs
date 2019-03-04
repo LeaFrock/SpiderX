@@ -32,6 +32,11 @@ namespace SpiderX.ProxyFetcher
 			return client;
 		}
 
+		public override string GetRequestUrl()
+		{
+			return IpUrl;
+		}
+
 		public override IList<string> GetRequestUrls()
 		{
 			return new string[] { IpUrl };
