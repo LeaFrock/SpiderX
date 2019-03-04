@@ -23,9 +23,9 @@ namespace SpiderX.ProxyFetcher
 		{
 			List<SpiderProxyUriEntity> entities = null;
 			Task task = webClient.SendAsync(httpMethod, url)
-				.ContinueWith(responseMsg =>
+				.ContinueWith(requestTask =>
 				{
-					HttpResponseMessage responseMessage = responseMsg.Result;
+					HttpResponseMessage responseMessage = requestTask.Result;
 					if (responseMessage == null)
 					{
 						return;
@@ -69,9 +69,9 @@ namespace SpiderX.ProxyFetcher
 			for (int i = 0; i < urlCount; i++)
 			{
 				tasks[i] = webClient.SendAsync(httpMethod, urls[i])
-					.ContinueWith(responseMsg =>
+					.ContinueWith(requestTask =>
 				   {
-					   HttpResponseMessage responseMessage = responseMsg.Result;
+					   HttpResponseMessage responseMessage = requestTask.Result;
 					   if (responseMessage == null)
 					   {
 						   return;
