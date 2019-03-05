@@ -1,5 +1,6 @@
 ﻿using System;
 using SpiderX.BusinessBase;
+using SpiderX.Extensions;
 using SpiderX.Tools;
 
 namespace SpiderX.Business.LaGou

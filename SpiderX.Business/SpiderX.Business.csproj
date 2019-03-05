@@ -18,4 +18,8 @@
     <ProjectReference Include="..\SpiderX.Tools\SpiderX.Tools.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
+
 </Project>

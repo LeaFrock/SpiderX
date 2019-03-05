@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using SpiderX.Http;
 using SpiderX.Http.Util;
@@ -19,12 +20,8 @@ namespace SpiderX.Business.LaGou
 
 			private SpiderWebClient CreateWebClient()
 			{
-				var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
-				var proxies = pa.SelectProxyEntities(e => e.Category == 1, 360).Select(e => e.Value);
-
-				DefaultSpiderProxyUriSelector uriSelector = new DefaultSpiderProxyUriSelector();
-				uriSelector.Init(proxies);
-				SpiderWebProxy webProxy = new SpiderWebProxy(uriSelector);
+				var uris = GetUrisFromDb();
+				var webProxy = CreateWebProxy(uris);
 
 				SpiderWebClient client = new SpiderWebClient(webProxy);
 				client.DefaultRequestHeaders.Host = PcWebApiProvider.HomePageHost;
@@ -39,11 +36,25 @@ namespace SpiderX.Business.LaGou
 				client.DefaultRequestHeaders.Add("Origin", PcWebApiProvider.HomePageUrl);
 				return client;
 			}
+
+			private static IWebProxy CreateWebProxy(IEnumerable<Uri> proxies)
+			{
+				DefaultSpiderProxyUriSelector uriSelector = new DefaultSpiderProxyUriSelector();
+				uriSelector.Init(proxies);
+				return new SpiderWebProxy(uriSelector);
+			}
 		}
 
 		private abstract class CollectorBase
 		{
 			public abstract void Collect();
+
+			protected static IEnumerable<Uri> GetUrisFromDb()
+			{
+				var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
+				var proxies = pa.SelectProxyEntities(e => e.Category == 1, 360).Select(e => e.Value);
+				return proxies;
+			}
 		}
 	}
 }
