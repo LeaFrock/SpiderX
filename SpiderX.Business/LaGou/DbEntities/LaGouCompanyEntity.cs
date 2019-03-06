@@ -30,6 +30,10 @@ namespace SpiderX.Business.LaGou.DbEntities
 
 		public string ZoneName { get; set; }
 
+		public string SubwayLine { get; set; }
+
+		public string StationName { get; set; }
+
 		public double Latitude { get; set; }
 
 		public double Longitude { get; set; }
