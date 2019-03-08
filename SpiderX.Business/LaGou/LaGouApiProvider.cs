@@ -72,12 +72,26 @@ namespace SpiderX.Business.LaGou
 
 			private static (LaGouPositionEntity positionEntity, LaGouCompanyEntity companyEntity) CreatePositionEntity(JToken posItem)
 			{
+				//Position
 				long positionId = posItem.Value<long>("positionId");
 				string positionName = posItem.Value<string>("positionName");
 				string firstType = posItem.Value<string>("firstType");
 				string secondType = posItem.Value<string>("secondType");
 				string thirdType = posItem.Value<string>("thirdType");
+				string education = posItem.Value<string>("education");
+				string positionAdvantage = posItem.Value<string>("positionAdvantage");
+				DateTime createTime = posItem.Value<DateTime>("createTime");
+				string salaryText = posItem.Value<string>("salary");
+				if(!string.IsNullOrWhiteSpace(salaryText))
+				{
 
+				}
+				string workYearText = posItem.Value<string>("workYear");
+				if (!string.IsNullOrWhiteSpace(workYearText))
+				{
+
+				}
+				//Company
 				int companyId = posItem.Value<int>("companyId");
 				string companyName = posItem.Value<string>("companyShortName");
 				string companyFullName = posItem.Value<string>("companyFullName");
@@ -89,20 +103,15 @@ namespace SpiderX.Business.LaGou
 				double lat = posItem.Value<double>("latitude");
 				double lng = posItem.Value<double>("longitude");
 				string labels = posItem.Value<string>("companyLabelList");
-
 				JArray zones = posItem.Value<JArray>("businessZones");
 				string zoneName = zones.IsNullOrEmpty() ? string.Empty : (zones[0]?.ToString() ?? string.Empty);
 				string companySize = posItem.Value<string>("companySize");
-
-				string education = posItem.Value<string>("education");
-				string positionAdvantage = posItem.Value<string>("positionAdvantage");
-
+				//Publisher Info
 				long publisherId = posItem.Value<long>("publisherId");
 				int resumeProcessRate = posItem.Value<int>("resumeProcessRate");
 				int resumeProcessDay = posItem.Value<int>("resumeProcessDay");
-
-				DateTime createTime = posItem.Value<DateTime>("createTime");
-
+				//Publisher Record
+				long lastloginTime = posItem.Value<long>("lastLogin");
 				LaGouPositionEntity pe = new LaGouPositionEntity()
 				{
 				};

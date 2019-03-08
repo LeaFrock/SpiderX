@@ -16,6 +16,8 @@ namespace SpiderX.Business.LaGou.DbEntities
 
 		public long LastLoginTimestamp { get; set; }
 
+		public int DateNumber { get; set; }
+
 		public int DbCreateTimeValue { get; set; }
 	}
 }
