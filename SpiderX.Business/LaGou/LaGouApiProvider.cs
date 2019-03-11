@@ -47,95 +47,82 @@ namespace SpiderX.Business.LaGou
 				{
 					return null;
 				}
-				LaGouResponseData result = new LaGouResponseData();
-				Dictionary<long, JToken> hrInfoMap = content.Value<Dictionary<long, JToken>>("hrInfoMap");
+				LaGouResponseData result = new LaGouResponseData(positions.Count);
+				var hrInfoMap = content.Value<JToken>("hrInfoMap")?.ToObject<Dictionary<string, JToken>>();
 				if (!hrInfoMap.IsNullOrEmpty())
 				{
-					var hrInfoDict = new Dictionary<long, LaGouHrInfoEntity>(hrInfoMap.Count);
-					foreach (var hrInfo in hrInfoMap)
+					foreach (var pos in positions)
 					{
-						var e = CreateHRInfoEntity(hrInfo.Value);
-						if (e != null)
+						var responseItem = CreateEntityItem(pos);
+						if (responseItem != null)
 						{
-							hrInfoDict.Add(hrInfo.Key, e);
+							if (responseItem.Position != null)
+							{
+								if (hrInfoMap.TryGetValue(responseItem.Position.PositionId.ToString(), out var temp))
+								{
+									FillHrInfoEntity(responseItem.HrInfo, (JObject)temp);
+								}
+							}
+							result.AddResponseItem(responseItem);
 						}
 					}
-					result.HrInfos = hrInfoDict;
 				}
-				Dictionary<int, LaGouCompanyEntity> companyEntities = new Dictionary<int, LaGouCompanyEntity>(positions.Count);
-				List<LaGouPositionEntity> positionEntities = new List<LaGouPositionEntity>(positions.Count);
-				foreach (var pos in positions)
+				else
 				{
+					foreach (var pos in positions)
+					{
+						var responseItem = CreateEntityItem(pos);
+						if (responseItem != null)
+						{
+							result.AddResponseItem(responseItem);
+						}
+					}
 				}
 				return result;
 			}
 
-			private static LaGouResponseItem CreatePositionEntity(JToken posItem)
+			private static LaGouResponseItem CreateEntityItem(JToken jsonItem)
 			{
 				//Position
-				long positionId = posItem.Value<long>("positionId");
-				string positionName = posItem.Value<string>("positionName");
-				string firstType = posItem.Value<string>("firstType");
-				string secondType = posItem.Value<string>("secondType");
-				string thirdType = posItem.Value<string>("thirdType");
-				string education = posItem.Value<string>("education");
-				string positionAdvantage = posItem.Value<string>("positionAdvantage");
-				DateTime createTime = posItem.Value<DateTime>("createTime");
-				string salaryText = posItem.Value<string>("salary");
-				int minSalary = 0, maxSalary = 0;
-				if (!string.IsNullOrWhiteSpace(salaryText))
-				{
-					int[] salaries = StringTool.MatchIntArray(salaryText, true);
-					switch (salaries.Length)
-					{
-						case 0:
-							break;
-
-						case 1:
-							minSalary = salaries[0];
-							break;
-
-						default:
-							minSalary = salaries[0];
-							maxSalary = salaries[1];
-							break;
-					}
-				}
-				string workYearText = posItem.Value<string>("workYear");
-				int minWorkYear = 0, maxWorkYear = 0;
-				if (!string.IsNullOrWhiteSpace(workYearText))
-				{
-					int[] workYears = StringTool.MatchIntArray(workYearText, true);
-					switch (workYears.Length)
-					{
-						case 0:
-							break;
-
-						case 1:
-							minSalary = workYears[0];
-							break;
-
-						default:
-							minSalary = workYears[0];
-							maxSalary = workYears[1];
-							break;
-					}
-				}
+				long positionId = jsonItem.Value<long>("positionId");
+				string positionName = jsonItem.Value<string>("positionName");
+				string firstType = jsonItem.Value<string>("firstType");
+				string secondType = jsonItem.Value<string>("secondType");
+				string thirdType = jsonItem.Value<string>("thirdType");
+				string education = jsonItem.Value<string>("education");
+				string positionAdvantage = jsonItem.Value<string>("positionAdvantage");
+				DateTime createTime = jsonItem.Value<DateTime>("createTime");
+				string salaryText = jsonItem.Value<string>("salary");
+				(int minSalary, int maxSalary) = GetRangeFromText(salaryText);
+				string workYearText = jsonItem.Value<string>("workYear");
+				(int minWorkYear, int maxWorkYear) = GetRangeFromText(workYearText);
 				//Company
-				int companyId = posItem.Value<int>("companyId");
-				string companyName = posItem.Value<string>("companyShortName");
-				string companyFullName = posItem.Value<string>("companyFullName");
-				string industryField = posItem.Value<string>("industryField");
-				string financeStage = posItem.Value<string>("financeStage");
-				string districtName = posItem.Value<string>("district");
-				string subwayLine = posItem.Value<string>("subwayline");
-				string stationName = posItem.Value<string>("stationname");
-				double lat = posItem.Value<double>("latitude");
-				double lng = posItem.Value<double>("longitude");
-				string labels = posItem.Value<string>("companyLabelList");
-				JArray zones = posItem.Value<JArray>("businessZones");
+				int companyId = jsonItem.Value<int>("companyId");
+				string companyName = jsonItem.Value<string>("companyShortName");
+				string companyFullName = jsonItem.Value<string>("companyFullName");
+				string industryField = jsonItem.Value<string>("industryField");
+				string financeStage = jsonItem.Value<string>("financeStage");
+				string districtName = jsonItem.Value<string>("district");
+				string subwayLine = jsonItem.Value<string>("subwayline");
+				string stationName = jsonItem.Value<string>("stationname");
+				double lat = jsonItem.Value<double>("latitude");
+				double lng = jsonItem.Value<double>("longitude");
+				string labelText = string.Empty;
+				JArray labels = jsonItem.Value<JArray>("companyLabelList");
+				if (!labels.IsNullOrEmpty())
+				{
+					StringBuilder sb = new StringBuilder(labels.Count);
+					sb.Append(labels[0]);
+					for (byte i = 1; i < labels.Count; i++)
+					{
+						sb.Append(',');
+						sb.Append(labels[i]);
+					}
+					labelText = sb.ToString();
+				}
+				JArray zones = jsonItem.Value<JArray>("businessZones");
 				string zoneName = zones.IsNullOrEmpty() ? string.Empty : (zones[0]?.ToString() ?? string.Empty);
-				string companySizeText = posItem.Value<string>("companySize");
+				string companySizeText = jsonItem.Value<string>("companySize");
 				int minCompanySize = 0, maxCompanySize = 0;
 				if (!string.IsNullOrWhiteSpace(companySizeText))
 				{
@@ -163,11 +150,11 @@ namespace SpiderX.Business.LaGou
 					}
 				}
 				//Publisher Info
-				long publisherId = posItem.Value<long>("publisherId");
-				int resumeProcessRate = posItem.Value<int>("resumeProcessRate");
-				int resumeProcessDay = posItem.Value<int>("resumeProcessDay");
+				long publisherId = jsonItem.Value<long>("publisherId");
 				//Publisher Record
-				long lastloginTime = posItem.Value<long>("lastLogin");
+				int resumeProcessRate = jsonItem.Value<int>("resumeProcessRate");
+				int resumeProcessDay = jsonItem.Value<int>("resumeProcessDay");
+				long lastloginTime = jsonItem.Value<long>("lastLogin");
 				LaGouPositionEntity pe = new LaGouPositionEntity()
 				{
 					Name = positionName,
@@ -194,7 +181,7 @@ namespace SpiderX.Business.LaGou
 					MaxSize = maxCompanySize,
 					FinanceStage = financeStage,
 					IndustryField = industryField,
-					LabelDescription = labels,
+					LabelDescription = labelText,
 					DistrictName = districtName,
 					ZoneName = zoneName,
 					SubwayLine = subwayLine,
@@ -204,11 +191,16 @@ namespace SpiderX.Business.LaGou
 				};
 				LaGouHrInfoEntity hie = new LaGouHrInfoEntity()
 				{
-
+					UserId = publisherId,
+					CompanyId = companyId,
 				};
 				LaGouHrDailyRecordEntity hdre = new LaGouHrDailyRecordEntity()
 				{
-
+					UserId = publisherId,
+					ResumeProcessDay = resumeProcessDay,
+					ResumeProcessRate = resumeProcessRate,
+					LastLoginTimestamp = lastloginTime,
+					DateNumber = DateTime.Now.ToDateNumber()
 				};
 				return new LaGouResponseItem()
 				{
@@ -219,39 +211,37 @@ namespace SpiderX.Business.LaGou
 				};
 			}
 
-			private static LaGouHrInfoEntity CreateHRInfoEntity(JToken info)
+			private static void FillHrInfoEntity(LaGouHrInfoEntity target, JToken info)
 			{
 				long userId = info.Value<long>("userId");
 				string name = info.Value<string>("realName");
 				string position = info.Value<string>("positionName");
 				string level = info.Value<string>("userLevel");
-				LaGouHrInfoEntity entity = new LaGouHrInfoEntity()
-				{
-					UserId = userId,
-					Name = name,
-					Position = position,
-					Level = level
-				};
-				return entity;
+
+				target.UserId = userId;
+				target.Name = name;
+				target.Position = position;
+				target.Level = level;
 			}
 
-			private static (int minSize, int maxSize) ConvertCompanySizeFromText(string text)
+			private static (int min, int max) GetRangeFromText(string text)
 			{
 				if (string.IsNullOrWhiteSpace(text))
 				{
 					return (0, 0);
 				}
-				int index = text.IndexOf('-');
-				if (index > 0)
+				int[] array = StringTool.MatchIntArray(text, true);
+				switch (array.Length)
 				{
-					string minStr = text.Substring(0, index);
-					int.TryParse(minStr, out int min);
-					string maxStr = text.Substring(index + 1, text.Length - index - 1);
-					int.TryParse(maxStr, out int max);
-					return (min, max);
+					case 0:
+						return (0, 0);
+
+					case 1:
+						return (array[0], 0);
+
+					default:
+						return (array[0], array[1]);
 				}
-				///ToDo: UnFinished
-				return (0, 0);
 			}
 		}
 	}
