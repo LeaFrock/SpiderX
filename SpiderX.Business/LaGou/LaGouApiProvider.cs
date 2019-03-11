@@ -33,7 +33,7 @@ namespace SpiderX.Business.LaGou
 				return new FormUrlEncodedContent(pairs);
 			}
 
-			public static LaGouResponseEntity CreateResponseEntity(string response)
+			public static LaGouResponseData CreateResponseEntity(string response)
 			{
 				JToken source = JsonTool.DeserializeObject<JToken>(response);
 				JToken content = source?.Value<JToken>("content");
@@ -47,7 +47,7 @@ namespace SpiderX.Business.LaGou
 				{
 					return null;
 				}
-				LaGouResponseEntity result = new LaGouResponseEntity();
+				LaGouResponseData result = new LaGouResponseData();
 				Dictionary<long, JToken> hrInfoMap = content.Value<Dictionary<long, JToken>>("hrInfoMap");
 				if (!hrInfoMap.IsNullOrEmpty())
 				{
@@ -70,7 +70,7 @@ namespace SpiderX.Business.LaGou
 				return result;
 			}
 
-			private static (LaGouPositionEntity positionEntity, LaGouCompanyEntity companyEntity) CreatePositionEntity(JToken posItem)
+			private static LaGouResponseItem CreatePositionEntity(JToken posItem)
 			{
 				//Position
 				long positionId = posItem.Value<long>("positionId");
@@ -82,14 +82,44 @@ namespace SpiderX.Business.LaGou
 				string positionAdvantage = posItem.Value<string>("positionAdvantage");
 				DateTime createTime = posItem.Value<DateTime>("createTime");
 				string salaryText = posItem.Value<string>("salary");
-				if(!string.IsNullOrWhiteSpace(salaryText))
+				int minSalary = 0, maxSalary = 0;
+				if (!string.IsNullOrWhiteSpace(salaryText))
 				{
+					int[] salaries = StringTool.MatchIntArray(salaryText, true);
+					switch (salaries.Length)
+					{
+						case 0:
+							break;
 
+						case 1:
+							minSalary = salaries[0];
+							break;
+
+						default:
+							minSalary = salaries[0];
+							maxSalary = salaries[1];
+							break;
+					}
 				}
 				string workYearText = posItem.Value<string>("workYear");
+				int minWorkYear = 0, maxWorkYear = 0;
 				if (!string.IsNullOrWhiteSpace(workYearText))
 				{
+					int[] workYears = StringTool.MatchIntArray(workYearText, true);
+					switch (workYears.Length)
+					{
+						case 0:
+							break;
 
+						case 1:
+							minSalary = workYears[0];
+							break;
+
+						default:
+							minSalary = workYears[0];
+							maxSalary = workYears[1];
+							break;
+					}
 				}
 				//Company
 				int companyId = posItem.Value<int>("companyId");
@@ -99,13 +129,39 @@ namespace SpiderX.Business.LaGou
 				string financeStage = posItem.Value<string>("financeStage");
 				string districtName = posItem.Value<string>("district");
 				string subwayLine = posItem.Value<string>("subwayline");
-				string stationname = posItem.Value<string>("stationname");
+				string stationName = posItem.Value<string>("stationname");
 				double lat = posItem.Value<double>("latitude");
 				double lng = posItem.Value<double>("longitude");
 				string labels = posItem.Value<string>("companyLabelList");
 				JArray zones = posItem.Value<JArray>("businessZones");
 				string zoneName = zones.IsNullOrEmpty() ? string.Empty : (zones[0]?.ToString() ?? string.Empty);
-				string companySize = posItem.Value<string>("companySize");
+				string companySizeText = posItem.Value<string>("companySize");
+				int minCompanySize = 0, maxCompanySize = 0;
+				if (!string.IsNullOrWhiteSpace(companySizeText))
+				{
+					int[] companySizes = StringTool.MatchIntArray(companySizeText, true);
+					switch (companySizes.Length)
+					{
+						case 0:
+							break;
+
+						case 1:
+							if (companySizeText.Contains("以上"))
+							{
+								maxCompanySize = companySizes[0];
+							}
+							else
+							{
+								minCompanySize = companySizes[0];
+							}
+							break;
+
+						default:
+							minCompanySize = companySizes[0];
+							maxCompanySize = companySizes[1];
+							break;
+					}
+				}
 				//Publisher Info
 				long publisherId = posItem.Value<long>("publisherId");
 				int resumeProcessRate = posItem.Value<int>("resumeProcessRate");
@@ -114,11 +170,53 @@ namespace SpiderX.Business.LaGou
 				long lastloginTime = posItem.Value<long>("lastLogin");
 				LaGouPositionEntity pe = new LaGouPositionEntity()
 				{
+					Name = positionName,
+					CompanyId = companyId,
+					PositionId = positionId,
+					PublisherId = publisherId,
+					Education = education,
+					MinWorkYear = minWorkYear,
+					MaxWorkYear = maxWorkYear,
+					MinSalary = minSalary,
+					MaxSalary = maxSalary,
+					FirstType = firstType,
+					SecondType = secondType,
+					ThirdType = thirdType,
+					Advantage = positionAdvantage,
+					CreateTime = createTime
 				};
 				LaGouCompanyEntity ce = new LaGouCompanyEntity()
 				{
+					CompanyId = companyId,
+					Name = companyName,
+					FullName = companyFullName,
+					MinSize = minCompanySize,
+					MaxSize = maxCompanySize,
+					FinanceStage = financeStage,
+					IndustryField = industryField,
+					LabelDescription = labels,
+					DistrictName = districtName,
+					ZoneName = zoneName,
+					SubwayLine = subwayLine,
+					StationName = stationName,
+					Latitude = lat,
+					Longitude = lng
 				};
-				return (pe, ce);
+				LaGouHrInfoEntity hie = new LaGouHrInfoEntity()
+				{
+
+				};
+				LaGouHrDailyRecordEntity hdre = new LaGouHrDailyRecordEntity()
+				{
+
+				};
+				return new LaGouResponseItem()
+				{
+					Company = ce,
+					Position = pe,
+					HrInfo = hie,
+					HrDailyRecord = hdre
+				};
 			}
 
 			private static LaGouHrInfoEntity CreateHRInfoEntity(JToken info)

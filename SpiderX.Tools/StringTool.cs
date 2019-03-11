@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace SpiderX.Tools
@@ -55,6 +56,28 @@ namespace SpiderX.Tools
 				return false;
 			}
 			return double.TryParse(m.Value, out value);
+		}
+
+		public static int[] MatchIntArray(string text, bool saveIfMatchFail = false)
+		{
+			var mc = _doubleRegex.Matches(text);
+			if (mc.Count < 1)
+			{
+				return Array.Empty<int>();
+			}
+			List<int> result = new List<int>(mc.Count);
+			for (int i = 0; i < mc.Count; i++)
+			{
+				if (mc[i].Success && int.TryParse(mc[i].Value, out int temp))
+				{
+					result.Add(temp);
+				}
+				else if (saveIfMatchFail)
+				{
+					result.Add(0);
+				}
+			}
+			return result.ToArray();
 		}
 
 		#endregion Value

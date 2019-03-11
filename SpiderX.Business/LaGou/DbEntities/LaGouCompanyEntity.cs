@@ -14,9 +14,9 @@ namespace SpiderX.Business.LaGou.DbEntities
 
 		public string FullName { get; set; }
 
-		public string MinSize { get; set; }
+		public int MinSize { get; set; }
 
-		public string MaxSize { get; set; }
+		public int MaxSize { get; set; }
 
 		public string FinanceStage { get; set; }
 

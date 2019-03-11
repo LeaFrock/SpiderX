@@ -9,6 +9,7 @@ namespace SpiderX.Business.LaGou
 	{
 		public override void Run()
 		{
+			var a = StringTool.MatchIntArray("dddd15.22222");
 		}
 
 		public override void Run(params string[] args)
