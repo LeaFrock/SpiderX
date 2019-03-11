@@ -13,5 +13,10 @@ namespace SpiderX.Extensions
 		{
 			return (dt.Ticks - 621355968000000000) / 10000;
 		}
+
+		public static int ToDateNumber(this DateTime dt)
+		{
+			return dt.Year * 10000 + dt.Month * 100 + dt.Day;
+		}
 	}
 }
