@@ -58,14 +58,14 @@ namespace SpiderX.Tools
 			return double.TryParse(m.Value, out value);
 		}
 
-		public static int[] MatchIntArray(string text, bool saveIfMatchFail = false)
+		public static List<int> MatchIntList(string text, bool saveIfMatchFail = false)
 		{
 			var mc = _doubleRegex.Matches(text);
 			if (mc.Count < 1)
 			{
-				return Array.Empty<int>();
+				return new List<int>(0);
 			}
-			List<int> result = new List<int>(mc.Count);
+			var result = new List<int>(mc.Count);
 			for (int i = 0; i < mc.Count; i++)
 			{
 				if (mc[i].Success && int.TryParse(mc[i].Value, out int temp))
@@ -77,7 +77,7 @@ namespace SpiderX.Tools
 					result.Add(0);
 				}
 			}
-			return result.ToArray();
+			return result;
 		}
 
 		#endregion Value

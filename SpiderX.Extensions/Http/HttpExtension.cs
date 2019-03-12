@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using SpiderX.Extensions.IO;
@@ -13,31 +15,18 @@ namespace SpiderX.Extensions.Http
 	{
 		private const string HtmlCharsetPrefix = "charset=";
 
+		private readonly static IReadOnlyDictionary<string, string> _charsetFixDict = new Dictionary<string, string>()
+		{
+			{ string.Empty, "utf-8" },
+			{ "utf8", "utf-8" }
+		};
+
 		public async static Task<string> ToTextAsync(this HttpResponseMessage responseMessage)
 		{
 			var content = responseMessage.Content;
-			if (content.Headers.ContentEncoding.IsNullOrEmpty())//ReadAsString directly.
-			{
-				string text = await responseMessage.Content.ReadAsStringAsync();
-				return text?.Trim();
-			}
-			Stream finalStream = await content.ToStreamAsync();
-			Encoding encoding = Encoding.UTF8;
-			using (finalStream)
-			{
-				using (StreamReader sr = new StreamReader(finalStream, encoding))
-				{
-					string text = await sr.ReadToEndAsync();
-					return text?.Trim();
-				}
-			}
-		}
-
-		public async static Task<StreamReader> ToHtmlReaderAsync(this HttpContent content)
-		{
-			Stream stream = await content.ToStreamAsync();
-			string charSet = content.Headers.ContentType?.CharSet;
-			return CreateHtmlReaderByCharset(stream, charSet);
+			EnsureHttpContentHeadersValid(content.Headers);
+			string text = await content.ReadAsStringAsync();
+			return text?.Trim();
 		}
 
 		public async static Task<Stream> ToStreamAsync(this HttpContent content)
@@ -64,11 +53,20 @@ namespace SpiderX.Extensions.Http
 			return copyStream;
 		}
 
+		#region Html
+
+		public async static Task<StreamReader> ToHtmlReaderAsync(this HttpContent content)
+		{
+			Stream stream = await content.ToStreamAsync();
+			string charSet = content.Headers.ContentType?.CharSet;
+			return CreateHtmlReaderByCharset(stream, charSet);
+		}
+
 		private static StreamReader CreateHtmlReaderByCharset(Stream stream, string charSet)
 		{
 			if (!string.IsNullOrEmpty(charSet))
 			{
-				var e = GetHtmlEncodingByCharset(charSet);
+				var e = GetEncodingByCharset(charSet);
 				return new StreamReader(stream, e);
 			}
 			Encoding encoding = Encoding.UTF8;
@@ -91,13 +89,13 @@ namespace SpiderX.Extensions.Http
 								if (nextQuotIndex >= 0)
 								{
 									charSet = line.Substring(firstQuotIndex + 1, nextQuotIndex - firstQuotIndex - 1);
-									encoding = GetHtmlEncodingByCharset(charSet);
+									encoding = GetEncodingByCharset(charSet);
 								}
 							}
 							else//Such as "<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />"
 							{
 								charSet = line.Substring(nextCharIndex, firstQuotIndex - nextCharIndex);
-								encoding = GetHtmlEncodingByCharset(charSet);
+								encoding = GetEncodingByCharset(charSet);
 							}
 						}
 						break;
@@ -109,7 +107,9 @@ namespace SpiderX.Extensions.Http
 			}
 		}
 
-		private static Encoding GetHtmlEncodingByCharset(string charSet)
+		#endregion Html
+
+		private static Encoding GetEncodingByCharset(string charSet)
 		{
 			try
 			{
@@ -118,9 +118,25 @@ namespace SpiderX.Extensions.Http
 			catch
 			{
 #if DEBUG
-				Debug.WriteLine($"{nameof(GetHtmlEncodingByCharset)}: GetEncoding[{charSet}]_Fail.");
+				Debug.WriteLine(nameof(GetEncodingByCharset) + ':' + charSet);
 #endif
 				return Encoding.UTF8;
+			}
+		}
+
+		private static void EnsureHttpContentHeadersValid(HttpContentHeaders headers)
+		{
+			var contentType = headers.ContentType;
+			if (contentType != null)
+			{
+				string charSet = contentType.CharSet;
+				if (charSet != null)
+				{
+					if (_charsetFixDict.TryGetValue(charSet.Trim(), out string correctCharSet))
+					{
+						contentType.CharSet = correctCharSet;
+					}
+				}
 			}
 		}
 	}
