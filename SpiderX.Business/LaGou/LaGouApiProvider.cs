@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using SpiderX.Business.LaGou.DbEntities;
@@ -17,9 +18,19 @@ namespace SpiderX.Business.LaGou
 			public const string HomePageHost = "www.lagou.com";
 			public const string HomePageUrl = "https://www.lagou.com/";
 
-			public static string GetRequestUrl(string cityName, string type = "new")
+			private readonly static MediaTypeHeaderValue ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded") { CharSet = "UTF-8" };
+
+			public static Uri GetRequestUri(string cityName, string type = "new")
 			{
-				return $"https://www.lagou.com/jobs/positionAjax.json?px={type}&city={cityName}&needAddtionalResult=false";
+				string urlString = $"https://www.lagou.com/jobs/positionAjax.json?px={type}&gx=全职&city={cityName}&needAddtionalResult=false";
+				return new Uri(urlString);
+			}
+
+			public static Uri GetRefererUri(string cityName, string keyword, string type = "new")
+			{
+				string encodedCityName = WebTool.UrlEncode(cityName);
+				string urlString = $"https://www.lagou.com/jobs/list_{keyword}?px={type}&gx=%E5%85%A8%E8%81%8C&city={encodedCityName}";
+				return new Uri(urlString);
 			}
 
 			public static HttpContent GetRequestFormData(string keyword, string pageNum)
@@ -30,10 +41,12 @@ namespace SpiderX.Business.LaGou
 					new KeyValuePair<string, string>("pn", pageNum),
 					new KeyValuePair<string, string>("kd", keyword),
 				};
-				return new FormUrlEncodedContent(pairs);
+				var content = new FormUrlEncodedContent(pairs);
+				content.Headers.ContentType = ContentType;
+				return content;
 			}
 
-			public static LaGouResponseData CreateResponseEntity(string response)
+			public static LaGouResponseData CreateResponseData(string response)
 			{
 				JToken source = JsonTool.DeserializeObject<JToken>(response);
 				JToken content = source?.Value<JToken>("content");
@@ -53,7 +66,7 @@ namespace SpiderX.Business.LaGou
 				{
 					foreach (var pos in positions)
 					{
-						var responseItem = CreateEntityItem(pos);
+						var responseItem = CreateResponseItem(pos);
 						if (responseItem != null)
 						{
 							if (responseItem.Position != null)
@@ -71,7 +84,7 @@ namespace SpiderX.Business.LaGou
 				{
 					foreach (var pos in positions)
 					{
-						var responseItem = CreateEntityItem(pos);
+						var responseItem = CreateResponseItem(pos);
 						if (responseItem != null)
 						{
 							result.AddResponseItem(responseItem);
@@ -81,7 +94,7 @@ namespace SpiderX.Business.LaGou
 				return result;
 			}
 
-			private static LaGouResponseItem CreateEntityItem(JToken jsonItem)
+			private static LaGouResponseItem CreateResponseItem(JToken jsonItem)
 			{
 				//Position
 				long positionId = jsonItem.Value<long>("positionId");
@@ -126,14 +139,14 @@ namespace SpiderX.Business.LaGou
 				int minCompanySize = 0, maxCompanySize = 0;
 				if (!string.IsNullOrWhiteSpace(companySizeText))
 				{
-					int[] companySizes = StringTool.MatchIntArray(companySizeText, true);
-					switch (companySizes.Length)
+					var companySizes = StringTool.MatchIntList(companySizeText, true);
+					switch (companySizes.Count)
 					{
 						case 0:
 							break;
 
 						case 1:
-							if (companySizeText.Contains("以上"))
+							if (companySizeText.Contains("少于"))
 							{
 								maxCompanySize = companySizes[0];
 							}
@@ -230,8 +243,8 @@ namespace SpiderX.Business.LaGou
 				{
 					return (0, 0);
 				}
-				int[] array = StringTool.MatchIntArray(text, true);
-				switch (array.Length)
+				var array = StringTool.MatchIntList(text, true);
+				switch (array.Count)
 				{
 					case 0:
 						return (0, 0);
