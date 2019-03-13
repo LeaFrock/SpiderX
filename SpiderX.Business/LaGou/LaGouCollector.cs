@@ -50,28 +50,14 @@ namespace SpiderX.Business.LaGou
 									string text = txtTask.Result;
 									if (string.IsNullOrEmpty(text))
 									{
-										ShowConsoleMsg("rspData =======null=============");
 										return null;
 									}
-									ShowConsoleMsg(text);
+									//ShowConsoleMsg(text);
 									return PcWebApiProvider.CreateResponseData(text);
 								}, TaskContinuationOptions.OnlyOnRanToCompletion);
 								dataCollection.AddResponseData(rspData);
 							}
 						}, TaskContinuationOptions.OnlyOnRanToCompletion);
-					try
-					{
-						ShowConsoleMsg("Task Wait Before");
-						tempTask.Wait();
-						ShowConsoleMsg("Task Wait Before 22222");
-						tempTask.Result.Wait();
-					}
-					catch (Exception ex)
-					{
-						ShowConsoleMsg(ex.ToString());
-						ShowConsoleMsg(ex.StackTrace);
-					}
-					ShowConsoleMsg("Task Wait After");
 				}
 			}
 
