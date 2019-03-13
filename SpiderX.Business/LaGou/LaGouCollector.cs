@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -22,56 +23,55 @@ namespace SpiderX.Business.LaGou
 			{
 				Uri uri = PcWebApiProvider.GetRequestUri(cityName);
 				Uri referer = PcWebApiProvider.GetRefererUri(cityName, keyword);
+				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
+
 				using (var client = CreateWebClient(false))
 				{
+					client.GetAsync(PcWebApiProvider.HomePageUrl, HttpCompletionOption.ResponseContentRead).ConfigureAwait(false).GetAwaiter().GetResult();
+
 					client.DefaultRequestHeaders.Referrer = referer;
 					HttpContent urlFormData = PcWebApiProvider.GetRequestFormData(keyword, "1");
-					var postTask = client.PostAsync(uri, urlFormData);
-					var dealTask = postTask.ContinueWith(DoAfterPost, TaskContinuationOptions.OnlyOnRanToCompletion);
+					var tempTask = client.PostAsync(uri, urlFormData).
+						ContinueWith(async rspTask =>
+						{
+							var rspMsg = rspTask.Result;
+							if (rspMsg == null)
+							{
+								return;
+							}
+							using (rspMsg)
+							{
+								if (!rspMsg.IsSuccessStatusCode)
+								{
+									return;
+								}
+								var rspData = await rspMsg.ToTextAsync().ContinueWith(txtTask =>
+								{
+									string text = txtTask.Result;
+									if (string.IsNullOrEmpty(text))
+									{
+										ShowConsoleMsg("rspData =======null=============");
+										return null;
+									}
+									ShowConsoleMsg(text);
+									return PcWebApiProvider.CreateResponseData(text);
+								}, TaskContinuationOptions.OnlyOnRanToCompletion);
+								dataCollection.AddResponseData(rspData);
+							}
+						}, TaskContinuationOptions.OnlyOnRanToCompletion);
 					try
 					{
-						var tempData = dealTask.ConfigureAwait(false).GetAwaiter().GetResult();
-						if(tempData != null)
-						{
-							///ToDo
-						}
+						ShowConsoleMsg("Task Wait Before");
+						tempTask.Wait();
+						ShowConsoleMsg("Task Wait Before 22222");
+						tempTask.Result.Wait();
 					}
-					catch
+					catch (Exception ex)
 					{
+						ShowConsoleMsg(ex.ToString());
+						ShowConsoleMsg(ex.StackTrace);
 					}
-				}
-			}
-
-			private static LaGouResponseData DoAfterPost(Task<HttpResponseMessage> rspTask)
-			{
-				var rspMsg = rspTask.Result;
-				if (rspMsg == null)
-				{
-					return null;
-				}
-				using (rspMsg)
-				{
-					if (!rspMsg.IsSuccessStatusCode)
-					{
-						return null;
-					}
-					var textTask = rspMsg.ToTextAsync().ContinueWith(t =>
-					{
-						string text = t.Result;
-						if (string.IsNullOrEmpty(text))
-						{
-							return null;
-						}
-						return PcWebApiProvider.CreateResponseData(text);
-					}, TaskContinuationOptions.OnlyOnRanToCompletion);
-					try
-					{
-						return textTask.ConfigureAwait(false).GetAwaiter().GetResult();
-					}
-					catch
-					{
-						return null;
-					}
+					ShowConsoleMsg("Task Wait After");
 				}
 			}
 
