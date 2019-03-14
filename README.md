@@ -1,6 +1,7 @@
 # SpiderX
 
-This is a simple web-crawler based on .Net Core.
+This is a simple web-crawler development framework based on .Net Core.
+>本项目是一个简单的基于 .Net Core 的爬虫开发框架。
 
 ## Develop Environment |开发环境
 
@@ -28,7 +29,6 @@ This is a simple web-crawler based on .Net Core.
     >包含所有用户设置和业务模块引用的入口。  
     >用户设置在[appsettings.json](https://github.com/LeaFrock/SpiderX/blob/master/SpiderX.Launcher/AppSettings/appsettings.json)里，各项设置非常易懂。在运行你自己的业务前检查下配置文件。  
     >当使用VS开发时，你还可以在“调试”窗口下使用启动参数启动你的业务案例，而不需要编辑设置文件里的“CaseSettings”。启动参数格式如下：
-
     >>- 单个案例: `MyCaseBll`
     >>- 多个案例: `MyFirstCaseBll;MySecondCaseBll CaseParam1 CaseParam2;MyThirdCaseBll CaseParam3` *//案例由英文分号隔断.*
     >>- 跳过案例: `-MyFirstCaseBll;/MySecondCaseBll;MyThirdCaseBll` *//以'-'或'/'开头的案例会被忽略.*
