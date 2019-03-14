@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,29 +23,24 @@ namespace SpiderX.Business.LaGou
 			public override void Collect(string cityName, string keyword)
 			{
 				Uri jobsListGetUri = PcWebApiProvider.GetJobsListUri(cityName, keyword);
-				using (var jobsListClient = CreateJobsListWebClient(false))
+				CookieContainer cookieContainer = new CookieContainer();
+				using (var jobsListClient = CreateJobsListWebClient(cookieContainer, false))
 				{
 					var jobRsp = jobsListClient.GetAsync(jobsListGetUri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false).GetAwaiter().GetResult();
-					if (!jobRsp.IsSuccessStatusCode || !jobRsp.Headers.TryGetValues("Set-Cookie", out var setCookies))
+					if (!jobRsp.IsSuccessStatusCode)
 					{
 						return;
 					}
-
 					Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(cityName);
 					LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
+					var cookies = cookieContainer.GetCookies(jobsListGetUri).Cast<Cookie>().Select(p => p.Name + '=' + p.Value);
 					using (var positionAjaxClient = CreatePositionAjaxWebClient(false))
 					{
 						HttpContent urlFormData = PcWebApiProvider.GetPositionAjaxFormData(keyword, "1");
+						HttpRequestMessage requestMessage = CreatePositionAjaxRequest(positionAjaxUri, jobsListGetUri, urlFormData, cookies);
 
-						HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, positionAjaxUri)
-						{
-							Content = urlFormData
-						};
-						requestMessage.Headers.Referrer = jobsListGetUri;
-						requestMessage.Headers.Add("Cookie", string.Concat(setCookies));
-
-						var tempTask = positionAjaxClient.SendAsync(requestMessage).
-							ContinueWith(async rspTask =>
+						var tempTask = positionAjaxClient.SendAsync(requestMessage)
+							.ContinueWith(async rspTask =>
 							{
 								var rspMsg = rspTask.Result;
 								if (rspMsg == null)
@@ -57,7 +53,8 @@ namespace SpiderX.Business.LaGou
 									{
 										return;
 									}
-									var rspData = await rspMsg.ToTextAsync().ContinueWith(txtTask =>
+									var rspData = await rspMsg.ToTextAsync()
+									.ContinueWith(txtTask =>
 									{
 										string text = txtTask.Result;
 										if (string.IsNullOrEmpty(text))
@@ -70,8 +67,21 @@ namespace SpiderX.Business.LaGou
 									dataCollection.AddResponseData(rspData);
 								}
 							}, TaskContinuationOptions.OnlyOnRanToCompletion);
+						///ToDo: Not async here
 					}
 				}
+			}
+
+			private static HttpRequestMessage CreatePositionAjaxRequest(Uri target, Uri referer, HttpContent content, IEnumerable<string> cookies)
+			{
+				HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, target)
+				{
+					Content = content,
+					Version = new Version(1, 1)
+				};
+				requestMessage.Headers.Referrer = referer;
+				requestMessage.Headers.Add("Cookie", cookies);
+				return requestMessage;
 			}
 
 			private SpiderWebClient CreatePositionAjaxWebClient(bool useProxy = true)
@@ -100,12 +110,13 @@ namespace SpiderX.Business.LaGou
 				return client;
 			}
 
-			private SpiderWebClient CreateJobsListWebClient(bool useProxy = true)
+			private SpiderWebClient CreateJobsListWebClient(CookieContainer cookieContainer, bool useProxy = true)
 			{
 				SocketsHttpHandler httpHandler = new SocketsHttpHandler()
 				{
 					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
 					UseCookies = true,
+					CookieContainer = cookieContainer,
 					UseProxy = useProxy
 				};
 				if (useProxy)

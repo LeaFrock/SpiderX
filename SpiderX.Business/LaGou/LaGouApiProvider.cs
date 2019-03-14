@@ -7,6 +7,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using SpiderX.Business.LaGou.DbEntities;
 using SpiderX.Extensions;
+using SpiderX.Http;
 using SpiderX.Tools;
 
 namespace SpiderX.Business.LaGou
@@ -17,8 +18,6 @@ namespace SpiderX.Business.LaGou
 		{
 			public const string HomePageHost = "www.lagou.com";
 			public const string HomePageUrl = "https://www.lagou.com/";
-
-			private readonly static MediaTypeHeaderValue ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded") { CharSet = "UTF-8" };
 
 			#region PositionAjax
 
@@ -42,7 +41,7 @@ namespace SpiderX.Business.LaGou
 					new KeyValuePair<string, string>("kd", keyword),
 				};
 				var content = new FormUrlEncodedContent(pairs);
-				content.Headers.ContentType = ContentType;
+				content.Headers.ContentType = HttpConsole.FormContentType;
 				return content;
 			}
 
