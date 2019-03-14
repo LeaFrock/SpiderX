@@ -21,47 +21,60 @@ namespace SpiderX.Business.LaGou
 
 			public override void Collect(string cityName, string keyword)
 			{
-				Uri uri = PcWebApiProvider.GetRequestUri(cityName);
-				Uri referer = PcWebApiProvider.GetRefererUri(cityName, keyword);
-				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
-
-				using (var client = CreateWebClient(false))
+				Uri jobsListGetUri = PcWebApiProvider.GetJobsListUri(cityName, keyword);
+				using (var jobsListClient = CreateJobsListWebClient(false))
 				{
-					client.GetAsync(PcWebApiProvider.HomePageUrl, HttpCompletionOption.ResponseContentRead).ConfigureAwait(false).GetAwaiter().GetResult();
+					var jobRsp = jobsListClient.GetAsync(jobsListGetUri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false).GetAwaiter().GetResult();
+					if (!jobRsp.IsSuccessStatusCode || !jobRsp.Headers.TryGetValues("Set-Cookie", out var setCookies))
+					{
+						return;
+					}
 
-					client.DefaultRequestHeaders.Referrer = referer;
-					HttpContent urlFormData = PcWebApiProvider.GetRequestFormData(keyword, "1");
-					var tempTask = client.PostAsync(uri, urlFormData).
-						ContinueWith(async rspTask =>
+					Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(cityName);
+					LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
+					using (var positionAjaxClient = CreatePositionAjaxWebClient(false))
+					{
+						HttpContent urlFormData = PcWebApiProvider.GetPositionAjaxFormData(keyword, "1");
+
+						HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, positionAjaxUri)
 						{
-							var rspMsg = rspTask.Result;
-							if (rspMsg == null)
+							Content = urlFormData
+						};
+						requestMessage.Headers.Referrer = jobsListGetUri;
+						requestMessage.Headers.Add("Cookie", string.Concat(setCookies));
+
+						var tempTask = positionAjaxClient.SendAsync(requestMessage).
+							ContinueWith(async rspTask =>
 							{
-								return;
-							}
-							using (rspMsg)
-							{
-								if (!rspMsg.IsSuccessStatusCode)
+								var rspMsg = rspTask.Result;
+								if (rspMsg == null)
 								{
 									return;
 								}
-								var rspData = await rspMsg.ToTextAsync().ContinueWith(txtTask =>
+								using (rspMsg)
 								{
-									string text = txtTask.Result;
-									if (string.IsNullOrEmpty(text))
+									if (!rspMsg.IsSuccessStatusCode)
 									{
-										return null;
+										return;
 									}
-									//ShowConsoleMsg(text);
-									return PcWebApiProvider.CreateResponseData(text);
-								}, TaskContinuationOptions.OnlyOnRanToCompletion);
-								dataCollection.AddResponseData(rspData);
-							}
-						}, TaskContinuationOptions.OnlyOnRanToCompletion);
+									var rspData = await rspMsg.ToTextAsync().ContinueWith(txtTask =>
+									{
+										string text = txtTask.Result;
+										if (string.IsNullOrEmpty(text))
+										{
+											return null;
+										}
+										//ShowConsoleMsg(text);
+										return PcWebApiProvider.CreateResponseData(text);
+									}, TaskContinuationOptions.OnlyOnRanToCompletion);
+									dataCollection.AddResponseData(rspData);
+								}
+							}, TaskContinuationOptions.OnlyOnRanToCompletion);
+					}
 				}
 			}
 
-			private SpiderWebClient CreateWebClient(bool useProxy = true)
+			private SpiderWebClient CreatePositionAjaxWebClient(bool useProxy = true)
 			{
 				SpiderWebClient client;
 				if (useProxy)
@@ -83,6 +96,31 @@ namespace SpiderX.Business.LaGou
 				client.DefaultRequestHeaders.Add("X-Anit-Forge-Code", "0");
 				client.DefaultRequestHeaders.Add("X-Anit-Forge-Token", "None");
 				client.DefaultRequestHeaders.Add("Origin", PcWebApiProvider.HomePageUrl);
+				client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+				return client;
+			}
+
+			private SpiderWebClient CreateJobsListWebClient(bool useProxy = true)
+			{
+				SocketsHttpHandler httpHandler = new SocketsHttpHandler()
+				{
+					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+					UseCookies = true,
+					UseProxy = useProxy
+				};
+				if (useProxy)
+				{
+					var uris = GetUrisFromDb();
+					httpHandler.Proxy = CreateWebProxy(uris);
+				}
+
+				SpiderWebClient client = new SpiderWebClient(httpHandler);
+				client.DefaultRequestHeaders.Host = PcWebApiProvider.HomePageHost;
+				client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+				client.DefaultRequestHeaders.Add("Accept-Encoding", "br");
+				client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
+				client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
+				client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 				return client;
 			}
 

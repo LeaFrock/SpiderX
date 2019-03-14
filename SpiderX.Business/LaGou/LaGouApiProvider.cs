@@ -20,20 +20,20 @@ namespace SpiderX.Business.LaGou
 
 			private readonly static MediaTypeHeaderValue ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded") { CharSet = "UTF-8" };
 
-			public static Uri GetRequestUri(string cityName, string type = "new")
+			#region PositionAjax
+
+			public static Uri GetPositionAjaxUri(string cityName, string type = "new")
 			{
 				string urlString = $"https://www.lagou.com/jobs/positionAjax.json?px={type}&gx=全职&city={cityName}&needAddtionalResult=false";
 				return new Uri(urlString);
 			}
 
-			public static Uri GetRefererUri(string cityName, string keyword, string type = "new")
-			{
-				string encodedCityName = WebTool.UrlEncode(cityName);
-				string urlString = $"https://www.lagou.com/jobs/list_{keyword}?px={type}&gx=%E5%85%A8%E8%81%8C&city={encodedCityName}";
-				return new Uri(urlString);
-			}
+			//public static Uri GetPositionAjaxRefererUri(string cityName, string keyword, string type = "new")
+			//{
+			//	return GetJobsListUri(cityName, keyword, type);
+			//}
 
-			public static HttpContent GetRequestFormData(string keyword, string pageNum)
+			public static HttpContent GetPositionAjaxFormData(string keyword, string pageNum)
 			{
 				KeyValuePair<string, string>[] pairs = new KeyValuePair<string, string>[]
 				{
@@ -256,6 +256,19 @@ namespace SpiderX.Business.LaGou
 						return (array[0], array[1]);
 				}
 			}
+
+			#endregion PositionAjax
+
+			#region JobsList
+
+			public static Uri GetJobsListUri(string cityName, string keyword, string type = "new")
+			{
+				string encodedCityName = WebTool.UrlEncode(cityName);
+				string urlString = $"https://www.lagou.com/jobs/list_{keyword}?px={type}&gx=%E5%85%A8%E8%81%8C&city={encodedCityName}";
+				return new Uri(urlString);
+			}
+
+			#endregion JobsList
 		}
 	}
 }
