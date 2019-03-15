@@ -11,7 +11,7 @@ namespace SpiderX.Business.LaGou
 
 		public override void Run()
 		{
-			_collector.Collect("上海", ".net");
+			_collector.Collect("上海", ".NET");
 		}
 
 		public override void Run(params string[] args)

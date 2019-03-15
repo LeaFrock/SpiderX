@@ -41,7 +41,7 @@ namespace SpiderX.Business.LaGou
 					new KeyValuePair<string, string>("kd", keyword),
 				};
 				var content = new FormUrlEncodedContent(pairs);
-				content.Headers.ContentType = HttpConsole.FormContentType;
+				content.Headers.ContentType = HttpConsole.GetContentType("application/x-www-form-urlencoded;UTF-8");
 				return content;
 			}
 
@@ -260,10 +260,11 @@ namespace SpiderX.Business.LaGou
 
 			#region JobsList
 
-			public static Uri GetJobsListUri(string cityName, string keyword, string type = "new")
+			public static Uri GetJobListUri(string cityName, string keyword, string type = "new")
 			{
+				string encodedKeyword = WebTool.UrlEncode(keyword);
 				string encodedCityName = WebTool.UrlEncode(cityName);
-				string urlString = $"https://www.lagou.com/jobs/list_{keyword}?px={type}&gx=%E5%85%A8%E8%81%8C&city={encodedCityName}";
+				string urlString = $"https://www.lagou.com/jobs/list_{encodedKeyword}?px={type}&gx=%E5%85%A8%E8%81%8C&city={encodedCityName}";
 				return new Uri(urlString);
 			}
 

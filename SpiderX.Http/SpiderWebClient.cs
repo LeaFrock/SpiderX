@@ -25,7 +25,7 @@ namespace SpiderX.Http
 			Timeout = TimeSpan.FromMilliseconds(5000);
 		}
 
-		public TimeSpan RequestInterval { get; set; } = TimeSpan.FromSeconds(3);
+		public TimeSpan RequestInterval { get; set; } = TimeSpan.FromSeconds(5);
 
 		public async Task<HttpResponseMessage> SendAsync(HttpMethod httpMethod, string requestUrl)
 		{
