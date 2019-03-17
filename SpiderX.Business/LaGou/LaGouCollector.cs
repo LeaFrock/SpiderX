@@ -25,9 +25,8 @@ namespace SpiderX.Business.LaGou
 			public override void Collect(string cityName, string keyword)
 			{
 				CookieContainer container = new CookieContainer();
-
 				Uri jobsListPageUri = PcWebApiProvider.GetJobListUri(cityName, keyword);
-				using (var positionAjaxClient = CreateWebClient(false, container))
+				using (var positionAjaxClient = CreateWebClient(true, container))
 				{
 					//Init Cookies
 					try
@@ -39,11 +38,8 @@ namespace SpiderX.Business.LaGou
 						throw;
 					}
 					Thread.Sleep(2000);
-					var aaa = container.GetCookies(jobsListPageUri).Cast<Cookie>().ToList();
-					var bbb = container.GetCookieHeader(jobsListPageUri);
 					//Preparing
 					Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(cityName);
-					var ccc = container.GetCookieHeader(positionAjaxUri);
 					HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(keyword, "1");
 					LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
 					//Start tasks
