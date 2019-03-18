@@ -11,6 +11,8 @@ namespace SpiderX.Http
 	{
 		private readonly SocketsHttpHandler _innerHandler;
 
+		public CookieContainer CookieContainer => _innerHandler.CookieContainer;
+
 		public SpiderWebClient() : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, UseCookies = false })
 		{
 		}
