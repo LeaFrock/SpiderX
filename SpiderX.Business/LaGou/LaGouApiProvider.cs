@@ -36,7 +36,7 @@ namespace SpiderX.Business.LaGou
 			{
 				KeyValuePair<string, string>[] pairs = new KeyValuePair<string, string>[]
 				{
-					new KeyValuePair<string, string>("first", "true"),
+					new KeyValuePair<string, string>("first", "false"),
 					new KeyValuePair<string, string>("pn", pageNum),
 					new KeyValuePair<string, string>("kd", keyword),
 				};
