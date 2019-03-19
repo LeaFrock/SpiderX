@@ -18,6 +18,6 @@ namespace SpiderX.Business.LaGou.DbEntities
 
 		public int DateNumber { get; set; }
 
-		public int DbCreateTimeValue { get; set; }
+		public DateTime DbCreateTime { get; set; }
 	}
 }

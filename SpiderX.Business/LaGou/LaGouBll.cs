@@ -1,4 +1,5 @@
 ﻿using System;
+using SpiderX.Business.LaGou.DbContexts;
 using SpiderX.BusinessBase;
 using SpiderX.Extensions;
 using SpiderX.Tools;
@@ -11,7 +12,15 @@ namespace SpiderX.Business.LaGou
 
 		public override void Run()
 		{
-			_collector.Collect("上海", ".NET");
+			var datas = _collector.Collect("上海", ".NET");
+			using (var context = new LaGouSqlServerContext())
+			{
+				context.Positions.AddRange(datas.Positions.Values);
+				context.Companies.AddRange(datas.Companies.Values);
+				context.HrInfos.AddRange(datas.HrInfos.Values);
+				context.HrDailyRecords.AddRange(datas.HrDailyRecords.Values);
+				context.SaveChanges();
+			}
 		}
 
 		public override void Run(params string[] args)

@@ -20,11 +20,11 @@ namespace SpiderX.Business.LaGou
 	{
 		private class PcWebCollector : CollectorBase
 		{
-			private const int MaxPage = 30;
+			private const int MaxPage = 2;
 
 			public bool UseProxy { get; set; } = false;
 
-			public override void Collect(string cityName, string keyword)
+			public override LaGouResponseDataCollection Collect(string cityName, string keyword)
 			{
 				if (UseProxy)
 				{
@@ -34,18 +34,23 @@ namespace SpiderX.Business.LaGou
 				using (var cookieClient = CreateCookiesWebClient())
 				{
 					Uri jobsListPageUri = PcWebApiProvider.GetJobListUri(cityName, keyword);
+					cookieClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
 					//Init Cookies
 					ResetHttpClientCookies(cookieClient, jobsListPageUri).ConfigureAwait(false).GetAwaiter().GetResult();
+					Thread.Sleep(3333);
 					using (var positionAjaxClient = CreatePositionAjaxWebClient())
 					{
 						//Preparing
 						positionAjaxClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
 						Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(cityName);
-						HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(keyword, "1");
+						var tasks = new Task[MaxPage];
 						//Start tasks
-						var tasks = new Task[1];
-						tasks[0] = GetResponseData(positionAjaxClient, positionAjaxUri, jobsListPageUri, httpContent, cookieClient.CookieContainer, dataCollection);
-						Thread.Sleep(CommonTool.RandomEvent.Next(5000, 10000));
+						for (int i = 1; i <= MaxPage; i++)
+						{
+							HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(keyword, i.ToString());
+							tasks[i - 1] = GetResponseData(positionAjaxClient, positionAjaxUri, jobsListPageUri, httpContent, cookieClient.CookieContainer, dataCollection);
+							Thread.Sleep(CommonTool.RandomEvent.Next(5000, 10000));
+						}
 						//Wait all tasks
 						try
 						{
@@ -57,6 +62,15 @@ namespace SpiderX.Business.LaGou
 						}
 					}
 				}
+				foreach (var pos in dataCollection.Positions)
+				{
+					pos.Value.Keyword = keyword;
+				}
+				foreach (var com in dataCollection.Companies)
+				{
+					com.Value.CityName = cityName;
+				}
+				return dataCollection;
 			}
 
 			private SpiderWebClient CreatePositionAjaxWebClient()
@@ -127,31 +141,23 @@ namespace SpiderX.Business.LaGou
 			private static async Task<LaGouResponseData> GetResponseData(SpiderWebClient webClient, Uri targetUri, Uri cookieUri, HttpContent content, CookieContainer cookieContainer)
 			{
 				string cookies = cookieContainer.GetCookieHeader(targetUri);
-				for (int i = 0; i < 3; i++)
+				var httpRequest = CreatePositionAjaxRequest(targetUri, content, cookies);
+				var rspMsg = await webClient.SendAsync(httpRequest).ConfigureAwait(false);
+				if (rspMsg == null || !rspMsg.IsSuccessStatusCode)
 				{
-					var httpRequest = CreatePositionAjaxRequest(targetUri, content, cookies);
-					var rspMsg = await webClient.SendAsync(httpRequest).ConfigureAwait(false);
-					if (rspMsg == null || !rspMsg.IsSuccessStatusCode)
-					{
-						Thread.Sleep(5000);
-						continue;
-					}
-					string text = await rspMsg.ToTextAsync().ConfigureAwait(false);
-					//ShowConsoleMsg(text);
-					if (string.IsNullOrEmpty(text))
-					{
-						Thread.Sleep(5000);
-						continue;
-					}
-					if (text.Contains("频繁"))
-					{
-						await ResetHttpClientCookies(webClient, cookieUri);
-						Thread.Sleep(5000);
-						continue;
-					}
-					return PcWebApiProvider.CreateResponseData(text);
+					return null;
 				}
-				return null;
+				string text = await rspMsg.ToTextAsync().ConfigureAwait(false);
+				ShowConsoleMsg(text);
+				if (string.IsNullOrEmpty(text))
+				{
+					return null;
+				}
+				if (text.Contains("频繁"))
+				{
+					return null;
+				}
+				return PcWebApiProvider.CreateResponseData(text);
 			}
 
 			private static async Task ResetHttpClientCookies(SpiderWebClient webClient, Uri targetUri)
@@ -197,7 +203,7 @@ namespace SpiderX.Business.LaGou
 
 		private abstract class CollectorBase
 		{
-			public abstract void Collect(string cityName, string keyword);
+			public abstract LaGouResponseDataCollection Collect(string cityName, string keyword);
 
 			protected static IEnumerable<Uri> GetUrisFromDb()
 			{

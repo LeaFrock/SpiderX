@@ -10,6 +10,8 @@ namespace SpiderX.Business.LaGou.DbEntities
 
 		public string Name { get; set; }
 
+		public string Keyword { get; set; }
+
 		public int CompanyId { get; set; }
 
 		public long PositionId { get; set; }

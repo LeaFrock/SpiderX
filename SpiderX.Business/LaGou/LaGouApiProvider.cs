@@ -121,7 +121,7 @@ namespace SpiderX.Business.LaGou
 				double lng = jsonItem.Value<double>("longitude");
 				string labelText = string.Empty;
 				JArray labels = jsonItem.Value<JArray>("companyLabelList");
-				if (!labels.IsNullOrEmpty())
+				if (!labels.IsNullOrEmpty() && (string)labels[0] != @"""")//The labels might be [""].
 				{
 					StringBuilder sb = new StringBuilder(labels.Count);
 					sb.Append(labels[0]);
@@ -260,11 +260,11 @@ namespace SpiderX.Business.LaGou
 
 			#region JobsList
 
-			public static Uri GetJobListUri(string cityName, string keyword, string type = "new")
+			public static Uri GetJobListUri(string cityName, string keyword)
 			{
 				string encodedKeyword = WebTool.UrlEncode(keyword);
 				string encodedCityName = WebTool.UrlEncode(cityName);
-				string urlString = $"https://www.lagou.com/jobs/list_{encodedKeyword}?px={type}&gx=%E5%85%A8%E8%81%8C&city={encodedCityName}";
+				string urlString = $"https://www.lagou.com/jobs/list_{encodedKeyword}?px=default&city={encodedCityName}";
 				return new Uri(urlString);
 			}
 
