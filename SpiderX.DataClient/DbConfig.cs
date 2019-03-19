@@ -8,15 +8,15 @@ namespace SpiderX.DataClient
 	{
 		private static int _globalTempId = 0;
 
-		public int TempId { get; set; }
+		public int TempId { get; private set; }
 
-		public string Name { get; set; }
+		public string Name { get; private set; }
 
-		public DbEnum Type { get; set; }
+		public DbEnum Type { get; private set; }
 
-		public string ConnectionString { get; set; }
+		public string ConnectionString { get; private set; }
 
-		public bool IsTest { get; set; } = true;
+		public bool IsTest { get; private set; } = true;
 
 		public static DbConfig FromConfiguration(IConfiguration source)
 		{
