@@ -5,6 +5,7 @@
 
 # User-self defined
 launchSettings.json
+[Mm]igrations/
 
 # User-specific files
 *.rsuser
