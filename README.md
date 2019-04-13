@@ -7,7 +7,7 @@ This is a simple web-crawler development framework based on .Net Core.
 
 - Target Framework |运行框架: [.Net Core 2.2+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
 
-- Recommended IDE |推荐IDE: [Visual Studio 2017 15.9+](https://visualstudio.microsoft.com/zh-hans/downloads/)
+- Recommended IDE |推荐IDE: [Visual Studio 2019 16.0+](https://visualstudio.microsoft.com/zh-hans/downloads/)
 
 - Recommended Language Version |推荐语言版本: [C# 7.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
 
