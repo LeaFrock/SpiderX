@@ -2,8 +2,10 @@
 
 namespace SpiderX.Proxy
 {
-	public interface IProxyUriSelector
-	{
-		Uri SingleProxyUri();
-	}
+    public interface IProxyUriSelector
+    {
+        Uri SelectNextProxyUri();
+
+        Uri SelectGoodProxyUri();
+    }
 }

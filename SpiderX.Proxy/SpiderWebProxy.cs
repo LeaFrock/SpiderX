@@ -24,7 +24,7 @@ namespace SpiderX.Proxy
 			//{
 			//	return destination;
 			//}
-			return _selector.SingleProxyUri();
+			return _selector.SelectNextProxyUri();
 		}
 
 		public bool IsBypassed(Uri host)
