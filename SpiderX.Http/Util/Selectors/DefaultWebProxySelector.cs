@@ -14,13 +14,14 @@ namespace SpiderX.Http.Util
         public DefaultWebProxySelector(Uri uri, IProxyUriLoader uriLoader, Func<IWebProxy, HttpClient> clientFactory, Predicate<string> rspValidator = null)
         {
             TargetUri = uri ?? throw new ArgumentNullException(nameof(TargetUri));
-            ProxyUriLoader = uriLoader ?? throw new ArgumentNullException(nameof(ProxyUriLoader));
+            _proxyUriLoader = uriLoader ?? throw new ArgumentNullException(nameof(_proxyUriLoader));
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(_clientFactory));
             _responseValidator = rspValidator;
         }
 
         private readonly Predicate<string> _responseValidator;
         private readonly Func<IWebProxy, HttpClient> _clientFactory;
+        private readonly IProxyUriLoader _proxyUriLoader;
 
         private readonly ConcurrentQueue<WebProxy> _verifyingQueue = new ConcurrentQueue<WebProxy>();
         private readonly ConcurrentQueue<WebProxy> _normalQueue = new ConcurrentQueue<WebProxy>();
@@ -50,8 +51,6 @@ namespace SpiderX.Http.Util
         public byte MaxFailTimesOfAdvancedProxies { get; set; } = 10;
 
         public Uri TargetUri { get; }
-
-        public IProxyUriLoader ProxyUriLoader { get; set; }
 
         public void Initialize()
         {
@@ -143,7 +142,7 @@ namespace SpiderX.Http.Util
 
         private void LoadProxies(int maxCount = 0)
         {
-            var uris = ProxyUriLoader.Load(maxCount);
+            var uris = _proxyUriLoader.Load(maxCount);
             foreach (var uri in uris)
             {
                 _verifyingQueue.Enqueue(new WebProxy(uri));
@@ -194,7 +193,7 @@ namespace SpiderX.Http.Util
                     return;
                 }
                 rspText = rspText.Trim();
-                if (_responseValidator?.Invoke(rspText) == true)
+                if (_responseValidator?.Invoke(rspText) != false)
                 {
                     _normalQueue.Enqueue(proxy);
                 }
