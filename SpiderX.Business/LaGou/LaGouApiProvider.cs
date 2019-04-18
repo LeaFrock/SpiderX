@@ -41,7 +41,7 @@ namespace SpiderX.Business.LaGou
 					new KeyValuePair<string, string>("kd", keyword),
 				};
 				var content = new FormUrlEncodedContent(pairs);
-				content.Headers.ContentType = HttpConsole.GetContentType("application/x-www-form-urlencoded;UTF-8");
+				content.Headers.ContentType = HttpConsole.GetOrAddContentType("application/x-www-form-urlencoded;UTF-8");
 				return content;
 			}
 

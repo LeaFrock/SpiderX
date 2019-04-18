@@ -192,13 +192,6 @@ namespace SpiderX.Business.LaGou
 					cookie.Expired = true;
 				}
 			}
-
-			private static IWebProxy CreateWebProxy(IEnumerable<Uri> proxies)
-			{
-				DefaultSpiderProxyUriSelector uriSelector = new DefaultSpiderProxyUriSelector();
-				uriSelector.Init(proxies);
-				return new SpiderWebProxy(uriSelector);
-			}
 		}
 
 		private abstract class CollectorBase

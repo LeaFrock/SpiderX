@@ -11,18 +11,23 @@ namespace SpiderX.Http.Util
 {
     public sealed class DefaultWebProxySelector : IWebProxySelector
     {
-        public DefaultWebProxySelector(Uri uri, ResponseValidatorBase responseValidator, IProxyUriLoader uriLoader)
+        public DefaultWebProxySelector(Uri uri, IProxyUriLoader uriLoader, Func<IWebProxy, HttpClient> clientFactory, Predicate<string> rspValidator = null)
         {
-            _responseValidator = responseValidator;
-            TargetUri = uri;
-            ProxyUriLoader = uriLoader;
+            TargetUri = uri ?? throw new ArgumentNullException(nameof(TargetUri));
+            ProxyUriLoader = uriLoader ?? throw new ArgumentNullException(nameof(ProxyUriLoader));
+            _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(_clientFactory));
+            _responseValidator = rspValidator;
         }
 
-        private readonly ResponseValidatorBase _responseValidator;
+        private readonly Predicate<string> _responseValidator;
+        private readonly Func<IWebProxy, HttpClient> _clientFactory;
 
         private readonly ConcurrentQueue<WebProxy> _verifyingQueue = new ConcurrentQueue<WebProxy>();
-        private readonly ConcurrentQueue<WebProxy> _availableQueue = new ConcurrentQueue<WebProxy>();
+        private readonly ConcurrentQueue<WebProxy> _normalQueue = new ConcurrentQueue<WebProxy>();
         private readonly ConcurrentQueue<WebProxy> _advancedQueue = new ConcurrentQueue<WebProxy>();
+
+        private readonly ConcurrentDictionary<string, byte> _failTimesRecordOfNormalProxies = new ConcurrentDictionary<string, byte>();
+        private readonly ConcurrentDictionary<string, byte> _failTimesRecordOfAdvancedProxies = new ConcurrentDictionary<string, byte>();
 
         private int _initCode;
 
@@ -32,11 +37,17 @@ namespace SpiderX.Http.Util
 
         public int VerifyPauseThresold { get; set; } = 300;
 
-        public int VerifyTaskDegree { get; set; } = 100;
+        public int AdvancedProxiesCacheCapacity { get; set; } = 100;
+
+        public int VerifyTaskDegree { get; set; } = 120;
 
         public TimeSpan VerifyTaskTimeout { get; set; } = TimeSpan.FromSeconds(20);
 
         public TimeSpan VerifyTimeout { get; set; } = TimeSpan.FromSeconds(3);
+
+        public byte MaxFailTimesOfNormalProxies { get; set; } = 3;
+
+        public byte MaxFailTimesOfAdvancedProxies { get; set; } = 10;
 
         public Uri TargetUri { get; }
 
@@ -53,17 +64,86 @@ namespace SpiderX.Http.Util
 
         public WebProxy SelectNextProxy()
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                if (_normalQueue.Count < UseThresold)
+                {
+                    Thread.Sleep(5000);
+                    continue;
+                }
+                if (!_normalQueue.TryDequeue(out var proxy))
+                {
+                    Thread.Sleep(1500);
+                    continue;
+                }
+                return proxy;
+            }
         }
 
-        public WebProxy SelectGoodProxy()
+        public bool TryPreferAdvancedProxy(out WebProxy proxy)
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                if (_advancedQueue.IsEmpty)
+                {
+                    proxy = SelectNextProxy();
+                    return false;
+                }
+                if (!_advancedQueue.TryDequeue(out proxy))
+                {
+                    proxy = SelectNextProxy();
+                    return false;
+                }
+                return true;
+            }
         }
 
-        private void LoadProxies()
+        public void OnNormalProxyFail(WebProxy proxy)
         {
-            var uris = ProxyUriLoader.Load();
+            int currentFailTimes = _failTimesRecordOfNormalProxies.AddOrUpdate(proxy.Address.AbsoluteUri, 1, (k, v) => (byte)(v + 1));
+            if (currentFailTimes < MaxFailTimesOfNormalProxies)
+            {
+                _normalQueue.Enqueue(proxy);
+            }
+            else
+            {
+                _failTimesRecordOfNormalProxies.TryRemove(proxy.Address.AbsoluteUri, out var _);
+            }
+        }
+
+        public void OnNormalProxySuccess(WebProxy proxy)
+        {
+            if (_advancedQueue.Count < AdvancedProxiesCacheCapacity)
+            {
+                _advancedQueue.Enqueue(proxy);
+            }
+            else
+            {
+                _normalQueue.Enqueue(proxy);
+            }
+        }
+
+        public void OnAdvancedProxyFail(WebProxy proxy)
+        {
+            int currentFailTimes = _failTimesRecordOfAdvancedProxies.AddOrUpdate(proxy.Address.AbsoluteUri, 1, (k, v) => (byte)(v + 1));
+            if (currentFailTimes < MaxFailTimesOfAdvancedProxies)
+            {
+                _advancedQueue.Enqueue(proxy);
+            }
+            else
+            {
+                _failTimesRecordOfAdvancedProxies.TryRemove(proxy.Address.AbsoluteUri, out var _);
+            }
+        }
+
+        public void OnAdvancedProxySuccess(WebProxy proxy)
+        {
+            _advancedQueue.Enqueue(proxy);
+        }
+
+        private void LoadProxies(int maxCount = 0)
+        {
+            var uris = ProxyUriLoader.Load(maxCount);
             foreach (var uri in uris)
             {
                 _verifyingQueue.Enqueue(new WebProxy(uri));
@@ -74,13 +154,14 @@ namespace SpiderX.Http.Util
         {
             while (true)
             {
-                if (_availableQueue.Count >= VerifyPauseThresold)
+                if (_normalQueue.Count >= VerifyPauseThresold)
                 {
-                    Thread.Sleep(30000);
+                    Thread.Sleep(10000);
+                    continue;
                 }
                 if (_verifyingQueue.IsEmpty)
                 {
-                    LoadProxies();
+                    LoadProxies(10000);
                 }
                 var tasks = new List<Task>(VerifyTaskDegree);
                 for (int i = 0; i < VerifyTaskDegree; i++)
@@ -91,38 +172,32 @@ namespace SpiderX.Http.Util
                     }
                     tasks.Add(VerifyProxyAsync(proxy));
                 }
-                try
+                if (tasks.Count > 0)
                 {
-                    Task.WaitAll(tasks.ToArray(), VerifyTaskTimeout);
+                    try
+                    {
+                        Task.WaitAll(tasks.ToArray(), VerifyTaskTimeout);
+                    }
+                    catch
+                    { }
                 }
-                catch
-                { }
             }
         }
 
         private async Task VerifyProxyAsync(WebProxy proxy)
         {
-            var handler = new SocketsHttpHandler()
-            {
-                UseProxy = true,
-                Proxy = proxy,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                ConnectTimeout = VerifyTimeout,
-                Expect100ContinueTimeout = VerifyTimeout,
-                ResponseDrainTimeout = VerifyTimeout
-            };
-            using (HttpClient client = new HttpClient(handler))
+            using (HttpClient client = _clientFactory.Invoke(proxy))
             {
                 string rspText = await client.GetStringAsync(TargetUri);
                 if (string.IsNullOrWhiteSpace(rspText))
                 {
                     return;
                 }
-                if (!_responseValidator.CheckPass(rspText))
+                rspText = rspText.Trim();
+                if (_responseValidator?.Invoke(rspText) == true)
                 {
-                    return;
+                    _normalQueue.Enqueue(proxy);
                 }
-                _availableQueue.Enqueue(proxy);
             }
         }
     }

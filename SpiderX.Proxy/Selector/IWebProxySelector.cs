@@ -6,6 +6,14 @@ namespace SpiderX.Proxy
     {
         WebProxy SelectNextProxy();
 
-        WebProxy SelectGoodProxy();
+        bool TryPreferAdvancedProxy(out WebProxy proxy);
+
+        void OnNormalProxyFail(WebProxy proxy);
+
+        void OnNormalProxySuccess(WebProxy proxy);
+
+        void OnAdvancedProxyFail(WebProxy proxy);
+
+        void OnAdvancedProxySuccess(WebProxy proxy);
     }
 }
