@@ -10,7 +10,7 @@ namespace SpiderX.DataClient
 			_dbConfigs = configs;
 		}
 
-		private List<DbConfig> _dbConfigs;
+		private readonly List<DbConfig> _dbConfigs;
 
 		public IReadOnlyList<DbConfig> DbConfigs => _dbConfigs;
 
