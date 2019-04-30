@@ -10,6 +10,7 @@ namespace SpiderX.Business.Bilibili
         {
             public override void Run()
             {
+                EnsureDbCreated(() => new BilibiliLiveRoomCountMySqlContext());
                 int liveRoomCount = Collector.Collect("0");
                 ShowConsoleMsg(liveRoomCount.ToString());
                 var item = BilibiliLiveRoomCount.Create(liveRoomCount);
@@ -17,6 +18,14 @@ namespace SpiderX.Business.Bilibili
                 {
                     context.LiveRoomCount.Add(item);
                     context.SaveChanges();
+                }
+            }
+
+            private static void EnsureDbCreated<T>(Func<T> contextFactory) where T : BilibiliLiveRoomCountContext
+            {
+                using (var context = contextFactory.Invoke())
+                {
+                    context.Database.EnsureCreated();
                 }
             }
         }
