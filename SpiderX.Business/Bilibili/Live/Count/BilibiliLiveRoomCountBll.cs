@@ -5,7 +5,7 @@ using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.Bilibili
 {
-    public sealed partial class BilibiliLiveCountBll : BllBase
+    public sealed partial class BilibiliLiveRoomCountBll : BllBase
     {
         public override void Run()
         {

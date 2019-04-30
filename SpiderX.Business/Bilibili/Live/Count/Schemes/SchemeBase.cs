@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SpiderX.Business.Bilibili
 {
-    public partial class BilibiliLiveCountBll
+    public partial class BilibiliLiveRoomCountBll
     {
         private abstract class SchemeBase
         {

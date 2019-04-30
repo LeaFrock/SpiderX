@@ -7,7 +7,7 @@ using SpiderX.Proxy;
 
 namespace SpiderX.Business.Bilibili
 {
-    public partial class BilibiliLiveCountBll
+    public partial class BilibiliLiveRoomCountBll
     {
         private abstract class CollectorBase
         {

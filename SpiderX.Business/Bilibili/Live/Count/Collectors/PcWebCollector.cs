@@ -8,7 +8,7 @@ using SpiderX.Http.Util;
 
 namespace SpiderX.Business.Bilibili
 {
-    public partial class BilibiliLiveCountBll
+    public partial class BilibiliLiveRoomCountBll
     {
         private sealed class PcWebCollector : CollectorBase
         {
