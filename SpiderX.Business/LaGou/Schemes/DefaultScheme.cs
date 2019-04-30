@@ -14,6 +14,7 @@ namespace SpiderX.Business.LaGou
                 var datas = Collector.Collect("上海", ".NET");
                 using (var context = new LaGouSqlServerContext())
                 {
+                    context.Database.EnsureCreated();
                     context.Positions.AddRange(datas.Positions.Values);
                     context.Companies.AddRange(datas.Companies.Values);
                     context.HrInfos.AddRange(datas.HrInfos.Values);
