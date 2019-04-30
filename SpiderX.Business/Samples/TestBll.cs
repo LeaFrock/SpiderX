@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using SpiderX.BusinessBase;
 using SpiderX.DataClient;
 using SpiderX.Http.Util;
@@ -22,8 +23,7 @@ namespace SpiderX.Business.Samples
             {
                 throw new DbConfigNotFoundException();
             }
-            var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance(conf, c => new SqlServerProxyDbContext(c));
-            var entities = pa.SelectProxyEntities(p => p.Id > 0, 360);
+
         }
     }
 }
