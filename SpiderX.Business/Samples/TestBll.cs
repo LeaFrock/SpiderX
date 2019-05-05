@@ -23,7 +23,6 @@ namespace SpiderX.Business.Samples
             {
                 throw new DbConfigNotFoundException();
             }
-
         }
     }
 }
