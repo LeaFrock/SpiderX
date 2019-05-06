@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.TenderWebs
@@ -13,7 +14,6 @@ namespace SpiderX.Business.TenderWebs
 
             public override void Run(params string[] keywords)
             {
-                throw new NotImplementedException();
             }
         }
     }
