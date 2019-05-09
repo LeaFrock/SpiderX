@@ -142,9 +142,10 @@ namespace SpiderX.Launcher
 					continue;
 				}
 				string[] tempAry = trimedPart.Split(' ');
-				string[] caseParams = new string[tempAry.Length - 1];
+                string caseName = CorrectCaseName(tempAry[0]);
+                string[] caseParams = new string[tempAry.Length - 1];
 				Array.Copy(tempAry, 1, caseParams, 0, caseParams.Length);
-				var setting = CreateDefault(tempAry[0], caseParams);
+				var setting = CreateDefault(caseName, caseParams);
 				settings.Add(setting);
 			}
 			return settings;
