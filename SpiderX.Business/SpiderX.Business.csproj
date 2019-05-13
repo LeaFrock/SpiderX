@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\" />
     <Folder Include="TenderWebs\DbServices\DbContexts\" />
   </ItemGroup>
 
