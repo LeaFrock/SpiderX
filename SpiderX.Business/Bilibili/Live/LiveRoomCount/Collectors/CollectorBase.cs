@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using SpiderX.BusinessBase;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
 
-namespace SpiderX.Business.TenderWebs
+namespace SpiderX.Business.Bilibili
 {
-	public partial class GgzyGovBll
+	public partial class BilibiliLiveRoomCountBll
 	{
-		public abstract class CollectorBase
+		private abstract class CollectorBase
 		{
-			public abstract List<OpenTenderEntity> CollectOpenBids(string[] keywords);
-
-			public abstract List<WinTenderEntity> CollectWinBids(string[] keywords);
+			public abstract int Collect(string areaId);
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{

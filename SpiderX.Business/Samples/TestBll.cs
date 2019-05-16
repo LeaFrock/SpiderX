@@ -9,20 +9,20 @@ using SpiderX.Proxy;
 
 namespace SpiderX.Business.Samples
 {
-    public sealed class TestBll : BllBase
-    {
-        public override void Run(params string[] args)
-        {
-            Run();
-        }
+	public sealed class TestBll : BllBase
+	{
+		public override void Run(params string[] args)
+		{
+			Run();
+		}
 
-        public override void Run()
-        {
-            var conf = DbClient.FindConfig("SqlServerTest", true);
-            if (conf == null)
-            {
-                throw new DbConfigNotFoundException();
-            }
-        }
-    }
+		public override void Run()
+		{
+			var conf = DbClient.FindConfig("SqlServerTest", true);
+			if (conf == null)
+			{
+				throw new DbConfigNotFoundException();
+			}
+		}
+	}
 }

@@ -28,7 +28,7 @@ namespace SpiderX.Business.LaGou
 
 		public void AddResponseData(LaGouResponseData data)
 		{
-			if(data == null)
+			if (data == null)
 			{
 				return;
 			}

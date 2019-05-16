@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SpiderX.Business.LaGou
+namespace SpiderX.Business.Bilibili
 {
-	public sealed partial class LaGouBll
+	public partial class BilibiliLiveRoomCountBll
 	{
 		private abstract class SchemeBase
 		{

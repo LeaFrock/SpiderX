@@ -4,14 +4,14 @@ using System.Text;
 
 namespace SpiderX.Business.Samples
 {
-    public sealed class TestEntity
-    {
-        public int Id { get; set; }
+	public sealed class TestEntity
+	{
+		public int Id { get; set; }
 
-        public string Message { get; set; }
+		public string Message { get; set; }
 
-        public bool AreYouOK { get; set; }
+		public bool AreYouOK { get; set; }
 
-        public DateTime CurrentTime { get; set; }
-    }
+		public DateTime CurrentTime { get; set; }
+	}
 }

@@ -2,18 +2,18 @@
 
 namespace SpiderX.Proxy
 {
-    public interface IWebProxySelector
-    {
-        WebProxy SelectNextProxy();
+	public interface IWebProxySelector
+	{
+		WebProxy SelectNextProxy();
 
-        bool TryPreferAdvancedProxy(out WebProxy proxy);
+		bool TryPreferAdvancedProxy(out WebProxy proxy);
 
-        void OnNormalProxyFail(WebProxy proxy);
+		void OnNormalProxyFail(WebProxy proxy);
 
-        void OnNormalProxySuccess(WebProxy proxy);
+		void OnNormalProxySuccess(WebProxy proxy);
 
-        void OnAdvancedProxyFail(WebProxy proxy);
+		void OnAdvancedProxyFail(WebProxy proxy);
 
-        void OnAdvancedProxySuccess(WebProxy proxy);
-    }
+		void OnAdvancedProxySuccess(WebProxy proxy);
+	}
 }

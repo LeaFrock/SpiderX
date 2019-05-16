@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SpiderX.Business.Samples
 {
-    public sealed class TestContext : DbContext
-    {
-        public DbSet<TestEntity> TestEntities { get; set; }
-    }
+	public sealed class TestContext : DbContext
+	{
+		public DbSet<TestEntity> TestEntities { get; set; }
+	}
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SpiderX.Business.TenderWebs
 {
-    public sealed class WinTenderEntity
-    {
-    }
+	public sealed class WinTenderEntity
+	{
+	}
 }

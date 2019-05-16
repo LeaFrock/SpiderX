@@ -5,10 +5,10 @@ using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.TenderWebs
 {
-    public sealed partial class GgzyGovBll : BllBase
-    {
-        public abstract class ApiProviderBase
-        {
-        }
-    }
+	public sealed partial class GgzyGovBll : BllBase
+	{
+		public abstract class ApiProviderBase
+		{
+		}
+	}
 }

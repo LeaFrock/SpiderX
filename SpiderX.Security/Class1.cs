@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpiderX.Security
+﻿namespace SpiderX.Security
 {
 	public class Class1
 	{
