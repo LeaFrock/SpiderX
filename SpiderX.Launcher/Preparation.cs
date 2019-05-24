@@ -2,9 +2,9 @@
 
 namespace SpiderX.Launcher
 {
-	public sealed class StartUp
+	internal sealed class Preparation
 	{
-		public static void Run()
+		public static void JustDoIt()
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 		}

@@ -9,7 +9,7 @@ namespace SpiderX.Launcher
 	{
 		public static string DefaultNamespace { get; private set; }
 
-		public static IReadOnlyList<CaseSetting> CaseSettings { get; private set; }
+		public static IReadOnlyList<CaseOption> CaseSettings { get; private set; }
 
 		public static bool RunCasesConcurrently { get; private set; }
 
@@ -27,7 +27,7 @@ namespace SpiderX.Launcher
 			DbClient.Initialize(conf);
 		}
 
-		internal static void LoadCaseSettings(IConfigurationRoot conf, IReadOnlyList<CaseSetting> settings = null)
+		internal static void LoadCaseSettings(IConfigurationRoot conf, IReadOnlyList<CaseOption> settings = null)
 		{
 			if (settings == null || settings.Count < 1)
 			{
@@ -47,13 +47,13 @@ namespace SpiderX.Launcher
 			}
 		}
 
-		private static List<CaseSetting> LoadCaseSettings(IConfigurationRoot root)
+		private static List<CaseOption> LoadCaseSettings(IConfigurationRoot root)
 		{
 			var dbSections = root.GetSection(nameof(CaseSettings)).GetChildren();
-			var result = new List<CaseSetting>();
+			var result = new List<CaseOption>();
 			foreach (var dbSection in dbSections)
 			{
-				CaseSetting item = CaseSetting.FromConfiguration(dbSection);
+				CaseOption item = CaseOption.FromConfiguration(dbSection);
 				if (item != null)
 				{
 					result.Add(item);

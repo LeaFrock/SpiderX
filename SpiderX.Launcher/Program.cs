@@ -2,53 +2,98 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using SpiderX.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace SpiderX.Launcher
 {
 	internal class Program
 	{
-		private static void Main(string[] args)
+		private async static Task Main(string[] args)
 		{
-			//Init GlobalSetting
-			string filePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
-			var conf = new ConfigurationBuilder()
-				.SetBasePath(filePath)
-				.AddJsonFile("appsettings.json", true, true)
+			Preparation.JustDoIt();
+			bool existsCommandLine = args != null && args.Length > 1;//The length must be larger than 1.
+			string settingFilePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
+			var hostConf = new ConfigurationBuilder()
+				.SetBasePath(settingFilePath)
+				.AddJsonFile("hostsettings.json", optional: false, reloadOnChange: true)
 				.Build();
-			GlobalSetting.Initialize(conf);
-			//Load Cases
-			if (args.IsNullOrEmpty())
-			{
-				GlobalSetting.LoadCaseSettings(conf);
-			}
-			else
-			{
-				var caseSettings = CaseSetting.GetListByStringArgs(args);
-				GlobalSetting.LoadCaseSettings(conf, caseSettings);
-			}
-			//StartUp
-			StartUp.Run();
-			//Invoke Cases
-			if (!GlobalSetting.RunCasesConcurrently)
-			{
-				foreach (var caseSetting in GlobalSetting.CaseSettings)
+			var host = new HostBuilder()
+				.ConfigureHostConfiguration(c => c.AddConfiguration(hostConf))
+				.ConfigureAppConfiguration((hostContext, appConf) =>
 				{
-					caseSetting.InvokeCase();
+					if (existsCommandLine)
+					{
+						appConf.AddCommandLine(args);
+					}
+					else
+					{
+						appConf.SetBasePath(settingFilePath);
+						appConf.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+					}
+				})
+				.ConfigureServices((hostContext, services) =>
+				{
+					bool runCasesConcurrently = args.Length > 2 && hostContext.Configuration.GetValue<bool>("RunCasesConcurrently");
+					if (existsCommandLine)
+					{
+						string nameSpace = GetNameSpaceOfServices(hostContext.Configuration, args[0]);
+						if (!runCasesConcurrently)
+						{
+							for (byte i = 1; i < args.Length; i++)
+							{
+								if (CaseOption.CheckSkipStringArg(args[i]))
+								{
+									continue;
+								}
+								services.AddHostedService<SingleBllCaseService>()
+								.Configure<CaseOption>(opt =>
+								{
+									opt.NameSpace = nameSpace;
+									CaseOption.InitOption(opt, args[i]);
+								});
+							}
+						}
+						else
+						{
+						}
+					}
+					else
+					{
+						services.AddHostedService<SingleBllCaseService>();
+					}
+				})
+				.ConfigureLogging((hostContext, logConf) =>
+				{
+					logConf.AddConsole();
+				})
+				.UseConsoleLifetime()
+				.Build();
+			using (host)
+			{
+				await host.StartAsync();
+				await host.StopAsync();
+				bool autoClose = hostConf.GetValue<bool>("AutoClose");
+				if (!autoClose)
+				{
+					Console.ReadKey();
 				}
 			}
-			else
+		}
+
+		private static string GetNameSpaceOfServices(IConfiguration hostConf, string arg)
+		{
+			var nameSpaceAbbrs = hostConf.GetSection("BllNameSpaces").GetChildren();
+			foreach (var section in nameSpaceAbbrs)
 			{
-				Parallel.ForEach(GlobalSetting.CaseSettings,
-					new ParallelOptions() { MaxDegreeOfParallelism = 100 },
-					s => s.InvokeCase());
+				string abbr = section.GetSection("Abbr").Value;
+				if (arg.Equals(abbr, StringComparison.CurrentCultureIgnoreCase))
+				{
+					return section.GetSection("Name").Value;
+				}
 			}
-			//End
-			if (!GlobalSetting.AutoClose)
-			{
-				Console.WriteLine("Program Runs Over.");
-				Console.ReadKey();
-			}
+			return arg;
 		}
 	}
 }

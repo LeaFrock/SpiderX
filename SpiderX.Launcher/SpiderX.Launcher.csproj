@@ -6,6 +6,7 @@
     <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
     <!--RuntimeIdentifiers>win10-x64</RuntimeIdentifiers-->
     <StartupObject>SpiderX.Launcher.Program</StartupObject>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,9 +17,13 @@
 
   <ItemGroup>
     <None Remove="AppSettings\appsettings.json" />
+    <None Remove="AppSettings\hostsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="AppSettings\hostsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="AppSettings\appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -27,9 +32,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.1" />
   </ItemGroup>
 
@@ -37,5 +45,7 @@
     <ProjectReference Include="..\SpiderX.Business\SpiderX.Business.csproj" />
     <ProjectReference Include="..\SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_4hostsettings_1json__JsonSchema="http://json.schemastore.org/config" /></VisualStudio></ProjectExtensions>
 
 </Project>
