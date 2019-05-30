@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,17 +10,13 @@ namespace SpiderX.Launcher
 	internal class SingleBllCaseService : IHostedService
 	{
 		private readonly ILogger _logger;
-		private readonly IConfiguration _configuration;
 		private readonly IApplicationLifetime _applicationLifetime;
 		private readonly CaseOption _caseSetting;
 
-		private readonly static Random random = new Random();
-
-		public SingleBllCaseService(IApplicationLifetime applicationLifetime, ILogger<SingleBllCaseService> logger, IConfiguration configuration, IOptions<CaseOption> caseSetting)
+		public SingleBllCaseService(IApplicationLifetime applicationLifetime, ILogger<SingleBllCaseService> logger, IOptions<CaseOption> caseSetting)
 		{
 			_caseSetting = caseSetting.Value ?? throw new ArgumentNullException();
 			_logger = logger;
-			_configuration = configuration;
 			_applicationLifetime = applicationLifetime;
 			_applicationLifetime.ApplicationStarted.Register(OnStarted);
 			_applicationLifetime.ApplicationStopping.Register(OnStopping);
@@ -30,7 +25,7 @@ namespace SpiderX.Launcher
 
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			//_logger.LogWarning(random.Next(0, 10).ToString());
+			_logger.LogInformation(_caseSetting.FullTypeName);
 			return Task.Delay(5000);
 		}
 
@@ -42,17 +37,17 @@ namespace SpiderX.Launcher
 
 		private void OnStarted()
 		{
-			_logger.LogInformation("Started...");
+			_logger.LogDebug("Started...");
 		}
 
 		private void OnStopping()
 		{
-			_logger.LogInformation("Stopping...");
+			_logger.LogDebug("Stopping...");
 		}
 
 		private void OnStopped()
 		{
-			_logger.LogInformation("Stopped...");
+			_logger.LogDebug("Stopped...");
 		}
 	}
 }

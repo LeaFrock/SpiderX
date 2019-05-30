@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using SpiderX.DataClient;
 
@@ -25,45 +24,6 @@ namespace SpiderX.Launcher
 			}
 			//Init DbClient
 			DbClient.Initialize(conf);
-		}
-
-		internal static void LoadCaseSettings(IConfigurationRoot conf, IReadOnlyList<CaseOption> settings = null)
-		{
-			if (settings == null || settings.Count < 1)
-			{
-				CaseSettings = LoadCaseSettings(conf);
-			}
-			else
-			{
-				CaseSettings = settings;
-			}
-			if (CaseSettings.Count > 1)
-			{
-				string runCasesConcurrentlyStr = conf.GetSection(nameof(RunCasesConcurrently)).Value;
-				if (bool.TryParse(runCasesConcurrentlyStr, out bool runCasesConcurrently))
-				{
-					RunCasesConcurrently = runCasesConcurrently;
-				}
-			}
-		}
-
-		private static List<CaseOption> LoadCaseSettings(IConfigurationRoot root)
-		{
-			var dbSections = root.GetSection(nameof(CaseSettings)).GetChildren();
-			var result = new List<CaseOption>();
-			foreach (var dbSection in dbSections)
-			{
-				CaseOption item = CaseOption.FromConfiguration(dbSection);
-				if (item != null)
-				{
-					result.Add(item);
-				}
-			}
-			if (result.Count < 1)
-			{
-				throw new ArgumentException("Invalid CaseSettings.");
-			}
-			return result;
 		}
 	}
 }

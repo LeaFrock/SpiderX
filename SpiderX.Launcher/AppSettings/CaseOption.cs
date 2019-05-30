@@ -14,31 +14,31 @@ namespace SpiderX.Launcher
 
 		public string FullTypeName => NameSpace + '.' + CaseName;
 
-		public static void InitOption(CaseOption option, string commandLineParam)
+		public void InitByCommandLine(string commandLineParam)
 		{
 			string[] parts = commandLineParam.Split('-', StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1)
 			{
-				option.CaseName = CorrectCaseName(parts[0]);
+				CaseName = CorrectCaseName(parts[0]);
 			}
 			else
 			{
 				if (parts[0] != "*")
 				{
-					option.NameSpace = parts[0];
+					NameSpace = parts[0];
 				}
-				option.CaseName = parts[1];
+				CaseName = CorrectCaseName(parts[1]);
 				if (parts.Length > 2)
 				{
 					if (parts[2] != "_")
 					{
-						option.Params = parts[2].Split(',');
+						Params = parts[2].Split(',');
 					}
 					if (parts.Length > 3)
 					{
 						if (int.TryParse(parts[3], out int version))
 						{
-							option.Version = version;
+							Version = version;
 						}
 					}
 				}

@@ -19,7 +19,7 @@ namespace SpiderX.Launcher
 				.SetBasePath(settingFilePath)
 				.AddJsonFile("hostsettings.json", optional: false, reloadOnChange: true)
 				.Build();
-			var host = new HostBuilder()
+			var hostBuilder = new HostBuilder()
 				.ConfigureHostConfiguration(c => c.AddConfiguration(hostConf))
 				.ConfigureAppConfiguration((hostContext, appConf) =>
 				{
@@ -33,43 +33,39 @@ namespace SpiderX.Launcher
 						appConf.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 					}
 				})
-				.ConfigureServices((hostContext, services) =>
-				{
-					bool runCasesConcurrently = args.Length > 2 && hostContext.Configuration.GetValue<bool>("RunCasesConcurrently");
-					if (existsCommandLine)
-					{
-						string nameSpace = GetNameSpaceOfServices(hostContext.Configuration, args[0]);
-						if (!runCasesConcurrently)
-						{
-							for (byte i = 1; i < args.Length; i++)
-							{
-								if (CaseOption.CheckSkipStringArg(args[i]))
-								{
-									continue;
-								}
-								services.AddHostedService<SingleBllCaseService>()
-								.Configure<CaseOption>(opt =>
-								{
-									opt.NameSpace = nameSpace;
-									CaseOption.InitOption(opt, args[i]);
-								});
-							}
-						}
-						else
-						{
-						}
-					}
-					else
-					{
-						services.AddHostedService<SingleBllCaseService>();
-					}
-				})
 				.ConfigureLogging((hostContext, logConf) =>
 				{
 					logConf.AddConsole();
-				})
-				.UseConsoleLifetime()
-				.Build();
+				});
+			bool runCasesConcurrently = args.Length > 2 && hostConf.GetValue<bool>("RunCasesConcurrently");
+			string nmsp = GetNameSpaceOfServices(hostConf, args[0]);
+			if (existsCommandLine)
+			{
+				if (!runCasesConcurrently)
+				{
+					for (byte i = 1; i < args.Length; i++)
+					{
+						string cmd = args[i];
+						hostBuilder.ConfigureServices((hostContext, services) =>
+						{
+							services.AddHostedService<SingleBllCaseService>()
+							.Configure<CaseOption>(opt =>
+							{
+								opt.NameSpace = nmsp;
+								opt.InitByCommandLine(cmd);
+							});
+						});
+					}
+				}
+				else
+				{
+				}
+			}
+			else
+			{
+			}
+			hostBuilder.UseConsoleLifetime();
+			var host = hostBuilder.Build();
 			using (host)
 			{
 				await host.StartAsync();
