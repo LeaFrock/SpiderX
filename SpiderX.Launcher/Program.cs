@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -13,14 +14,14 @@ namespace SpiderX.Launcher
 		private async static Task Main(string[] args)
 		{
 			Preparation.JustDoIt();
-			bool existsCommandLine = args != null && args.Length > 1;//The length must be larger than 1.
+			bool existsCommandLine = ExistsValidCommandLine(args, out string[] validArgs);
 			string settingFilePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
-			var hostConf = new ConfigurationBuilder()
+			var hostConfig = new ConfigurationBuilder()
 				.SetBasePath(settingFilePath)
 				.AddJsonFile("hostsettings.json", optional: false, reloadOnChange: true)
 				.Build();
 			var hostBuilder = new HostBuilder()
-				.ConfigureHostConfiguration(c => c.AddConfiguration(hostConf))
+				.ConfigureHostConfiguration(hostConf => hostConf.AddConfiguration(hostConfig))
 				.ConfigureAppConfiguration((hostContext, appConf) =>
 				{
 					if (existsCommandLine)
@@ -37,40 +38,39 @@ namespace SpiderX.Launcher
 				{
 					logConf.AddConsole();
 				});
-			bool runCasesConcurrently = args.Length > 2 && hostConf.GetValue<bool>("RunCasesConcurrently");
-			string nmsp = GetNameSpaceOfServices(hostConf, args[0]);
-			if (existsCommandLine)
+
+			hostBuilder.ConfigureServices((hostContext, services) =>
 			{
-				if (!runCasesConcurrently)
+				services.AddHostedService<BllCaseLaunchService>()
+				.Configure<List<CaseOption>>(opts =>
 				{
-					for (byte i = 1; i < args.Length; i++)
+					if (existsCommandLine)
 					{
-						string cmd = args[i];
-						hostBuilder.ConfigureServices((hostContext, services) =>
+						string nmsp = GetNameSpaceOfServices(hostConfig, args[0]);
+						for (byte i = 1; i < args.Length; i++)
 						{
-							services.AddHostedService<SingleBllCaseService>()
-							.Configure<CaseOption>(opt =>
+							string cmd = args[i];
+							if (!CaseOption.CheckSkipStringArg(cmd))
 							{
-								opt.NameSpace = nmsp;
+								CaseOption opt = new CaseOption() { NameSpace = nmsp };
 								opt.InitByCommandLine(cmd);
-							});
-						});
+								opts.Add(opt);
+							}
+						}
 					}
-				}
-				else
-				{
-				}
-			}
-			else
-			{
-			}
+					else
+					{
+						var hostConf = hostContext.Configuration;
+					}
+				});
+			});
 			hostBuilder.UseConsoleLifetime();
 			var host = hostBuilder.Build();
 			using (host)
 			{
 				await host.StartAsync();
 				await host.StopAsync();
-				bool autoClose = hostConf.GetValue<bool>("AutoClose");
+				bool autoClose = hostConfig.GetValue<bool>("AutoClose");
 				if (!autoClose)
 				{
 					Console.ReadKey();
@@ -90,6 +90,30 @@ namespace SpiderX.Launcher
 				}
 			}
 			return arg;
+		}
+
+		private static bool ExistsValidCommandLine(string[] args, out string[] validArgs)
+		{
+			if (args == null || args.Length < 2)//The length must be larger than 1.
+			{
+				validArgs = null;
+				return false;
+			}
+			List<string> tempList = new List<string>(args.Length) { args[0] };
+			for (byte i = 1; i < args.Length; i++)
+			{
+				if (!CaseOption.CheckSkipStringArg(args[i]))
+				{
+					tempList.Add(args[i]);
+				}
+			}
+			if (tempList.Count < 2)
+			{
+				validArgs = null;
+				return false;
+			}
+			validArgs = tempList.ToArray();
+			return true;
 		}
 	}
 }

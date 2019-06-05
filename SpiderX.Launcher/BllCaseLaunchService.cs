@@ -5,25 +5,26 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace SpiderX.Launcher
 {
-	internal class GroupBllCasesService : IHostedService
+	internal class BllCaseLaunchService : IHostedService
 	{
 		private readonly ILogger _logger;
 		private readonly IConfiguration _configuration;
 		private readonly IApplicationLifetime _applicationLifetime;
 
-		private readonly IEnumerable<CaseOption> _caseSettings;
+		private readonly List<CaseOption> _caseSettings;
 
 		private readonly static Random random = new Random();
 
-		public GroupBllCasesService(IApplicationLifetime applicationLifetime, ILogger<SingleBllCaseService> logger, IConfiguration configuration, IEnumerable<CaseOption> caseSettings)
+		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<CaseOption>> caseSettings)
 		{
 			_logger = logger;
 			_configuration = configuration;
 			_applicationLifetime = applicationLifetime;
-			_caseSettings = caseSettings;
+			_caseSettings = caseSettings.Value;
 			_applicationLifetime.ApplicationStarted.Register(OnStarted);
 			_applicationLifetime.ApplicationStopping.Register(OnStopping);
 			_applicationLifetime.ApplicationStopped.Register(OnStopped);
