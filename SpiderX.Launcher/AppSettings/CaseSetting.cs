@@ -2,7 +2,7 @@
 
 namespace SpiderX.Launcher
 {
-	public sealed class CaseOption
+	public sealed class CaseSetting
 	{
 		public string NameSpace { get; set; }
 

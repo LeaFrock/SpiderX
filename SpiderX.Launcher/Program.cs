@@ -38,11 +38,10 @@ namespace SpiderX.Launcher
 				{
 					logConf.AddConsole();
 				});
-
 			hostBuilder.ConfigureServices((hostContext, services) =>
 			{
 				services.AddHostedService<BllCaseLaunchService>()
-				.Configure<List<CaseOption>>(opts =>
+				.Configure<List<CaseSetting>>(opts =>
 				{
 					if (existsCommandLine)
 					{
@@ -50,9 +49,9 @@ namespace SpiderX.Launcher
 						for (byte i = 1; i < args.Length; i++)
 						{
 							string cmd = args[i];
-							if (!CaseOption.CheckSkipStringArg(cmd))
+							if (!CaseSetting.CheckSkipStringArg(cmd))
 							{
-								CaseOption opt = new CaseOption() { NameSpace = nmsp };
+								CaseSetting opt = new CaseSetting() { NameSpace = nmsp };
 								opt.InitByCommandLine(cmd);
 								opts.Add(opt);
 							}
@@ -99,20 +98,22 @@ namespace SpiderX.Launcher
 				validArgs = null;
 				return false;
 			}
-			List<string> tempList = new List<string>(args.Length) { args[0] };
+			int validCount = 0;
 			for (byte i = 1; i < args.Length; i++)
 			{
-				if (!CaseOption.CheckSkipStringArg(args[i]))
+				if (!CaseSetting.CheckSkipStringArg(args[i]))
 				{
-					tempList.Add(args[i]);
+					validCount++;
+					args[validCount] = args[i];
 				}
 			}
-			if (tempList.Count < 2)
+			if (validCount < 1)
 			{
 				validArgs = null;
 				return false;
 			}
-			validArgs = tempList.ToArray();
+			validArgs = new string[validCount + 1];
+			Array.Copy(args, validArgs, validCount + 1);
 			return true;
 		}
 	}

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SpiderX.BusinessBase;
 
 namespace SpiderX.Launcher
 {
@@ -15,31 +17,97 @@ namespace SpiderX.Launcher
 		private readonly IConfiguration _configuration;
 		private readonly IApplicationLifetime _applicationLifetime;
 
-		private readonly List<CaseOption> _caseSettings;
+		private readonly List<CaseSetting> _caseSettings;
 
-		private readonly static Random random = new Random();
-
-		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<CaseOption>> caseSettings)
+		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<CaseSetting>> caseSettings)
 		{
+			_caseSettings = caseSettings.Value;
+			if (_caseSettings == null || _caseSettings.Count < 1)
+			{
+				throw new ArgumentException("Invalid CaseSettings.");
+			}
 			_logger = logger;
 			_configuration = configuration;
 			_applicationLifetime = applicationLifetime;
-			_caseSettings = caseSettings.Value;
 			_applicationLifetime.ApplicationStarted.Register(OnStarted);
 			_applicationLifetime.ApplicationStopping.Register(OnStopping);
 			_applicationLifetime.ApplicationStopped.Register(OnStopped);
 		}
 
-		public Task StartAsync(CancellationToken cancellationToken)
+		public async Task StartAsync(CancellationToken cancellationToken)
 		{
-			_logger.LogWarning(random.Next(0, 10).ToString());
-			return Task.CompletedTask;
+			bool runCasesConcurrently = _configuration.GetValue<bool>("RunCasesConcurrently");
+			if (runCasesConcurrently)
+			{
+				Task[] caseTask = new Task[_caseSettings.Count];
+				for (int i = 0; i < _caseSettings.Count; i++)
+				{
+					caseTask[i] = LaunchBllCase(_caseSettings[i]);
+				}
+				try
+				{
+					Task.WaitAll(caseTask);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogTrace(ex, ex.Message);
+				}
+			}
+			else
+			{
+				foreach (var setting in _caseSettings)
+				{
+					await LaunchBllCase(setting);
+				}
+			}
 		}
 
-		public Task StopAsync(CancellationToken cancellationToken)
+		public async Task StopAsync(CancellationToken cancellationToken)
 		{
 			_applicationLifetime.StopApplication();
-			return Task.CompletedTask;
+			await Task.CompletedTask;
+		}
+
+		private async Task LaunchBllCase(CaseSetting setting)
+		{
+			string fullTypeName = setting.FullTypeName;
+			Type caseType;
+			try
+			{
+				Assembly a = Assembly.Load(setting.NameSpace);
+				caseType = a.GetType(fullTypeName, true, true);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, ex.Message);
+				return;
+			}
+			if (caseType.IsAbstract || caseType.IsNotPublic || !caseType.IsSubclassOf(typeof(BllBase)))
+			{
+				_logger.LogError("Invalid Type:" + fullTypeName);
+				return;
+			}
+			//Create Instance
+			BllBase bllInstance;
+			try
+			{
+				bllInstance = (BllBase)Activator.CreateInstance(caseType, false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, ex.StackTrace);
+				return;
+			}
+			//Invoke Method
+			var runParams = setting.Params;
+			if (runParams == null || runParams.Length < 1)
+			{
+				await Task.Run(bllInstance.Run);
+			}
+			else
+			{
+				await Task.Run(() => bllInstance.Run(runParams));
+			}
 		}
 
 		private void OnStarted()
