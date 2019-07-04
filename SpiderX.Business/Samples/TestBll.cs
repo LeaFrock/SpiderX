@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
 using SpiderX.DataClient;
 using SpiderX.Http;
@@ -14,14 +16,20 @@ namespace SpiderX.Business.Samples
 {
 	public sealed class TestBll : BllBase
 	{
-		public override void Run(params string[] args)
+		public TestBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
 		{
-			Run();
 		}
 
-		public override void Run()
+		public override Task RunAsync(params string[] args)
 		{
-			var conf = DbClient.FindConfig("SqlServerTest", true);
+			return RunAsync();
+		}
+
+		public override async Task RunAsync()
+		{
+			await base.RunAsync();
+
+			var conf = DbConfigManager.Default.GetConfig("SqlServerTest", true);
 			if (conf == null)
 			{
 				throw new DbConfigNotFoundException();

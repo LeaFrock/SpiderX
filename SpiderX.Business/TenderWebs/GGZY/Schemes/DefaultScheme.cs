@@ -12,8 +12,9 @@ namespace SpiderX.Business.TenderWebs
 		{
 			public override CollectorBase Collector { get; } = new PcWebCollector();
 
-			public override void Run(params string[] keywords)
+			public override async Task RunAsync(params string[] keywords)
 			{
+				await Collector.CollectOpenBids(keywords);
 			}
 		}
 	}

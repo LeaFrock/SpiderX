@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
 using SpiderX.Extensions;
 using SpiderX.Extensions.Http;
@@ -15,6 +16,10 @@ namespace SpiderX.ProxyFetcher
 {
 	public abstract class ProxyBll : BllBase
 	{
+		//public ProxyBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		//{
+		//}
+
 		protected static Random RandomEvent => CommonTool.RandomEvent;
 
 		internal abstract ProxyApiProvider ApiProvider { get; }

@@ -1,9 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SpiderX.BusinessBase
 {
 	public abstract class BllBase
 	{
+		public BllBase()
+		{ }
+
+		public BllBase(ILogger logger, string[] runSetting, int version)
+		{
+			Logger = logger;
+			RunSetting = runSetting;
+			Version = version;
+		}
+
 		private string _className;
 
 		public string ClassName
@@ -18,10 +31,17 @@ namespace SpiderX.BusinessBase
 			}
 		}
 
-		public abstract void Run(params string[] args);
+		protected ILogger Logger { get; }
 
-		public virtual void Run()
+		public IReadOnlyList<string> RunSetting { get; }
+
+		public int Version { get; }
+
+		public abstract Task RunAsync(params string[] args);
+
+		public virtual Task RunAsync()
 		{
+			return Task.CompletedTask;
 		}
 
 		protected static void ShowConsoleMsg(string msg)

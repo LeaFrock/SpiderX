@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpiderX.Business.LaGou
 {
@@ -10,7 +11,7 @@ namespace SpiderX.Business.LaGou
 		{
 			public CollectorBase Collector { get; set; }
 
-			public abstract void Run();
+			public abstract Task RunAsync();
 		}
 	}
 }

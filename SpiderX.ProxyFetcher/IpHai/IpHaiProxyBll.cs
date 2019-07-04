@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Threading.Tasks;
 using SpiderX.Proxy;
 
 namespace SpiderX.ProxyFetcher
@@ -7,9 +8,9 @@ namespace SpiderX.ProxyFetcher
 	{
 		internal override ProxyApiProvider ApiProvider { get; } = new IpHaiProxyApiProvider();
 
-		public override void Run()
+		public override async Task RunAsync()
 		{
-			base.Run();
+			await base.RunAsync();
 			string caseName = ClassName;
 			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
 			var urls = ApiProvider.GetRequestUrls();
@@ -27,9 +28,9 @@ namespace SpiderX.ProxyFetcher
 			}
 		}
 
-		public override void Run(params string[] args)
+		public override Task RunAsync(params string[] args)
 		{
-			Run();
+			return RunAsync();
 		}
 	}
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SpiderX.DataClient;
 
 namespace SpiderX.Launcher
 {
@@ -14,12 +15,12 @@ namespace SpiderX.Launcher
 		private async static Task Main(string[] args)
 		{
 			Preparation.JustDoIt();
-			bool existsCommandLine = ExistsValidCommandLine(args, out string[] validArgs);
 			string settingFilePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
 			var hostConfig = new ConfigurationBuilder()
 				.SetBasePath(settingFilePath)
 				.AddJsonFile("hostsettings.json", optional: false, reloadOnChange: true)
 				.Build();
+			bool existsCommandLine = ExistsValidCommandLine(args, out string[] validArgs);
 			var hostBuilder = new HostBuilder()
 				.ConfigureHostConfiguration(hostConf => hostConf.AddConfiguration(hostConfig))
 				.ConfigureAppConfiguration((hostContext, appConf) =>
@@ -40,6 +41,7 @@ namespace SpiderX.Launcher
 				});
 			hostBuilder.ConfigureServices((hostContext, services) =>
 			{
+				services.AddSingleton<DbConfigManager>();
 				services.AddHostedService<BllCaseLaunchService>()
 				.Configure<List<CaseSetting>>(opts =>
 				{
@@ -51,8 +53,7 @@ namespace SpiderX.Launcher
 							string cmd = args[i];
 							if (!CaseSetting.CheckSkipStringArg(cmd))
 							{
-								CaseSetting opt = new CaseSetting() { NameSpace = nmsp };
-								opt.InitByCommandLine(cmd);
+								var opt = CaseSetting.FromCommandLine(cmd, nmsp);
 								opts.Add(opt);
 							}
 						}
@@ -60,6 +61,16 @@ namespace SpiderX.Launcher
 					else
 					{
 						var hostConf = hostContext.Configuration;
+						var casesConf = hostConf.GetSection("CaseSettings").GetChildren();
+						foreach (var cs in casesConf)
+						{
+							bool enabled = cs.GetValue<bool>("Enabled");
+							if (enabled)
+							{
+								var opt = CaseSetting.FromConfiguration(cs);
+								opts.Add(opt);
+							}
+						}
 					}
 				});
 			});
@@ -67,6 +78,7 @@ namespace SpiderX.Launcher
 			var host = hostBuilder.Build();
 			using (host)
 			{
+				DbConfigManager.SetDefault(host.Services);
 				await host.StartAsync();
 				await host.StopAsync();
 				bool autoClose = hostConfig.GetValue<bool>("AutoClose");
@@ -82,10 +94,10 @@ namespace SpiderX.Launcher
 			var nameSpaceAbbrs = hostConf.GetSection("BllNameSpaces").GetChildren();
 			foreach (var section in nameSpaceAbbrs)
 			{
-				string abbr = section.GetSection("Abbr").Value;
+				string abbr = section.GetValue<string>("Abbr");
 				if (arg.Equals(abbr, StringComparison.CurrentCultureIgnoreCase))
 				{
-					return section.GetSection("Name").Value;
+					return section.GetValue<string>("Name");
 				}
 			}
 			return arg;

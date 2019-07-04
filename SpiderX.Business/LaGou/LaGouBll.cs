@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SpiderX.Business.LaGou.DbContexts;
 using SpiderX.BusinessBase;
 using SpiderX.Extensions;
@@ -14,33 +15,33 @@ namespace SpiderX.Business.LaGou
 			new KeyValuePair<string, Func<SchemeBase>>("default", () => new DefaultScheme())
 		};
 
-		public override void Run()
+		public override async Task RunAsync()
 		{
 			var scheme = new DefaultScheme() { Collector = new PcWebCollector() };
-			scheme.Run();
+			await scheme.RunAsync();
 		}
 
-		public override void Run(params string[] args)
+		public override async Task RunAsync(params string[] args)
 		{
 			if (args.IsNullOrEmpty())
 			{
-				Run();
+				await RunAsync();
 				return;
 			}
 			string schemeKey = args[0];
 			if (string.IsNullOrEmpty(schemeKey))
 			{
-				Run();
+				await RunAsync();
 				return;
 			}
 			var schemePair = Array.Find(_schemes, s => s.Key.Equals(schemeKey, StringComparison.CurrentCultureIgnoreCase));
 			if (schemePair.Value == null)
 			{
-				Run();
+				await RunAsync();
 				return;
 			}
 			var scheme = schemePair.Value.Invoke();
-			scheme.Run();
+			await scheme.RunAsync();
 		}
 	}
 }

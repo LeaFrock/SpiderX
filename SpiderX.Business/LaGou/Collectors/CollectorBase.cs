@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
 
@@ -11,7 +12,7 @@ namespace SpiderX.Business.LaGou
 	{
 		private abstract class CollectorBase
 		{
-			public abstract LaGouResponseDataCollection Collect(string cityName, string keyword);
+			public abstract Task<LaGouResponseDataCollection> CollectAsync(string cityName, string keyword);
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{

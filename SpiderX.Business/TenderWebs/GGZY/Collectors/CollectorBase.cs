@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.BusinessBase;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
@@ -11,9 +12,9 @@ namespace SpiderX.Business.TenderWebs
 	{
 		public abstract class CollectorBase
 		{
-			public abstract List<OpenTenderEntity> CollectOpenBids(string[] keywords);
+			public abstract Task<List<OpenTenderEntity>> CollectOpenBids(string[] keywords);
 
-			public abstract List<WinTenderEntity> CollectWinBids(string[] keywords);
+			public abstract Task<List<WinTenderEntity>> CollectWinBids(string[] keywords);
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{

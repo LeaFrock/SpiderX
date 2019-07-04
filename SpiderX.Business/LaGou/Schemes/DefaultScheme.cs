@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.Business.LaGou.DbContexts;
 
 namespace SpiderX.Business.LaGou
@@ -9,9 +10,9 @@ namespace SpiderX.Business.LaGou
 	{
 		private class DefaultScheme : SchemeBase
 		{
-			public override void Run()
+			public override async Task RunAsync()
 			{
-				var datas = Collector.Collect("上海", ".NET");
+				var datas = await Collector.CollectAsync("上海", ".NET");
 				using (var context = new LaGouSqlServerContext())
 				{
 					context.Database.EnsureCreated();

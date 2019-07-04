@@ -17,7 +17,7 @@
       "Type": 1,
       "ConnectionString": "",
       "IsTest": false,
-      "IsEnabled": true
+      "IsEnabled": false
     },
     {
       "Name": "MySqlTest",

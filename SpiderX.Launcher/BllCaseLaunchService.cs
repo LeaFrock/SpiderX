@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,11 +22,8 @@ namespace SpiderX.Launcher
 
 		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<CaseSetting>> caseSettings)
 		{
-			_caseSettings = caseSettings.Value;
-			if (_caseSettings == null || _caseSettings.Count < 1)
-			{
-				throw new ArgumentException("Invalid CaseSettings.");
-			}
+			_caseSettings = caseSettings.Value ?? throw new ArgumentNullException(nameof(caseSettings));
+
 			_logger = logger;
 			_configuration = configuration;
 			_applicationLifetime = applicationLifetime;
@@ -70,8 +68,26 @@ namespace SpiderX.Launcher
 
 		private async Task LaunchBllCase(CaseSetting setting)
 		{
+			if (!TryGetCaseType(setting, out var caseType))
+			{
+				return;
+			}
+			BllBase bllInstance;
+			try
+			{
+				bllInstance = (BllBase)Activator.CreateInstance(caseType, _logger, setting.Params, setting.Version);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "CreateBllInstance_Failed.");
+				return;
+			}
+			await bllInstance.RunAsync();
+		}
+
+		private bool TryGetCaseType(CaseSetting setting, out Type caseType)
+		{
 			string fullTypeName = setting.FullTypeName;
-			Type caseType;
 			try
 			{
 				Assembly a = Assembly.Load(setting.NameSpace);
@@ -79,35 +95,16 @@ namespace SpiderX.Launcher
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, ex.Message);
-				return;
+				_logger?.LogError(ex, ex.Message);
+				caseType = null;
+				return false;
 			}
 			if (caseType.IsAbstract || caseType.IsNotPublic || !caseType.IsSubclassOf(typeof(BllBase)))
 			{
-				_logger.LogError("Invalid Type:" + fullTypeName);
-				return;
+				_logger?.LogError("Invalid Type:" + fullTypeName);
+				return false;
 			}
-			//Create Instance
-			BllBase bllInstance;
-			try
-			{
-				bllInstance = (BllBase)Activator.CreateInstance(caseType, false);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, ex.StackTrace);
-				return;
-			}
-			//Invoke Method
-			var runParams = setting.Params;
-			if (runParams == null || runParams.Length < 1)
-			{
-				await Task.Run(bllInstance.Run);
-			}
-			else
-			{
-				await Task.Run(() => bllInstance.Run(runParams));
-			}
+			return true;
 		}
 
 		private void OnStarted()
@@ -117,7 +114,7 @@ namespace SpiderX.Launcher
 
 		private void OnStopping()
 		{
-			_logger.LogInformation("Stopping...");
+			//_logger.LogInformation("Stopping...");
 		}
 
 		private void OnStopped()

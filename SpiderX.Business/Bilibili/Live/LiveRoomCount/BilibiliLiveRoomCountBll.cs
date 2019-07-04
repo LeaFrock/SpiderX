@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.Bilibili
 {
 	public sealed partial class BilibiliLiveRoomCountBll : BllBase
 	{
-		public override void Run()
+		public override async Task RunAsync()
 		{
-			base.Run();
+			await base.RunAsync();
 			var scheme = new DefaultScheme() { Collector = new PcWebCollector() };
 			scheme.Run();
 		}
 
-		public override void Run(params string[] args)
+		public override Task RunAsync(params string[] args)
 		{
-			Run();
+			return RunAsync();
 		}
 	}
 }

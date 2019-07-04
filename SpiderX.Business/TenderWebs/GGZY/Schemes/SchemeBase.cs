@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.TenderWebs
@@ -11,7 +12,7 @@ namespace SpiderX.Business.TenderWebs
 		{
 			public abstract CollectorBase Collector { get; }
 
-			public abstract void Run(params string[] keywords);
+			public abstract Task RunAsync(params string[] keywords);
 		}
 	}
 }

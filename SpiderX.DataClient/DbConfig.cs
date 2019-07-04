@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Microsoft.Extensions.Configuration;
 
 namespace SpiderX.DataClient
@@ -33,31 +32,20 @@ namespace SpiderX.DataClient
 
 		public static DbConfig FromConfiguration(IConfiguration source)
 		{
-			DbConfig instance = new DbConfig();
-			string enabledStr = source.GetSection("IsEnabled").Value;
-			if (!bool.TryParse(enabledStr, out bool isEnabled) || !isEnabled)
+			bool isEnabled = source.GetValue<bool>("IsEnabled");
+			if (!isEnabled)
 			{
 				return null;
 			}
-			string connection = source.GetSection(nameof(ConnectionString)).Value?.Trim();
+			string connection = source.GetValue<string>(nameof(ConnectionString))?.Trim();
 			if (string.IsNullOrEmpty(connection))
 			{
 				return null;
 			}
-			string typeStr = source.GetSection(nameof(Type)).Value;
-			if (!Enum.TryParse(typeStr, out DbEnum type))
-			{
-				return null;
-			}
-			instance.Type = type;
-			string testStr = source.GetSection(nameof(IsTest)).Value;
-			if (bool.TryParse(testStr, out bool isTest))
-			{
-				instance.IsTest = isTest;
-			}
-			instance.Name = source.GetSection(nameof(Name)).Value ?? "???";
-			instance.ConnectionString = connection;
-			return instance;
+			string name = source.GetValue<string>(nameof(Name)) ?? "???";
+			var type = source.GetValue<DbEnum>(nameof(Type));
+			bool isTest = source.GetValue<bool>(nameof(IsTest));
+			return new DbConfig(name, type, connection, isTest);
 		}
 	}
 }

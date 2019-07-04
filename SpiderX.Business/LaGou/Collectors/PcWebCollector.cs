@@ -24,7 +24,7 @@ namespace SpiderX.Business.LaGou
 
 			public bool UseProxy { get; set; }
 
-			public override LaGouResponseDataCollection Collect(string cityName, string keyword)
+			public override async Task<LaGouResponseDataCollection> CollectAsync(string cityName, string keyword)
 			{
 				if (UseProxy)
 				{
@@ -37,7 +37,7 @@ namespace SpiderX.Business.LaGou
 					cookieClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
 					//Init Cookies
 					ResetHttpClientCookies(cookieClient, jobsListPageUri).ConfigureAwait(false).GetAwaiter().GetResult();
-					Thread.Sleep(3333);
+					await Task.Delay(3333);
 					using (var positionAjaxClient = CreatePositionAjaxWebClient())
 					{
 						//Preparing

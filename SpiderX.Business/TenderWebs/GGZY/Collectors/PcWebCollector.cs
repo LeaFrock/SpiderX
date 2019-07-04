@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.BusinessBase;
 using SpiderX.Http;
 
@@ -13,12 +14,12 @@ namespace SpiderX.Business.TenderWebs
 	{
 		public sealed class PcWebCollector : CollectorBase
 		{
-			public override List<OpenTenderEntity> CollectOpenBids(string[] keywords)
+			public override Task<List<OpenTenderEntity>> CollectOpenBids(string[] keywords)
 			{
 				return null;
 			}
 
-			public override List<WinTenderEntity> CollectWinBids(string[] keywords)
+			public override Task<List<WinTenderEntity>> CollectWinBids(string[] keywords)
 			{
 				return null;
 			}

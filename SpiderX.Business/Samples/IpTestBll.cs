@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
 using SpiderX.DataClient;
 using SpiderX.Http;
@@ -18,11 +19,14 @@ namespace SpiderX.Business.Samples
 		public const string HomePageHost = "icanhazip.com";
 		public readonly Uri HomePageUri = new Uri("http://icanhazip.com");
 
-		public override void Run()
+		public IpTestBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
 		{
-			base.Run();
+		}
 
-			var conf = DbClient.FindConfig("SqlServerTest", true);
+		public override async Task RunAsync()
+		{
+			await base.RunAsync();
+			var conf = DbConfigManager.Default.GetConfig("SqlServerTest", true);
 			if (conf == null)
 			{
 				throw new DbConfigNotFoundException();
@@ -45,9 +49,9 @@ namespace SpiderX.Business.Samples
 			ShowConsoleMsg(rspText);
 		}
 
-		public override void Run(params string[] args)
+		public override Task RunAsync(params string[] args)
 		{
-			Run();
+			return RunAsync();
 		}
 
 		public static SpiderWebClient CreateWebClient(IWebProxy proxy)
