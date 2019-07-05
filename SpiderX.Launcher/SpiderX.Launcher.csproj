@@ -16,15 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="AppSettings\appsettings.json" />
-    <None Remove="AppSettings\hostsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="AppSettings\hostsettings.json">
+    <Content Include="hostsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="AppSettings\appsettings.json">
+    <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -46,6 +41,6 @@
     <ProjectReference Include="..\SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_4hostsettings_1json__JsonSchema="http://json.schemastore.org/config" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

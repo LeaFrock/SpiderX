@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,11 +17,11 @@ namespace SpiderX.Launcher
 		private readonly IConfiguration _configuration;
 		private readonly IApplicationLifetime _applicationLifetime;
 
-		private readonly List<CaseSetting> _caseSettings;
+		private readonly List<IBllCaseBuilder> _caseBuilders;
 
-		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<CaseSetting>> caseSettings)
+		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<IBllCaseBuilder>> caseBuilders)
 		{
-			_caseSettings = caseSettings.Value ?? throw new ArgumentNullException(nameof(caseSettings));
+			_caseBuilders = caseBuilders.Value ?? throw new ArgumentNullException(nameof(caseBuilders));
 
 			_logger = logger;
 			_configuration = configuration;
@@ -34,13 +33,28 @@ namespace SpiderX.Launcher
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
+			var bllCases = new List<BllBase>();
+			foreach (var builder in _caseBuilders)
+			{
+				BllBase bllCase;
+				try
+				{
+					bllCase = builder.Build();
+				}
+				catch (BllCaseBuildException ex)
+				{
+					_logger.LogError(ex, ex.Message);
+					continue;
+				}
+				bllCases.Add(bllCase);
+			}
 			bool runCasesConcurrently = _configuration.GetValue<bool>("RunCasesConcurrently");
 			if (runCasesConcurrently)
 			{
-				Task[] caseTask = new Task[_caseSettings.Count];
-				for (int i = 0; i < _caseSettings.Count; i++)
+				Task[] caseTask = new Task[bllCases.Count];
+				for (int i = 0; i < bllCases.Count; i++)
 				{
-					caseTask[i] = LaunchBllCase(_caseSettings[i]);
+					caseTask[i] = bllCases[i].RunAsync();
 				}
 				try
 				{
@@ -53,9 +67,9 @@ namespace SpiderX.Launcher
 			}
 			else
 			{
-				foreach (var setting in _caseSettings)
+				foreach (var bllCase in bllCases)
 				{
-					await LaunchBllCase(setting);
+					await bllCase.RunAsync();
 				}
 			}
 		}
@@ -66,46 +80,7 @@ namespace SpiderX.Launcher
 			await Task.CompletedTask;
 		}
 
-		private async Task LaunchBllCase(CaseSetting setting)
-		{
-			if (!TryGetCaseType(setting, out var caseType))
-			{
-				return;
-			}
-			BllBase bllInstance;
-			try
-			{
-				bllInstance = (BllBase)Activator.CreateInstance(caseType, _logger, setting.Params, setting.Version);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "CreateBllInstance_Failed.");
-				return;
-			}
-			await bllInstance.RunAsync();
-		}
-
-		private bool TryGetCaseType(CaseSetting setting, out Type caseType)
-		{
-			string fullTypeName = setting.FullTypeName;
-			try
-			{
-				Assembly a = Assembly.Load(setting.NameSpace);
-				caseType = a.GetType(fullTypeName, true, true);
-			}
-			catch (Exception ex)
-			{
-				_logger?.LogError(ex, ex.Message);
-				caseType = null;
-				return false;
-			}
-			if (caseType.IsAbstract || caseType.IsNotPublic || !caseType.IsSubclassOf(typeof(BllBase)))
-			{
-				_logger?.LogError("Invalid Type:" + fullTypeName);
-				return false;
-			}
-			return true;
-		}
+		
 
 		private void OnStarted()
 		{

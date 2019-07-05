@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SpiderX.BusinessBase;
 using SpiderX.DataClient;
 
 namespace SpiderX.Launcher
@@ -15,12 +16,12 @@ namespace SpiderX.Launcher
 		private async static Task Main(string[] args)
 		{
 			Preparation.JustDoIt();
-			string settingFilePath = Path.Combine(Directory.GetCurrentDirectory(), "AppSettings");
+			string settingFilePath = Directory.GetCurrentDirectory();
 			var hostConfig = new ConfigurationBuilder()
 				.SetBasePath(settingFilePath)
 				.AddJsonFile("hostsettings.json", optional: false, reloadOnChange: true)
 				.Build();
-			bool existsCommandLine = ExistsValidCommandLine(args, out string[] validArgs);
+			bool existsCommandLine = ExistsValidCommandLine(args, out int validLength);
 			var hostBuilder = new HostBuilder()
 				.ConfigureHostConfiguration(hostConf => hostConf.AddConfiguration(hostConfig))
 				.ConfigureAppConfiguration((hostContext, appConf) =>
@@ -43,19 +44,16 @@ namespace SpiderX.Launcher
 			{
 				services.AddSingleton<DbConfigManager>();
 				services.AddHostedService<BllCaseLaunchService>()
-				.Configure<List<CaseSetting>>(opts =>
+				.Configure<List<IBllCaseBuilder>>(opts =>
 				{
 					if (existsCommandLine)
 					{
 						string nmsp = GetNameSpaceOfServices(hostConfig, args[0]);
-						for (byte i = 1; i < args.Length; i++)
+						for (byte i = 1; i < validLength; i++)
 						{
 							string cmd = args[i];
-							if (!CaseSetting.CheckSkipStringArg(cmd))
-							{
-								var opt = CaseSetting.FromCommandLine(cmd, nmsp);
-								opts.Add(opt);
-							}
+							var opt = BllCaseBuilderHelper.FromCommandLine(cmd, nmsp);
+							opts.Add(opt);
 						}
 					}
 					else
@@ -67,7 +65,7 @@ namespace SpiderX.Launcher
 							bool enabled = cs.GetValue<bool>("Enabled");
 							if (enabled)
 							{
-								var opt = CaseSetting.FromConfiguration(cs);
+								var opt = BllCaseBuilderHelper.FromConfiguration(cs);
 								opts.Add(opt);
 							}
 						}
@@ -103,30 +101,33 @@ namespace SpiderX.Launcher
 			return arg;
 		}
 
-		private static bool ExistsValidCommandLine(string[] args, out string[] validArgs)
+		private static bool ExistsValidCommandLine(string[] args, out int validLength)
 		{
 			if (args == null || args.Length < 2)//The length must be larger than 1.
 			{
-				validArgs = null;
+				validLength = 0;
 				return false;
 			}
 			int validCount = 0;
 			for (byte i = 1; i < args.Length; i++)
 			{
-				if (!CaseSetting.CheckSkipStringArg(args[i]))
+				if (!CheckSkipStringArg(args[i]))
 				{
 					validCount++;
+					string temp = args[validCount];
 					args[validCount] = args[i];
+					args[i] = temp;
 				}
 			}
 			if (validCount < 1)
 			{
-				validArgs = null;
+				validLength = 0;
 				return false;
 			}
-			validArgs = new string[validCount + 1];
-			Array.Copy(args, validArgs, validCount + 1);
+			validLength = validCount + 1;
 			return true;
 		}
+
+		public static bool CheckSkipStringArg(string arg) => arg.StartsWith('/');
 	}
 }

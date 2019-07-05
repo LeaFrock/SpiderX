@@ -7,13 +7,10 @@ namespace SpiderX.BusinessBase
 {
 	public abstract class BllBase
 	{
-		public BllBase()
-		{ }
-
 		public BllBase(ILogger logger, string[] runSetting, int version)
 		{
 			Logger = logger;
-			RunSetting = runSetting;
+			RunSettings = runSetting;
 			Version = version;
 		}
 
@@ -33,23 +30,19 @@ namespace SpiderX.BusinessBase
 
 		protected ILogger Logger { get; }
 
-		public IReadOnlyList<string> RunSetting { get; }
+		public IReadOnlyList<string> RunSettings { get; }
 
 		public int Version { get; }
-
-		public abstract Task RunAsync(params string[] args);
 
 		public virtual Task RunAsync()
 		{
 			return Task.CompletedTask;
 		}
 
-		protected static void ShowConsoleMsg(string msg)
+		protected void ShowConsoleMsg(string msg)
 		{
 #if DEBUG
-			Console.WriteLine(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
-#else
-			Console.WriteLine(msg);
+			Logger.LogInformation(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
 #endif
 		}
 	}
