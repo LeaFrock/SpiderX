@@ -1,11 +1,16 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SpiderX.Proxy;
 
 namespace SpiderX.ProxyFetcher
 {
 	public sealed class IpHaiProxyBll : ProxyBll
 	{
+		public IpHaiProxyBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		{
+		}
+
 		internal override ProxyApiProvider ApiProvider { get; } = new IpHaiProxyApiProvider();
 
 		public override async Task RunAsync()
@@ -26,11 +31,6 @@ namespace SpiderX.ProxyFetcher
 				int insertCount = pa.InsertProxyEntities(entities);
 				ShowConsoleMsg("InsertCount: " + insertCount.ToString());
 			}
-		}
-
-		public override Task RunAsync(params string[] args)
-		{
-			return RunAsync();
 		}
 	}
 }

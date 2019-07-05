@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -7,9 +7,13 @@ namespace SpiderX.BusinessBase
 {
 	public abstract class BllBase
 	{
+		private static ILogger _logger;
+
+		protected static ILogger Logger => _logger;
+
 		public BllBase(ILogger logger, string[] runSetting, int version)
 		{
-			Logger = logger;
+			Interlocked.CompareExchange(ref _logger, logger, null);
 			RunSettings = runSetting;
 			Version = version;
 		}
@@ -28,9 +32,7 @@ namespace SpiderX.BusinessBase
 			}
 		}
 
-		protected ILogger Logger { get; }
-
-		public IReadOnlyList<string> RunSettings { get; }
+		public string[] RunSettings { get; }
 
 		public int Version { get; }
 
@@ -39,10 +41,10 @@ namespace SpiderX.BusinessBase
 			return Task.CompletedTask;
 		}
 
-		protected void ShowConsoleMsg(string msg)
+		protected static void ShowConsoleMsg(string msg)
 		{
 #if DEBUG
-			Logger.LogInformation(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
+			Logger?.LogInformation(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
 #endif
 		}
 	}

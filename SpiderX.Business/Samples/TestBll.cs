@@ -20,11 +20,6 @@ namespace SpiderX.Business.Samples
 		{
 		}
 
-		public override Task RunAsync(params string[] args)
-		{
-			return RunAsync();
-		}
-
 		public override async Task RunAsync()
 		{
 			await base.RunAsync();

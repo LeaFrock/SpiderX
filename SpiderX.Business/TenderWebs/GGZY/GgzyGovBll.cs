@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.TenderWebs
 {
 	public sealed partial class GgzyGovBll : BllBase
 	{
-		public override Task RunAsync()
+		public GgzyGovBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
 		{
-			throw new NotSupportedException("Must input keywords");
 		}
 
-		public override async Task RunAsync(params string[] args)
+		public override async Task RunAsync()
 		{
 			var scheme = new DefaultScheme();
-			await scheme.RunAsync(args);
+			await scheme.RunAsync(RunSettings);
 		}
 	}
 }

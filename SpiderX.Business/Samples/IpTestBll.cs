@@ -49,11 +49,6 @@ namespace SpiderX.Business.Samples
 			ShowConsoleMsg(rspText);
 		}
 
-		public override Task RunAsync(params string[] args)
-		{
-			return RunAsync();
-		}
-
 		public static SpiderWebClient CreateWebClient(IWebProxy proxy)
 		{
 			SpiderWebClient client = new SpiderWebClient(proxy);
