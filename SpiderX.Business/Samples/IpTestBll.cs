@@ -25,7 +25,6 @@ namespace SpiderX.Business.Samples
 
 		public override async Task RunAsync()
 		{
-			await base.RunAsync();
 			var conf = DbConfigManager.Default.GetConfig("SqlServerTest", true);
 			if (conf == null)
 			{
@@ -45,7 +44,7 @@ namespace SpiderX.Business.Samples
 			};
 			HttpRequestFactory requestFactory = new HttpRequestFactory(CreateWebClient, CreateRequestMessage);
 			proxySelector.Initialize();
-			string rspText = HttpConsole.GetResponseTextByProxy(requestFactory, proxySelector);
+			string rspText = await HttpConsole.GetResponseTextByProxyAsync(requestFactory, proxySelector);
 			ShowConsoleMsg(rspText);
 		}
 

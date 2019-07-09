@@ -15,7 +15,6 @@ namespace SpiderX.Business.Bilibili
 
 		public override async Task RunAsync()
 		{
-			await base.RunAsync();
 			var scheme = new DefaultScheme() { Collector = new PcWebCollector() };
 			scheme.Run();
 		}

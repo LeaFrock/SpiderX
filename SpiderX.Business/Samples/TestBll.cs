@@ -22,8 +22,6 @@ namespace SpiderX.Business.Samples
 
 		public override async Task RunAsync()
 		{
-			await base.RunAsync();
-
 			var conf = DbConfigManager.Default.GetConfig("SqlServerTest", true);
 			if (conf == null)
 			{
