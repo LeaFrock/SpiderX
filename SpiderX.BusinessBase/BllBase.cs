@@ -36,10 +36,7 @@ namespace SpiderX.BusinessBase
 
 		public int Version { get; }
 
-		public virtual Task RunAsync()
-		{
-			return Task.CompletedTask;
-		}
+		public abstract Task RunAsync();
 
 		protected static void ShowConsoleMsg(string msg)
 		{
