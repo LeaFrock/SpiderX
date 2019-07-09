@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +32,7 @@ namespace SpiderX.Launcher
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
-			var bllCases = new List<BllBase>();
+			var bllCases = new List<BllBase>(_caseBuilders.Count);
 			foreach (var builder in _caseBuilders)
 			{
 				BllBase bllCase;
@@ -79,8 +78,6 @@ namespace SpiderX.Launcher
 			_applicationLifetime.StopApplication();
 			await Task.CompletedTask;
 		}
-
-		
 
 		private void OnStarted()
 		{

@@ -46,13 +46,14 @@ namespace SpiderX.Launcher
 				services.AddHostedService<BllCaseLaunchService>()
 				.Configure<List<IBllCaseBuilder>>(opts =>
 				{
+					var loggerFactory = services.BuildServiceProvider().GetService<ILoggerFactory>();
 					if (existsCommandLine)
 					{
 						string nmsp = GetNameSpaceOfServices(hostConfig, args[0]);
 						for (byte i = 1; i < validLength; i++)
 						{
 							string cmd = args[i];
-							var opt = BllCaseBuilderHelper.FromCommandLine(cmd, nmsp);
+							var opt = BllCaseBuilderHelper.FromCommandLine(cmd, nmsp, loggerFactory);
 							opts.Add(opt);
 						}
 					}
@@ -65,7 +66,7 @@ namespace SpiderX.Launcher
 							bool enabled = cs.GetValue<bool>("Enabled");
 							if (enabled)
 							{
-								var opt = BllCaseBuilderHelper.FromConfiguration(cs);
+								var opt = BllCaseBuilderHelper.FromConfiguration(cs, loggerFactory);
 								opts.Add(opt);
 							}
 						}

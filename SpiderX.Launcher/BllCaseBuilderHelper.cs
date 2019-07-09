@@ -10,7 +10,7 @@ namespace SpiderX.Launcher
 {
 	public static class BllCaseBuilderHelper
 	{
-		public static IBllCaseBuilder FromCommandLine(string commandLineParam, string defaultNamespace, ILogger logger = null)
+		public static IBllCaseBuilder FromCommandLine(string commandLineParam, string defaultNamespace, ILoggerFactory loggerFactory = null)
 		{
 			string nameSpace = defaultNamespace;
 			string caseName;
@@ -40,6 +40,7 @@ namespace SpiderX.Launcher
 					}
 				}
 			}
+			var logger = loggerFactory?.CreateLogger(nameSpace + '.' + caseName);
 			if (!TryGetCaseType(nameSpace, caseName, logger, out var caseType))
 			{
 				return EmptyBllCaseBuilder.Default;
@@ -47,10 +48,11 @@ namespace SpiderX.Launcher
 			return new DefaultBllCaseBuilder(caseType, new BllCaseBuildOption(runSettings, version), logger);
 		}
 
-		public static IBllCaseBuilder FromConfiguration(IConfiguration cs, ILogger logger = null)
+		public static IBllCaseBuilder FromConfiguration(IConfiguration cs, ILoggerFactory loggerFactory = null)
 		{
 			string nameSpace = cs.GetValue<string>("NameSpace");
 			string caseName = cs.GetValue<string>("CaseName");
+			var logger = loggerFactory?.CreateLogger(nameSpace + '.' + caseName);
 			if (!TryGetCaseType(nameSpace, caseName, logger, out var caseType))
 			{
 				return EmptyBllCaseBuilder.Default;
