@@ -56,7 +56,8 @@ namespace SpiderX.Http
 			for (byte i = 0; i < retryTimes - 1; i++)
 			{
 				var proxy = proxySelector.SelectNextProxy();
-				if (TryGetResponseTextByProxy(requestFactory, proxy, rspValidator, out rspText))
+				rspText = GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator).ConfigureAwait(false).GetAwaiter().GetResult();
+				if (rspText != null)
 				{
 					isSuccessfulByNormalProxies = true;
 					proxySelector.OnNormalProxySuccess(proxy);
@@ -69,7 +70,8 @@ namespace SpiderX.Http
 				for (byte i = 0; i < 2; i++)
 				{
 					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
-					if (TryGetResponseTextByProxy(requestFactory, proxy, rspValidator, out rspText))
+					rspText = GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator).ConfigureAwait(false).GetAwaiter().GetResult();
+					if (rspText != null)
 					{
 						if (isAdvancedProxy)
 						{
@@ -94,7 +96,58 @@ namespace SpiderX.Http
 			return rspText;
 		}
 
-		public static async Task<string> GetResponseTextByProxyAsync(HttpRequestFactory requestFactory, IWebProxy proxy)
+		public static async Task<string> GetResponseTextByProxyAsync(HttpRequestFactory requestFactory, IWebProxySelector proxySelector, Predicate<string> rspValidator = null, byte retryTimes = 9)
+		{
+			string rspText = null;
+			if (retryTimes < 4)
+			{
+				retryTimes = 4;
+			}
+			bool isSuccessfulByNormalProxies = false;
+			for (byte i = 0; i < retryTimes - 1; i++)
+			{
+				var proxy = proxySelector.SelectNextProxy();
+				rspText = await GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator);
+				if (rspText != null)
+				{
+					isSuccessfulByNormalProxies = true;
+					proxySelector.OnNormalProxySuccess(proxy);
+					break;
+				}
+				proxySelector.OnNormalProxyFail(proxy);
+			}
+			if (!isSuccessfulByNormalProxies)
+			{
+				for (byte i = 0; i < 2; i++)
+				{
+					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
+					rspText = await GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator);
+					if (rspText != null)
+					{
+						if (isAdvancedProxy)
+						{
+							proxySelector.OnAdvancedProxySuccess(proxy);
+						}
+						else
+						{
+							proxySelector.OnNormalProxySuccess(proxy);
+						}
+						break;
+					}
+					if (isAdvancedProxy)
+					{
+						proxySelector.OnAdvancedProxyFail(proxy);
+					}
+					else
+					{
+						proxySelector.OnNormalProxyFail(proxy);
+					}
+				}
+			}
+			return rspText;
+		}
+
+		private static async Task<string> GetResponseTextByProxyAsync(HttpRequestFactory requestFactory, IWebProxy proxy, Predicate<string> rspValidator)
 		{
 			string rspText;
 			var client = requestFactory.ClientFactory.Invoke(proxy);
@@ -117,22 +170,15 @@ namespace SpiderX.Http
 				reqMsg.Dispose();
 				client.Dispose();
 			}
-			return rspText;
-		}
-
-		private static bool TryGetResponseTextByProxy(HttpRequestFactory requestFactory, IWebProxy proxy, Predicate<string> rspValidator, out string rspText)
-		{
-			rspText = GetResponseTextByProxyAsync(requestFactory, proxy).ConfigureAwait(false).GetAwaiter().GetResult();
 			if (string.IsNullOrEmpty(rspText))
 			{
-				return false;
+				return null;
 			}
 			if (rspValidator?.Invoke(rspText) == false)
 			{
-				rspText = null;
-				return false;
+				return null;
 			}
-			return true;
+			return rspText;
 		}
 	}
 }
