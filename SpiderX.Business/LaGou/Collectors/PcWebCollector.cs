@@ -49,7 +49,7 @@ namespace SpiderX.Business.LaGou
 						{
 							HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(keyword, i.ToString());
 							tasks[i - 1] = GetResponseData(positionAjaxClient, positionAjaxUri, jobsListPageUri, httpContent, cookieClient.CookieContainer, dataCollection);
-							Thread.Sleep(CommonTool.RandomEvent.Next(5000, 10000));
+							Thread.Sleep(RandomTool.NextIntSafely(5000, 10000));
 						}
 						//Wait all tasks
 						try

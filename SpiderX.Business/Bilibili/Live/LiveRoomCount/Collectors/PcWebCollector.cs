@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.Http;
 using SpiderX.Http.Util;
 
@@ -12,14 +13,14 @@ namespace SpiderX.Business.Bilibili
 	{
 		private sealed class PcWebCollector : CollectorBase
 		{
-			public override int Collect(string areaIdStr)
+			public override async Task<int> CollectAsync(string areaIdStr)
 			{
 				Uri apiUri = PcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
 				HttpRequestMessage createRequestMessage() => new HttpRequestMessage(HttpMethod.Get, apiUri) { Version = HttpVersion.Version11 };
 				var requestFactory = new HttpRequestFactory(CreateWebClient, createRequestMessage);
 				var proxyUriLoader = CreateProxyUriLoader();
 				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
-				string rspText = HttpConsole.GetResponseTextByProxy(requestFactory, proxySelector, ValidateResponseTextOK, 49);
+				string rspText = await HttpConsole.GetResponseTextByProxyAsync(requestFactory, proxySelector, ValidateResponseTextOK, 49);
 				return PcWebApiProvider.GetLiveRoomCount(rspText);
 			}
 

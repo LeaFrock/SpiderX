@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
 
@@ -11,7 +12,7 @@ namespace SpiderX.Business.Bilibili
 	{
 		private abstract class CollectorBase
 		{
-			public abstract int Collect(string areaId);
+			public abstract Task<int> CollectAsync(string areaId);
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{

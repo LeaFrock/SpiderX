@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpiderX.Business.Bilibili
 {
@@ -8,9 +9,9 @@ namespace SpiderX.Business.Bilibili
 	{
 		private sealed class DefaultScheme : SchemeBase
 		{
-			public override void Run()
+			public override async Task RunAsync()
 			{
-				int liveRoomCount = Collector.Collect("0");
+				int liveRoomCount = await Collector.CollectAsync("0");
 				ShowConsoleMsg(liveRoomCount.ToString());
 				using (var context = new BilibiliLiveRoomCountMySqlContext())
 				{

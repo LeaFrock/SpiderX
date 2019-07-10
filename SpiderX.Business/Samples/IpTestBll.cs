@@ -11,6 +11,7 @@ using SpiderX.DataClient;
 using SpiderX.Http;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
+using SpiderX.Tools;
 
 namespace SpiderX.Business.Samples
 {

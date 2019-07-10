@@ -39,6 +39,7 @@ namespace SpiderX.Business.Samples
 				UseThresold = 1,
 				VerifyPauseThresold = 2
 			};
+			await Task.CompletedTask;
 		}
 
 		public static SpiderWebClient CreateWebClient(IWebProxy proxy)
