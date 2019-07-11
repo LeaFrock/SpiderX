@@ -31,8 +31,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Security", "SpiderX
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Tools", "SpiderX.Tools\SpiderX.Tools.csproj", "{1BE3B017-421B-4975-8C17-511046D866A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.DependencyInjection", "SpiderX.DependencyInjection\SpiderX.DependencyInjection.csproj", "{08A848D7-C610-455D-A1CF-56FC1B6FF6A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,10 +77,6 @@ Global
 		{1BE3B017-421B-4975-8C17-511046D866A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BE3B017-421B-4975-8C17-511046D866A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BE3B017-421B-4975-8C17-511046D866A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08A848D7-C610-455D-A1CF-56FC1B6FF6A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08A848D7-C610-455D-A1CF-56FC1B6FF6A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08A848D7-C610-455D-A1CF-56FC1B6FF6A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08A848D7-C610-455D-A1CF-56FC1B6FF6A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,7 +91,6 @@ Global
 		{F21A7920-203D-4D73-96FE-C96652E733B8} = {ED7F11A2-5BF3-40E8-9D4E-D5F99FE695A4}
 		{990E9CD4-335A-4D38-A218-AECD5CEE61BF} = {2B321A9D-71DB-4080-A732-A396F5517448}
 		{1BE3B017-421B-4975-8C17-511046D866A6} = {2B321A9D-71DB-4080-A732-A396F5517448}
-		{08A848D7-C610-455D-A1CF-56FC1B6FF6A3} = {2B321A9D-71DB-4080-A732-A396F5517448}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA9EF8C1-3356-453F-94EF-F79B8E79D808}
