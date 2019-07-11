@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using SpiderX.DataClient;
 using SpiderX.Http;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
+using SpiderX.Puppeteer;
 
 namespace SpiderX.Business.Samples
 {
@@ -27,19 +29,31 @@ namespace SpiderX.Business.Samples
 			{
 				throw new DbConfigNotFoundException();
 			}
-			var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance(conf, c => new SqlServerProxyDbContext(c));
-			DefaultProxyUriLoader proxyUriLoader = new DefaultProxyUriLoader()
+			//var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance(conf, c => new SqlServerProxyDbContext(c));
+			//DefaultProxyUriLoader proxyUriLoader = new DefaultProxyUriLoader()
+			//{
+			//	Days = 360,
+			//	Condition = p => p.Id > 0,
+			//	ProxyAgent = proxyAgent
+			//};
+			//DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, CreateWebClient, ValidateWebProxy)
+			//{
+			//	UseThresold = 1,
+			//	VerifyPauseThresold = 2
+			//};
+			var browser = await PuppeteerConsole.LauncherBrowser();
+			using (browser)
 			{
-				Days = 360,
-				Condition = p => p.Id > 0,
-				ProxyAgent = proxyAgent
-			};
-			DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, CreateWebClient, ValidateWebProxy)
-			{
-				UseThresold = 1,
-				VerifyPauseThresold = 2
-			};
-			await Task.CompletedTask;
+				using (var page = await browser.NewPageAsync())
+				{
+					var rsp = await page.WaitForResponseAsync("https://www.baidu.com");
+					if (rsp.Ok)
+					{
+						string text = await rsp.TextAsync();
+						ShowConsoleMsg(text);
+					}
+				}
+			}
 		}
 
 		public static SpiderWebClient CreateWebClient(IWebProxy proxy)

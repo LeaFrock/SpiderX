@@ -56,7 +56,7 @@ namespace SpiderX.ProxyFetcher
 						}
 					}
 				});
-				Thread.Sleep(RandomTool.NextIntSafely(4000, 6000));
+				await Task.Delay(RandomTool.NextIntSafely(4000, 6000));
 			}
 			await Task.WhenAll(tasks);
 			return entities;
