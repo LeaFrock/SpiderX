@@ -41,19 +41,14 @@ namespace SpiderX.Business.Samples
 			//	UseThresold = 1,
 			//	VerifyPauseThresold = 2
 			//};
-			var browser = await PuppeteerConsole.LauncherBrowser();
-			using (browser)
+			for (int i = 0; i < 2; i++)
 			{
-				using (var page = await browser.NewPageAsync())
-				{
-					var rsp = await page.WaitForResponseAsync("https://www.baidu.com");
-					if (rsp.Ok)
-					{
-						string text = await rsp.TextAsync();
-						ShowConsoleMsg(text);
-					}
-				}
+				var browser = await PuppeteerConsole.LauncherBrowser(false);
+				var page = await browser.NewPageAsync();
+				await page.GoToAsync("https://www.baidu.com");
+				Console.ReadKey();
 			}
+			PuppeteerConsole.CloseAllBrowsers();
 		}
 
 		public static SpiderWebClient CreateWebClient(IWebProxy proxy)
