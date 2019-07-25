@@ -175,7 +175,7 @@ namespace SpiderX.Http.Util
 
 		private async Task VerifyProxyAsync(WebProxy proxy)
 		{
-			bool isPassed = await _proxyValidator.VerifyProxyAsync(proxy, TargetUri);
+			bool isPassed = await _proxyValidator.VerifyProxyAsync(proxy, TargetUri).ConfigureAwait(false);
 			if (isPassed)
 			{
 				_normalQueue.Enqueue(proxy);
