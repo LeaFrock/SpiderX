@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SpiderX.Proxy;
@@ -11,17 +10,16 @@ namespace SpiderX.Http.Util
 {
 	public sealed class DefaultWebProxySelector : IWebProxySelector
 	{
-		public DefaultWebProxySelector(Uri uri, IProxyUriLoader uriLoader, Func<IWebProxy, HttpClient> clientFactory, Predicate<string> rspValidator = null)
+		public DefaultWebProxySelector(Uri uri, IProxyUriLoader uriLoader, IWebProxyValidator proxyValidator)
 		{
 			TargetUri = uri ?? throw new ArgumentNullException(nameof(TargetUri));
 			_proxyUriLoader = uriLoader ?? throw new ArgumentNullException(nameof(_proxyUriLoader));
-			_clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(_clientFactory));
-			_responseValidator = rspValidator;
+			_proxyValidator = proxyValidator ?? throw new ArgumentNullException(nameof(_proxyValidator));
+			ProxyValidatorConfig = _proxyValidator.Config;
 		}
 
-		private readonly Predicate<string> _responseValidator;
-		private readonly Func<IWebProxy, HttpClient> _clientFactory;
 		private readonly IProxyUriLoader _proxyUriLoader;
+		private readonly IWebProxyValidator _proxyValidator;
 
 		private readonly ConcurrentQueue<WebProxy> _verifyingQueue = new ConcurrentQueue<WebProxy>();
 		private readonly ConcurrentQueue<WebProxy> _normalQueue = new ConcurrentQueue<WebProxy>();
@@ -34,17 +32,9 @@ namespace SpiderX.Http.Util
 
 		public bool IsInited => _initCode != 0;
 
-		public int UseThresold { get; set; } = 100;
-
-		public int VerifyPauseThresold { get; set; } = 300;
+		public WebProxyValidatorConfig ProxyValidatorConfig { get; }
 
 		public int AdvancedProxiesCacheCapacity { get; set; } = 100;
-
-		public int VerifyTaskDegree { get; set; } = 120;
-
-		public TimeSpan VerifyTaskTimeout { get; set; } = TimeSpan.FromSeconds(20);
-
-		public TimeSpan VerifyTimeout { get; set; } = TimeSpan.FromSeconds(3);
 
 		public byte MaxFailTimesOfNormalProxies { get; set; } = 3;
 
@@ -65,7 +55,7 @@ namespace SpiderX.Http.Util
 		{
 			while (true)
 			{
-				if (_normalQueue.Count < UseThresold)
+				if (_normalQueue.Count < ProxyValidatorConfig.UseThresold)
 				{
 					Thread.Sleep(5000);
 					continue;
@@ -153,7 +143,7 @@ namespace SpiderX.Http.Util
 		{
 			while (true)
 			{
-				if (_normalQueue.Count >= VerifyPauseThresold)
+				if (_normalQueue.Count >= ProxyValidatorConfig.VerifyPauseThresold)
 				{
 					Thread.Sleep(10000);
 					continue;
@@ -162,8 +152,8 @@ namespace SpiderX.Http.Util
 				{
 					LoadProxies(10000);
 				}
-				var tasks = new List<Task>(VerifyTaskDegree);
-				for (int i = 0; i < VerifyTaskDegree; i++)
+				var tasks = new List<Task>(ProxyValidatorConfig.VerifyTaskDegree);
+				for (int i = 0; i < ProxyValidatorConfig.VerifyTaskDegree; i++)
 				{
 					if (!_verifyingQueue.TryDequeue(out var proxy))
 					{
@@ -175,7 +165,7 @@ namespace SpiderX.Http.Util
 				{
 					try
 					{
-						Task.WaitAll(tasks.ToArray(), VerifyTaskTimeout);
+						Task.WaitAll(tasks.ToArray(), ProxyValidatorConfig.VerifyTaskTimeout);
 					}
 					catch
 					{ }
@@ -185,18 +175,10 @@ namespace SpiderX.Http.Util
 
 		private async Task VerifyProxyAsync(WebProxy proxy)
 		{
-			using (HttpClient client = _clientFactory.Invoke(proxy))
+			bool isPassed = await _proxyValidator.VerifyProxyAsync(proxy, TargetUri);
+			if (isPassed)
 			{
-				string rspText = await client.GetStringAsync(TargetUri);
-				if (string.IsNullOrWhiteSpace(rspText))
-				{
-					return;
-				}
-				rspText = rspText.Trim();
-				if (_responseValidator?.Invoke(rspText) != false)
-				{
-					_normalQueue.Enqueue(proxy);
-				}
+				_normalQueue.Enqueue(proxy);
 			}
 		}
 	}

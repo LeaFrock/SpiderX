@@ -38,11 +38,12 @@ namespace SpiderX.Business.Samples
 				Condition = p => p.Id > 0,
 				ProxyAgent = proxyAgent
 			};
-			DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, CreateWebClient, ValidateWebProxy)
+			DefaultWebProxyValidator webProxyValidator = new DefaultWebProxyValidator(CreateWebClient, ValidateWebProxy, new WebProxyValidatorConfig()
 			{
 				UseThresold = 1,
 				VerifyPauseThresold = 2
-			};
+			});
+			DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, webProxyValidator);
 			HttpRequestFactory requestFactory = new HttpRequestFactory(CreateWebClient, CreateRequestMessage);
 			proxySelector.Initialize();
 			string rspText = await HttpConsole.GetResponseTextByProxyAsync(requestFactory, proxySelector);

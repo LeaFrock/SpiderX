@@ -4,9 +4,7 @@ namespace SpiderX.Proxy
 {
 	public sealed class SpiderProxyEntityComparer : IEqualityComparer<SpiderProxyUriEntity>
 	{
-		private static readonly SpiderProxyEntityComparer _default = new SpiderProxyEntityComparer();
-
-		public static IEqualityComparer<SpiderProxyUriEntity> Default => _default;
+		public static IEqualityComparer<SpiderProxyUriEntity> Default { get; } = new SpiderProxyEntityComparer();
 
 		public bool Equals(SpiderProxyUriEntity x, SpiderProxyUriEntity y)
 		{
