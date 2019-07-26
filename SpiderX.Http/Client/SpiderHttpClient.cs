@@ -7,21 +7,21 @@ using SpiderX.Extensions.Http;
 
 namespace SpiderX.Http
 {
-	public sealed class SpiderWebClient : HttpClient
+	public sealed class SpiderHttpClient : HttpClient
 	{
 		private readonly SocketsHttpHandler _innerHandler;
 
 		public CookieContainer CookieContainer => _innerHandler.CookieContainer;
 
-		public SpiderWebClient() : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, UseCookies = false })
+		public SpiderHttpClient() : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, UseCookies = false })
 		{
 		}
 
-		public SpiderWebClient(IWebProxy proxy) : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, UseProxy = true, Proxy = proxy, UseCookies = false })
+		public SpiderHttpClient(IWebProxy proxy) : this(new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, UseProxy = true, Proxy = proxy, UseCookies = false })
 		{
 		}
 
-		public SpiderWebClient(SocketsHttpHandler handler) : base(handler)
+		public SpiderHttpClient(SocketsHttpHandler handler) : base(handler)
 		{
 			_innerHandler = handler;
 			Timeout = TimeSpan.FromMilliseconds(5000);

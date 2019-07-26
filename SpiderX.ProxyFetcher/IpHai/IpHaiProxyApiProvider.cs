@@ -19,9 +19,9 @@ namespace SpiderX.ProxyFetcher
 		public const string NgUrl = "http://www.iphai.com/free/ng";//国内高匿
 		public const string WgUrl = "http://www.iphai.com/free/wg";//国外高匿
 
-		public override SpiderWebClient CreateWebClient()
+		public override SpiderHttpClient CreateWebClient()
 		{
-			SpiderWebClient client = new SpiderWebClient();
+			SpiderHttpClient client = new SpiderHttpClient();
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Referrer = new Uri(NgUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");

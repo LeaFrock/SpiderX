@@ -34,9 +34,9 @@ namespace SpiderX.Business.TenderWebs
 				return rspText.EndsWith("}") && rspText.Contains("data", StringComparison.CurrentCultureIgnoreCase);
 			}
 
-			private static SpiderWebClient CreateWebClient(IWebProxy proxy)
+			private static SpiderHttpClient CreateWebClient(IWebProxy proxy)
 			{
-				var client = new SpiderWebClient(proxy);
+				var client = new SpiderHttpClient(proxy);
 				client.DefaultRequestHeaders.Add("Accept", "application/json, text/javascript, */*; q=0.01");
 				client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
 				client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);

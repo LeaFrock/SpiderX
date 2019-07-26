@@ -23,7 +23,7 @@ namespace SpiderX.ProxyFetcher
 		/// <returns></returns>
 		public abstract IList<string> GetRequestUrls();
 
-		public abstract SpiderWebClient CreateWebClient();
+		public abstract SpiderHttpClient CreateWebClient();
 
 		public virtual List<SpiderProxyUriEntity> GetProxyEntities(string responseText)
 		{

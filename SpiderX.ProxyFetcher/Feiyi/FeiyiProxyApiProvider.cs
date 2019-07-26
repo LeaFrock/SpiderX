@@ -18,9 +18,9 @@ namespace SpiderX.ProxyFetcher
 
 		public const string IpUrl = "http://www.feiyiproxy.com/?page_id=1457";
 
-		public override SpiderWebClient CreateWebClient()
+		public override SpiderHttpClient CreateWebClient()
 		{
-			SpiderWebClient client = new SpiderWebClient();
+			SpiderHttpClient client = new SpiderHttpClient();
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Referrer = new Uri(HomePageUrl);
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");

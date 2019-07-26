@@ -51,9 +51,9 @@ namespace SpiderX.Business.Samples
 			PuppeteerConsole.CloseAllBrowsers();
 		}
 
-		public static SpiderWebClient CreateWebClient(IWebProxy proxy)
+		public static SpiderHttpClient CreateWebClient(IWebProxy proxy)
 		{
-			SpiderWebClient client = new SpiderWebClient(proxy);
+			SpiderHttpClient client = new SpiderHttpClient(proxy);
 			client.DefaultRequestHeaders.Host = "www.baidu.com";
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");

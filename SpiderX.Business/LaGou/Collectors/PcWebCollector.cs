@@ -73,7 +73,7 @@ namespace SpiderX.Business.LaGou
 				return dataCollection;
 			}
 
-			private SpiderWebClient CreatePositionAjaxWebClient()
+			private SpiderHttpClient CreatePositionAjaxWebClient()
 			{
 				SocketsHttpHandler httpHandler = new SocketsHttpHandler()
 				{
@@ -88,7 +88,7 @@ namespace SpiderX.Business.LaGou
 					//httpHandler.Proxy = webProxy;
 					httpHandler.Proxy = HttpConsole.LocalWebProxy;
 				}
-				SpiderWebClient client = new SpiderWebClient(httpHandler);
+				SpiderHttpClient client = new SpiderHttpClient(httpHandler);
 				var headers = client.DefaultRequestHeaders;
 				headers.Host = PcWebApiProvider.HomePageUri.Host;
 				headers.Add("Accept", "application/json, text/javascript, */*; q=0.01");
@@ -104,7 +104,7 @@ namespace SpiderX.Business.LaGou
 				return client;
 			}
 
-			private SpiderWebClient CreateCookiesWebClient()
+			private SpiderHttpClient CreateCookiesWebClient()
 			{
 				SocketsHttpHandler httpHandler = new SocketsHttpHandler()
 				{
@@ -119,7 +119,7 @@ namespace SpiderX.Business.LaGou
 					//httpHandler.Proxy = webProxy;
 					httpHandler.Proxy = HttpConsole.LocalWebProxy;
 				}
-				SpiderWebClient client = new SpiderWebClient(httpHandler);
+				SpiderHttpClient client = new SpiderHttpClient(httpHandler);
 				var headers = client.DefaultRequestHeaders;
 				headers.Host = PcWebApiProvider.HomePageUri.Host;
 				headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
@@ -129,7 +129,7 @@ namespace SpiderX.Business.LaGou
 				return client;
 			}
 
-			private static async Task GetResponseData(SpiderWebClient webClient, Uri targetUri, Uri cookieUri, HttpContent httpContent, CookieContainer cookieContainer, LaGouResponseDataCollection dataCollection)
+			private static async Task GetResponseData(SpiderHttpClient webClient, Uri targetUri, Uri cookieUri, HttpContent httpContent, CookieContainer cookieContainer, LaGouResponseDataCollection dataCollection)
 			{
 				var data = await GetResponseData(webClient, targetUri, cookieUri, httpContent, cookieContainer).ConfigureAwait(false);
 				if (data != null)
@@ -138,7 +138,7 @@ namespace SpiderX.Business.LaGou
 				}
 			}
 
-			private static async Task<LaGouResponseData> GetResponseData(SpiderWebClient webClient, Uri targetUri, Uri cookieUri, HttpContent content, CookieContainer cookieContainer)
+			private static async Task<LaGouResponseData> GetResponseData(SpiderHttpClient webClient, Uri targetUri, Uri cookieUri, HttpContent content, CookieContainer cookieContainer)
 			{
 				string cookies = cookieContainer.GetCookieHeader(targetUri);
 				var httpRequest = CreatePositionAjaxRequest(targetUri, content, cookies);
@@ -160,7 +160,7 @@ namespace SpiderX.Business.LaGou
 				return PcWebApiProvider.CreateResponseData(text);
 			}
 
-			private static async Task ResetHttpClientCookies(SpiderWebClient webClient, Uri targetUri)
+			private static async Task ResetHttpClientCookies(SpiderHttpClient webClient, Uri targetUri)
 			{
 				MakeCookiesExpired(webClient.CookieContainer, targetUri);
 				try

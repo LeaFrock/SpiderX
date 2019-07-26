@@ -20,9 +20,9 @@ namespace SpiderX.ProxyFetcher
 
 		public byte MaxPage { get; } = 10;
 
-		public override SpiderWebClient CreateWebClient()
+		public override SpiderHttpClient CreateWebClient()
 		{
-			SpiderWebClient client = new SpiderWebClient();
+			SpiderHttpClient client = new SpiderHttpClient();
 			client.DefaultRequestHeaders.Host = HomePageHost;
 			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
 			client.DefaultRequestHeaders.Add("Accept-Encoding", "br");

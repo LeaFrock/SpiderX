@@ -29,9 +29,9 @@ namespace SpiderX.Business.Bilibili
 				return rspText.EndsWith("}") && rspText.Contains("success", StringComparison.CurrentCultureIgnoreCase);
 			}
 
-			private static SpiderWebClient CreateWebClient(IWebProxy proxy)
+			private static SpiderHttpClient CreateWebClient(IWebProxy proxy)
 			{
-				var client = new SpiderWebClient(proxy);
+				var client = new SpiderHttpClient(proxy);
 				client.DefaultRequestHeaders.Add("Accept", "application/json, text/plain, */*");
 				client.DefaultRequestHeaders.Add("Accept-Encoding", "br");
 				client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
