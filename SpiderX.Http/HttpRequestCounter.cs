@@ -8,6 +8,8 @@ namespace SpiderX.Http
 {
 	public sealed class HttpRequestCounter
 	{
+		private readonly static object _timerSyncRoot = new object();
+
 		private readonly static Lazy<Timer> _timerLazy = new Lazy<Timer>(CreateTimer, true);
 
 		private readonly static StringBuilder _counterInfoBuilder = new StringBuilder(10);
@@ -17,19 +19,11 @@ namespace SpiderX.Http
 
 		public static ILogger Logger { get; set; }
 
-		public HttpRequestCounter(string name)
+		private HttpRequestCounter()
 		{
-			Name = name;
-			if (_counterCache.TryAdd(name, this))
-			{
-				if (!_timerLazy.IsValueCreated || !Timer.Enabled)
-				{
-					Timer.Start();
-				}
-			}
 		}
 
-		public string Name { get; }
+		public string Name { get; private set; }
 
 		public long Send { get; private set; }
 
@@ -44,9 +38,15 @@ namespace SpiderX.Http
 
 		public void Disable()
 		{
-			if (_counterCache.TryRemove(Name, out var _) && _counterCache.IsEmpty)
+			if (_counterCache.TryRemove(Name, out var _))
 			{
-				Timer.Stop();
+				lock (_timerSyncRoot)
+				{
+					if (_counterCache.IsEmpty)
+					{
+						Timer.Stop();
+					}
+				}
 			}
 		}
 
@@ -56,6 +56,23 @@ namespace SpiderX.Http
 			{
 				Timer?.Dispose();
 			}
+		}
+
+		public static bool TryRegisterNew(string name)
+		{
+			var c = new HttpRequestCounter() { Name = name };
+			bool success = _counterCache.TryAdd(name, c);
+			if (success)
+			{
+				lock (_timerSyncRoot)
+				{
+					if (!_timerLazy.IsValueCreated || !Timer.Enabled)
+					{
+						Timer.Start();
+					}
+				}
+			}
+			return success;
 		}
 
 		private static Timer CreateTimer()

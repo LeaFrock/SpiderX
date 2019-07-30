@@ -2,7 +2,7 @@
   "profiles": {
     "SpiderX.Launcher": {
       "commandName": "Project",
-      "commandLineArgs": "PxFt /SpiderX.Business-samples.iptest SpiderX.Business-samples.test /SpiderX.Business-bilibili.BilibiliLiveRoomCountBll /*-iphaiproxy /*-feiyiproxy /*-fatezeroproxy /*-kuaidailiproxy /*-kxdailiproxy /*-qydailiproxy /*-xicidailiproxy /*-yundailiproxy",
+      "commandLineArgs": "PxFt /SpiderX.Business-samples.iptest /SpiderX.Business-samples.test SpiderX.Business-bilibili.BilibiliLiveRoomCountBll /*-iphaiproxy /*-feiyiproxy /*-fatezeroproxy /*-kuaidailiproxy /*-kxdailiproxy /*-qydailiproxy /*-xicidailiproxy /*-yundailiproxy",
       "environmentVariables": {
         "PUPPETEER_EXECUTABLE_PATH": "*\\.local-chromium\\chrome.exe",
         "App_Resources_FolderName": "SpiderX",

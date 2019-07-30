@@ -44,10 +44,24 @@ namespace SpiderX.Business.Samples
 				VerifyPauseThresold = 2
 			});
 			DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, webProxyValidator);
-			HttpRequestFactory requestFactory = new HttpRequestFactory(CreateWebClient, CreateRequestMessage);
 			proxySelector.Initialize();
-			string rspText = await HttpConsole.GetResponseTextByProxyAsync(requestFactory, proxySelector);
+			string rspText = await HttpConsole.GetResponseTextByProxyAsync(HomePageUri, proxySelector, GetResponseTextAsync);
 			ShowConsoleMsg(rspText);
+		}
+
+		public static async Task<string> GetResponseTextAsync(Uri uri, IWebProxy proxy)
+		{
+			using (var client = CreateWebClient(proxy))
+			{
+				try
+				{
+					return await client.GetStringAsync(uri);
+				}
+				catch
+				{
+					return string.Empty;
+				}
+			}
 		}
 
 		public static SpiderHttpClient CreateWebClient(IWebProxy proxy)
@@ -61,15 +75,6 @@ namespace SpiderX.Business.Samples
 			client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 			return client;
-		}
-
-		private HttpRequestMessage CreateRequestMessage()
-		{
-			return new HttpRequestMessage()
-			{
-				Method = HttpMethod.Get,
-				RequestUri = HomePageUri
-			};
 		}
 
 		private static bool ValidateWebProxy(string rspText)

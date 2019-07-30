@@ -46,7 +46,7 @@ namespace SpiderX.Http
 			return new MediaTypeHeaderValue(mediaTypeSpan) { CharSet = charSetSpan };
 		}
 
-		public static string GetResponseTextByProxy(HttpRequestFactory requestFactory, IWebProxySelector proxySelector, Predicate<string> rspValidator = null, byte retryTimes = 9)
+		public static async Task<string> GetResponseTextByProxyAsync(Uri uri, IWebProxySelector proxySelector, Func<Uri, IWebProxy, Task<string>> rspTextFetcher, Predicate<string> rspValidator = null, byte retryTimes = 9)
 		{
 			string rspText = null;
 			if (retryTimes < 4)
@@ -57,7 +57,7 @@ namespace SpiderX.Http
 			for (byte i = 0; i < retryTimes - 1; i++)
 			{
 				var proxy = proxySelector.SelectNextProxy();
-				rspText = GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator).ConfigureAwait(false).GetAwaiter().GetResult();
+				rspText = await rspTextFetcher.Invoke(uri, proxy);
 				if (rspText != null)
 				{
 					isSuccessfulByNormalProxies = true;
@@ -71,7 +71,7 @@ namespace SpiderX.Http
 				for (byte i = 0; i < 2; i++)
 				{
 					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
-					rspText = GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator).ConfigureAwait(false).GetAwaiter().GetResult();
+					rspText = await rspTextFetcher.Invoke(uri, proxy);
 					if (rspText != null)
 					{
 						if (isAdvancedProxy)
@@ -97,7 +97,7 @@ namespace SpiderX.Http
 			return rspText;
 		}
 
-		public static async Task<string> GetResponseTextByProxyAsync(HttpRequestFactory requestFactory, IWebProxySelector proxySelector, Predicate<string> rspValidator = null, byte retryTimes = 9)
+		public static async Task<string> GetResponseTextByProxyAsync(Uri uri, IWebProxySelector proxySelector, Func<Uri, IWebProxy, Task<HttpResponseMessage>> rspFetcher, Predicate<string> rspValidator = null, byte retryTimes = 9)
 		{
 			string rspText = null;
 			if (retryTimes < 4)
@@ -108,7 +108,7 @@ namespace SpiderX.Http
 			for (byte i = 0; i < retryTimes - 1; i++)
 			{
 				var proxy = proxySelector.SelectNextProxy();
-				rspText = await GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator);
+				rspText = await GetResponseTextByProxyAsync(uri, rspFetcher, proxy, rspValidator);
 				if (rspText != null)
 				{
 					isSuccessfulByNormalProxies = true;
@@ -122,7 +122,7 @@ namespace SpiderX.Http
 				for (byte i = 0; i < 2; i++)
 				{
 					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
-					rspText = await GetResponseTextByProxyAsync(requestFactory, proxy, rspValidator);
+					rspText = await GetResponseTextByProxyAsync(uri, rspFetcher, proxy, rspValidator);
 					if (rspText != null)
 					{
 						if (isAdvancedProxy)
@@ -148,148 +148,12 @@ namespace SpiderX.Http
 			return rspText;
 		}
 
-		private static async Task<string> GetResponseTextByProxyAsync(HttpRequestFactory requestFactory, IWebProxy proxy, Predicate<string> rspValidator)
-		{
-			string rspText;
-			var client = requestFactory.ClientFactory.Invoke(proxy);
-			var reqMsg = requestFactory.MessageFactory.Invoke();
-			try
-			{
-				var rspMsg = await client.SendAsync(reqMsg).ConfigureAwait(false);
-				if (rspMsg == null || !rspMsg.IsSuccessStatusCode)
-				{
-					rspText = null;
-				}
-				rspText = await rspMsg.ToTextAsync();
-			}
-			catch
-			{
-				rspText = null;
-			}
-			finally
-			{
-				reqMsg.Dispose();
-				client.Dispose();
-			}
-			if (string.IsNullOrEmpty(rspText))
-			{
-				return null;
-			}
-			if (rspValidator?.Invoke(rspText) == false)
-			{
-				return null;
-			}
-			return rspText;
-		}
-
-		private static async Task<string> GetResponseTextByProxyAsync(IWebProxySelector proxySelector, Func<IWebProxy, Task<string>> rspFetcher, Predicate<string> rspValidator = null, byte retryTimes = 9)
-		{
-			string rspText = null;
-			if (retryTimes < 4)
-			{
-				retryTimes = 4;
-			}
-			bool isSuccessfulByNormalProxies = false;
-			for (byte i = 0; i < retryTimes - 1; i++)
-			{
-				var proxy = proxySelector.SelectNextProxy();
-				rspText = await rspFetcher.Invoke(proxy);
-				if (rspText != null)
-				{
-					isSuccessfulByNormalProxies = true;
-					proxySelector.OnNormalProxySuccess(proxy);
-					break;
-				}
-				proxySelector.OnNormalProxyFail(proxy);
-			}
-			if (!isSuccessfulByNormalProxies)
-			{
-				for (byte i = 0; i < 2; i++)
-				{
-					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
-					rspText = await rspFetcher.Invoke(proxy);
-					if (rspText != null)
-					{
-						if (isAdvancedProxy)
-						{
-							proxySelector.OnAdvancedProxySuccess(proxy);
-						}
-						else
-						{
-							proxySelector.OnNormalProxySuccess(proxy);
-						}
-						break;
-					}
-					if (isAdvancedProxy)
-					{
-						proxySelector.OnAdvancedProxyFail(proxy);
-					}
-					else
-					{
-						proxySelector.OnNormalProxyFail(proxy);
-					}
-				}
-			}
-			return rspText;
-		}
-
-		private static async Task<string> GetResponseTextByProxyAsync(IWebProxySelector proxySelector, Func<IWebProxy, Task<HttpResponseMessage>> rspFetcher, Predicate<string> rspValidator = null, byte retryTimes = 9)
-		{
-			string rspText = null;
-			if (retryTimes < 4)
-			{
-				retryTimes = 4;
-			}
-			bool isSuccessfulByNormalProxies = false;
-			for (byte i = 0; i < retryTimes - 1; i++)
-			{
-				var proxy = proxySelector.SelectNextProxy();
-				rspText = await GetResponseTextByProxyAsync(rspFetcher, proxy, rspValidator);
-				if (rspText != null)
-				{
-					isSuccessfulByNormalProxies = true;
-					proxySelector.OnNormalProxySuccess(proxy);
-					break;
-				}
-				proxySelector.OnNormalProxyFail(proxy);
-			}
-			if (!isSuccessfulByNormalProxies)
-			{
-				for (byte i = 0; i < 2; i++)
-				{
-					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
-					rspText = await GetResponseTextByProxyAsync(rspFetcher, proxy, rspValidator);
-					if (rspText != null)
-					{
-						if (isAdvancedProxy)
-						{
-							proxySelector.OnAdvancedProxySuccess(proxy);
-						}
-						else
-						{
-							proxySelector.OnNormalProxySuccess(proxy);
-						}
-						break;
-					}
-					if (isAdvancedProxy)
-					{
-						proxySelector.OnAdvancedProxyFail(proxy);
-					}
-					else
-					{
-						proxySelector.OnNormalProxyFail(proxy);
-					}
-				}
-			}
-			return rspText;
-		}
-
-		private static async Task<string> GetResponseTextByProxyAsync(Func<IWebProxy, Task<HttpResponseMessage>> rspFetcher, IWebProxy proxy, Predicate<string> rspValidator)
+		private static async Task<string> GetResponseTextByProxyAsync(Uri uri, Func<Uri, IWebProxy, Task<HttpResponseMessage>> rspFetcher, IWebProxy proxy, Predicate<string> rspValidator)
 		{
 			string rspText;
 			try
 			{
-				var rspMsg = await rspFetcher.Invoke(proxy).ConfigureAwait(false);
+				var rspMsg = await rspFetcher.Invoke(uri, proxy).ConfigureAwait(false);
 				if (rspMsg == null || !rspMsg.IsSuccessStatusCode)
 				{
 					rspText = null;

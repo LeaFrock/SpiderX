@@ -16,12 +16,25 @@ namespace SpiderX.Business.Bilibili
 			public override async Task<int> CollectAsync(string areaIdStr)
 			{
 				Uri apiUri = PcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
-				HttpRequestMessage createRequestMessage() => new HttpRequestMessage(HttpMethod.Get, apiUri) { Version = HttpVersion.Version11 };
-				var requestFactory = new HttpRequestFactory(CreateWebClient, createRequestMessage);
 				var proxyUriLoader = CreateProxyUriLoader();
 				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
-				string rspText = await HttpConsole.GetResponseTextByProxyAsync(requestFactory, proxySelector, ValidateResponseTextOK, 49);
+				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, ValidateResponseTextOK, 49);
 				return PcWebApiProvider.GetLiveRoomCount(rspText);
+			}
+
+			private static async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
+			{
+				using (var client = CreateWebClient(proxy))
+				{
+					try
+					{
+						return await client.GetStringAsync(targetUri);
+					}
+					catch
+					{
+						return null;
+					}
+				}
 			}
 
 			private static bool ValidateResponseTextOK(string rspText)
