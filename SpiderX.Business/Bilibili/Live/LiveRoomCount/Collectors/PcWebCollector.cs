@@ -18,17 +18,29 @@ namespace SpiderX.Business.Bilibili
 				Uri apiUri = PcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
 				var proxyUriLoader = CreateProxyUriLoader();
 				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
-				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, ValidateResponseTextOK, 49);
+				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, 49);
+				if (string.IsNullOrEmpty(rspText))
+				{
+					return 0;
+				}
 				return PcWebApiProvider.GetLiveRoomCount(rspText);
 			}
 
-			private static async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
+			private async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
 			{
 				using (var client = CreateWebClient(proxy))
 				{
+					RequestCounter.OnSend();
 					try
 					{
-						return await client.GetStringAsync(targetUri);
+						string rspText = await client.GetStringAsync(targetUri);
+						RequestCounter.OnPass();
+						if (!ValidateResponseTextOK(rspText))
+						{
+							return null;
+						}
+						RequestCounter.OnSucceed();
+						return rspText;
 					}
 					catch
 					{

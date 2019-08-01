@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SpiderX.Http;
 
 namespace SpiderX.Business.Bilibili
 {
@@ -11,6 +12,7 @@ namespace SpiderX.Business.Bilibili
 		{
 			public override async Task RunAsync()
 			{
+				Collector.BeforeCollectAsync();
 				int liveRoomCount = await Collector.CollectAsync("0");
 				ShowConsoleMsg(liveRoomCount.ToString());
 				using (var context = new BilibiliLiveRoomCountMySqlContext())
