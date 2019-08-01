@@ -27,9 +27,9 @@ namespace SpiderX.ProxyFetcher
 					return;
 				}
 				entities.ForEach(e => e.Source = caseName);
-				ShowConsoleMsg("CollectCount: " + entities.Count.ToString());
+				ShowLogInfo("CollectCount: " + entities.Count.ToString());
 				int insertCount = pa.InsertProxyEntities(entities);
-				ShowConsoleMsg("InsertCount: " + insertCount.ToString());
+				ShowLogInfo("InsertCount: " + insertCount.ToString());
 			}
 		}
 	}

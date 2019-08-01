@@ -14,7 +14,7 @@ namespace SpiderX.Business.Bilibili
 			{
 				Collector.BeforeCollectAsync();
 				int liveRoomCount = await Collector.CollectAsync("0");
-				ShowConsoleMsg(liveRoomCount.ToString());
+				ShowLogInfo(liveRoomCount.ToString());
 				using (var context = new BilibiliLiveRoomCountMySqlContext())
 				{
 					context.Database.EnsureCreated();

@@ -46,7 +46,7 @@ namespace SpiderX.Business.Samples
 			DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, webProxyValidator);
 			proxySelector.Initialize();
 			string rspText = await HttpConsole.GetResponseTextByProxyAsync(HomePageUri, proxySelector, GetResponseTextAsync);
-			ShowConsoleMsg(rspText);
+			ShowLogInfo(rspText);
 		}
 
 		public static async Task<string> GetResponseTextAsync(Uri uri, IWebProxy proxy)

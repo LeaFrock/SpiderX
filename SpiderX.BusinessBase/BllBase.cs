@@ -38,11 +38,16 @@ namespace SpiderX.BusinessBase
 
 		public abstract Task RunAsync();
 
-		protected static void ShowConsoleMsg(string msg)
+		protected static void ShowLogInfo(string msg)
 		{
 #if DEBUG
 			Logger?.LogInformation(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
 #endif
+		}
+
+		protected static void ShowLogError(string msg)
+		{
+			Logger?.LogError(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
 		}
 	}
 }
