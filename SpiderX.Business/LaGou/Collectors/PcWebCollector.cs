@@ -24,30 +24,29 @@ namespace SpiderX.Business.LaGou
 
 			public bool UseProxy { get; set; }
 
-			public override async Task<LaGouResponseDataCollection> CollectAsync(string cityName, string keyword)
+			public override async Task<LaGouResponseDataCollection> CollectAsync(LaGouSearchParam searchParam)
 			{
-				if (UseProxy)
-				{
-					throw new NotImplementedException();
-				}
+				string encodedCityName = WebTool.UrlEncodeByW3C(searchParam.City);
+				string encodedKeyword = WebTool.UrlEncodeByW3C(searchParam.Keyword);
 				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
 				using (var cookieClient = CreateCookiesWebClient())
 				{
-					Uri jobsListPageUri = PcWebApiProvider.GetJobListUri(cityName, keyword);
+					Uri jobsListPageUri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword);
 					cookieClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
 					//Init Cookies
 					ResetHttpClientCookies(cookieClient, jobsListPageUri).ConfigureAwait(false).GetAwaiter().GetResult();
 					await Task.Delay(3333);
-					using (var positionAjaxClient = CreatePositionAjaxWebClient())
+					Uri referer = PcWebApiProvider.GetPostionAjaxReferer(encodedCityName, encodedKeyword);
+					using (var positionAjaxClient = CreatePositionAjaxWebClient(referer))
 					{
 						//Preparing
 						positionAjaxClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
-						Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(cityName);
+						Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(encodedCityName);
 						var tasks = new Task[MaxPage];
 						//Start tasks
 						for (int i = 1; i <= MaxPage; i++)
 						{
-							HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(keyword, i.ToString());
+							HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(encodedKeyword, i.ToString());
 							tasks[i - 1] = GetResponseData(positionAjaxClient, positionAjaxUri, jobsListPageUri, httpContent, cookieClient.CookieContainer, dataCollection);
 							Thread.Sleep(RandomTool.NextIntSafely(5000, 10000));
 						}
@@ -64,43 +63,39 @@ namespace SpiderX.Business.LaGou
 				}
 				foreach (var pos in dataCollection.Positions)
 				{
-					pos.Value.Keyword = keyword;
+					pos.Value.Keyword = encodedKeyword;
 				}
 				foreach (var com in dataCollection.Companies)
 				{
-					com.Value.CityName = cityName;
+					com.Value.CityName = encodedCityName;
 				}
 				return dataCollection;
 			}
 
-			private SpiderHttpClient CreatePositionAjaxWebClient()
+			private SpiderHttpClient CreatePositionAjaxWebClient(Uri referer)
 			{
-				SocketsHttpHandler httpHandler = new SocketsHttpHandler()
+				SocketsHttpHandler handler = new SocketsHttpHandler()
 				{
 					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-					UseCookies = false,
+					UseCookies = true,
 					UseProxy = UseProxy
 				};
 				if (UseProxy)
 				{
-					//var uris = GetUrisFromDb();
-					//var webProxy = CreateWebProxy(uris);
-					//httpHandler.Proxy = webProxy;
-					httpHandler.Proxy = HttpConsole.LocalWebProxy;
+					handler.Proxy = HttpConsole.LocalWebProxy;
 				}
-				SpiderHttpClient client = new SpiderHttpClient(httpHandler);
+				SpiderHttpClient client = new SpiderHttpClient(handler);
 				var headers = client.DefaultRequestHeaders;
 				headers.Host = PcWebApiProvider.HomePageUri.Host;
+				headers.Referrer = referer;
 				headers.Add("Accept", "application/json, text/javascript, */*; q=0.01");
 				headers.Add("Accept-Encoding", "br");
 				headers.Add("Accept-Language", "zh-CN,zh;q=0.9");
 				headers.Add("X-Requested-With", "XMLHttpRequest");
 				headers.Add("X-Anit-Forge-Code", "0");
 				headers.Add("X-Anit-Forge-Token", "None");
-				headers.Add("Origin", PcWebApiProvider.HomePageUri.Host);
+				headers.Add("Origin", PcWebApiProvider.HomePageUri.AbsoluteUri);
 				headers.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
-				headers.Add("Cache-Control", "no-cache");
-				headers.Add("Pragma", "no-cache");
 				return client;
 			}
 
@@ -148,7 +143,7 @@ namespace SpiderX.Business.LaGou
 					return null;
 				}
 				string text = await rspMsg.ToTextAsync().ConfigureAwait(false);
-				ShowConsoleMsg(text);
+				ShowLogInfo(text);
 				if (string.IsNullOrEmpty(text))
 				{
 					return null;

@@ -11,7 +11,7 @@ namespace SpiderX.Business.LaGou
 		{
 			public CollectorBase Collector { get; set; }
 
-			public abstract Task RunAsync();
+			public abstract Task RunAsync(LaGouSearchParam searchParam);
 		}
 	}
 }

@@ -13,7 +13,8 @@ namespace SpiderX.Business.LaGou
 	{
 		private readonly KeyValuePair<string, Func<SchemeBase>>[] _schemeFactories = new KeyValuePair<string, Func<SchemeBase>>[]
 		{
-			new KeyValuePair<string, Func<SchemeBase>>("default", () => new DefaultScheme())
+			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb", () => new DefaultScheme() { Collector = new PcWebCollector() }),
+			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb_p", () => new DefaultScheme() { Collector = new PcWebCollector() { UseProxy = true } })
 		};
 
 		public LaGouBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
@@ -22,20 +23,47 @@ namespace SpiderX.Business.LaGou
 
 		public override async Task RunAsync()
 		{
-			var args = RunSettings;
-			string schemeKey = args[0];
-			if (!args.IsNullOrEmpty() && !string.IsNullOrEmpty(schemeKey))
+			const int settingLength = 4;
+			var args = RunSettings;//[SchemeKey,City,Keyword,SearchType(default or new)]
+			if (args == null)
 			{
-				var schemePair = Array.Find(_schemeFactories, s => s.Key.Equals(schemeKey, StringComparison.CurrentCultureIgnoreCase));
-				if (schemePair.Value != null)
+				ShowLogError("RunSettings is NULL.");
+				return;
+			}
+			if (args.Length != settingLength)
+			{
+				ShowLogError($"Invalid length of RunSettings: {args.Length.ToString()}. The right length should be {settingLength.ToString()}.");
+				return;
+			}
+			string schemeKey = args[0];
+			if (string.IsNullOrEmpty(schemeKey))
+			{
+				ShowLogError($"Invalid RunSettings[0]: {schemeKey}.");
+				return;
+			}
+			var schemePair = Array.Find(_schemeFactories, s => s.Key.Equals(schemeKey, StringComparison.CurrentCultureIgnoreCase));
+			var scheme = schemePair.Value?.Invoke();
+			if (scheme == null)
+			{
+				ShowLogError($"Scheme Invoke Error: {schemeKey}.");
+				return;
+			}
+			for (byte i = 1; i < args.Length; i++)
+			{
+				if (string.IsNullOrEmpty(args[i]))
 				{
-					var scheme = schemePair.Value.Invoke();
-					await scheme.RunAsync();
+					ShowLogError($"Invalid RunSettings[{i.ToString()}]: {args[i]}.");
 					return;
 				}
 			}
-			var scheme0 = new DefaultScheme() { Collector = new PcWebCollector() };
-			await scheme0.RunAsync();
+			var searchParam = new LaGouSearchParam()
+			{
+				City = args[1],
+				Keyword = args[2],
+				SearchType = args[3]
+			};
+			await scheme.RunAsync(searchParam);
+			return;
 		}
 	}
 }

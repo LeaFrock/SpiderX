@@ -22,23 +22,41 @@ namespace SpiderX.Business.LaGou
 
 			public static Uri GetPositionAjaxUri(string cityName, string type = "new")
 			{
-				string urlString = $"https://www.lagou.com/jobs/positionAjax.json?px={type}&gx=全职&city={cityName}&needAddtionalResult=false";
-				return new Uri(urlString);
+				StringBuilder sb = new StringBuilder(5);
+				sb.Append("https://www.lagou.com/jobs/positionAjax.json?px=");
+				sb.Append(type);
+				sb.Append("&gx=%E5%85%A8%E8%81%8C&city=");
+				sb.Append(WebTool.UrlEncodeByW3C(cityName));
+				sb.Append("&needAddtionalResult=false");
+				string url = sb.ToString();
+				return new Uri(url);
 			}
 
-			//public static Uri GetPositionAjaxRefererUri(string cityName, string keyword, string type = "new")
-			//{
-			//	return GetJobsListUri(cityName, keyword, type);
-			//}
-
-			public static HttpContent GetPositionAjaxFormData(string keyword, string pageNum)
+			public static Uri GetPostionAjaxReferer(string encodedCityName, string encodedKeyword, string type = "new")
 			{
-				KeyValuePair<string, string>[] pairs = new KeyValuePair<string, string>[]
+				StringBuilder sb = new StringBuilder(6);
+				sb.Append("https://www.lagou.com/jobs/list_");
+				sb.Append(encodedKeyword);
+				sb.Append("?px=");
+				sb.Append(type);
+				sb.Append("&gx=%E5%85%A8%E8%81%8C&city=");
+				sb.Append(encodedCityName);
+				string url = sb.ToString();
+				return new Uri(url);
+			}
+
+			public static HttpContent GetPositionAjaxFormData(string keyword, string pageNum, string sid = null)
+			{
+				var pairs = new List<KeyValuePair<string, string>>(4)
 				{
 					new KeyValuePair<string, string>("first", "false"),
 					new KeyValuePair<string, string>("pn", pageNum),
-					new KeyValuePair<string, string>("kd", keyword),
+					new KeyValuePair<string, string>("kd", keyword)
 				};
+				if (sid != null)
+				{
+					pairs.Add(new KeyValuePair<string, string>("sid", sid));
+				}
 				var content = new FormUrlEncodedContent(pairs);
 				content.Headers.ContentType = HttpConsole.GetOrAddContentType("application/x-www-form-urlencoded;UTF-8");
 				return content;
@@ -259,10 +277,8 @@ namespace SpiderX.Business.LaGou
 
 			#region JobsList
 
-			public static Uri GetJobListUri(string cityName, string keyword)
+			public static Uri GetJobListUri(string encodedCityName, string encodedKeyword)
 			{
-				string encodedKeyword = WebTool.UrlEncode(keyword);
-				string encodedCityName = WebTool.UrlEncode(cityName);
 				string urlString = $"https://www.lagou.com/jobs/list_{encodedKeyword}?px=default&city={encodedCityName}";
 				return new Uri(urlString);
 			}

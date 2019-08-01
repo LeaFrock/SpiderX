@@ -10,9 +10,9 @@ namespace SpiderX.Business.LaGou
 	{
 		private class DefaultScheme : SchemeBase
 		{
-			public override async Task RunAsync()
+			public override async Task RunAsync(LaGouSearchParam searchParam)
 			{
-				var datas = await Collector.CollectAsync("上海", ".NET");
+				var datas = await Collector.CollectAsync(searchParam);
 				using (var context = new LaGouSqlServerContext())
 				{
 					context.Database.EnsureCreated();

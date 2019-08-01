@@ -12,7 +12,7 @@ namespace SpiderX.Business.LaGou
 	{
 		private abstract class CollectorBase
 		{
-			public abstract Task<LaGouResponseDataCollection> CollectAsync(string cityName, string keyword);
+			public abstract Task<LaGouResponseDataCollection> CollectAsync(LaGouSearchParam searchParam);
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{
