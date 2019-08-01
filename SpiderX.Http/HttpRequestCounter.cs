@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Threading;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 
@@ -10,12 +11,12 @@ namespace SpiderX.Http
 	{
 		private readonly static object _timerSyncRoot = new object();
 
-		private readonly static Lazy<Timer> _timerLazy = new Lazy<Timer>(CreateTimer, true);
+		private readonly static Lazy<System.Timers.Timer> _timerLazy = new Lazy<System.Timers.Timer>(CreateTimer, true);
 
 		private readonly static StringBuilder _counterInfoBuilder = new StringBuilder(10);
 		private readonly static ConcurrentDictionary<string, HttpRequestCounter> _counterCache = new ConcurrentDictionary<string, HttpRequestCounter>();
 
-		internal static Timer Timer => _timerLazy.Value;
+		internal static System.Timers.Timer Timer => _timerLazy.Value;
 
 		public static ILogger Logger { get; set; }
 
@@ -23,17 +24,23 @@ namespace SpiderX.Http
 		{
 		}
 
+		private long _send;
+		private long _pass;
+		private long _succeed;
+
 		public string Name { get; private set; }
 
-		public long Send { get; private set; }
+		public long Send => _send;
 
-		public long Pass { get; private set; }
+		public long Pass => _pass;
 
-		public long Success { get; private set; }
+		public long Succeed => _succeed;
 
 		public void Reset()
 		{
-			Send = Pass = Success = 0;
+			Interlocked.Exchange(ref _send, 0);
+			Interlocked.Exchange(ref _pass, 0);
+			Interlocked.Exchange(ref _succeed, 0);
 		}
 
 		public void Disable()
@@ -50,18 +57,34 @@ namespace SpiderX.Http
 			}
 		}
 
-		public static void Clear()
+		public void OnSend()
+		{
+			Interlocked.Increment(ref _send);
+		}
+
+		public void OnPass()
+		{
+			Interlocked.Increment(ref _pass);
+		}
+
+		public void OnSucceed()
+		{
+			Interlocked.Increment(ref _succeed);
+		}
+
+		public static void DisposeStaticTimer()
 		{
 			if (_timerLazy.IsValueCreated)
 			{
+				Timer?.Stop();
 				Timer?.Dispose();
 			}
 		}
 
-		public static bool TryRegisterNew(string name)
+		public static bool TryRegisterNew(string name, out HttpRequestCounter counter)
 		{
-			var c = new HttpRequestCounter() { Name = name };
-			bool success = _counterCache.TryAdd(name, c);
+			counter = new HttpRequestCounter() { Name = name };
+			bool success = _counterCache.TryAdd(name, counter);
 			if (success)
 			{
 				lock (_timerSyncRoot)
@@ -75,9 +98,9 @@ namespace SpiderX.Http
 			return success;
 		}
 
-		private static Timer CreateTimer()
+		private static System.Timers.Timer CreateTimer()
 		{
-			var timer = new Timer()
+			var timer = new System.Timers.Timer()
 			{
 				AutoReset = true,
 				Enabled = false,
@@ -105,7 +128,7 @@ namespace SpiderX.Http
 				_counterInfoBuilder.Append('/');
 				_counterInfoBuilder.Append(counter.Pass);
 				_counterInfoBuilder.Append('/');
-				_counterInfoBuilder.Append(counter.Success);
+				_counterInfoBuilder.Append(counter.Succeed);
 				string counterInfo = _counterInfoBuilder.ToString();
 				_counterInfoBuilder.Clear();
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
@@ -23,17 +22,20 @@ namespace SpiderX.ProxyFetcher
 		protected async Task<List<SpiderProxyUriEntity>> GetProxyEntitiesAsync(SpiderHttpClient webClient, HttpMethod httpMethod, string url)
 		{
 			List<SpiderProxyUriEntity> entities = null;
-			var responseMessage = await webClient.SendAsync(httpMethod, url);
-			if (responseMessage != null)
+			using (var reqMsg = new HttpRequestMessage(httpMethod, url))
 			{
-				using (responseMessage)
+				var rspMsg = await webClient.SendAsync(reqMsg);
+				if (rspMsg != null)
 				{
-					if (responseMessage.IsSuccessStatusCode)
+					using (rspMsg)
 					{
-						var reader = await responseMessage.Content.ToHtmlReaderAsync();
-						entities = ApiProvider.GetProxyEntities(reader);
-					}
-				};
+						if (rspMsg.IsSuccessStatusCode)
+						{
+							var reader = await rspMsg.Content.ToHtmlReaderAsync();
+							entities = ApiProvider.GetProxyEntities(reader);
+						}
+					};
+				}
 			}
 			return entities ?? new List<SpiderProxyUriEntity>(0);
 		}

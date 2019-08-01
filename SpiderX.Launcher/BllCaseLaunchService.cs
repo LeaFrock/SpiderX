@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SpiderX.BusinessBase;
+using SpiderX.Http;
 
 namespace SpiderX.Launcher
 {
@@ -75,6 +76,7 @@ namespace SpiderX.Launcher
 
 		public async Task StopAsync(CancellationToken cancellationToken)
 		{
+			HttpRequestCounter.DisposeStaticTimer();
 			_applicationLifetime.StopApplication();
 			await Task.CompletedTask;
 		}

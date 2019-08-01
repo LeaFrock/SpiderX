@@ -46,7 +46,7 @@ namespace SpiderX.Http
 			return new MediaTypeHeaderValue(mediaTypeSpan) { CharSet = charSetSpan };
 		}
 
-		public static async Task<string> GetResponseTextByProxyAsync(Uri uri, IWebProxySelector proxySelector, Func<Uri, IWebProxy, Task<string>> rspTextFetcher, Predicate<string> rspValidator = null, byte retryTimes = 9)
+		public static async Task<string> GetResponseTextByProxyAsync(Uri uri, IWebProxySelector proxySelector, Func<Uri, IWebProxy, Task<string>> rspTextFetcher, byte retryTimes = 9)
 		{
 			string rspText = null;
 			if (retryTimes < 4)
@@ -58,7 +58,7 @@ namespace SpiderX.Http
 			{
 				var proxy = proxySelector.SelectNextProxy();
 				rspText = await rspTextFetcher.Invoke(uri, proxy);
-				if (rspText != null)
+				if (!string.IsNullOrEmpty(rspText))
 				{
 					isSuccessfulByNormalProxies = true;
 					proxySelector.OnNormalProxySuccess(proxy);
@@ -72,7 +72,7 @@ namespace SpiderX.Http
 				{
 					bool isAdvancedProxy = proxySelector.TryPreferAdvancedProxy(out var proxy);
 					rspText = await rspTextFetcher.Invoke(uri, proxy);
-					if (rspText != null)
+					if (!string.IsNullOrEmpty(rspText))
 					{
 						if (isAdvancedProxy)
 						{
