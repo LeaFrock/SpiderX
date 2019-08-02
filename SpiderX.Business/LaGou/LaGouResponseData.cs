@@ -37,6 +37,22 @@ namespace SpiderX.Business.LaGou
 			HrInfos.AddRange(data.HrInfos.Select(p => new KeyValuePair<long, LaGouHrInfoEntity>(p.UserId, p)));
 			HrDailyRecords.AddRange(data.HrDailyRecords.Select(p => new KeyValuePair<long, LaGouHrDailyRecordEntity>(p.UserId, p)));
 		}
+
+		public void FillPositions(string keyword)
+		{
+			foreach (var pos in Positions)
+			{
+				pos.Value.Keyword = keyword;
+			}
+		}
+
+		public void FillCompanies(string cityName)
+		{
+			foreach (var com in Companies)
+			{
+				com.Value.CityName = cityName;
+			}
+		}
 	}
 
 	public sealed class LaGouResponseData

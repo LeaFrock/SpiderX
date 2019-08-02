@@ -8,11 +8,13 @@ namespace SpiderX.Business.LaGou
 	{
 		private sealed class LaGouSearchParam
 		{
-			public string City { get; set; }
+			public string CityName { get; set; }
 
 			public string Keyword { get; set; }
 
-			public string SearchType { get; set; }
+			public string SearchType { get; set; } = "new";
+
+			public int MaxPage { get; set; } = 7;
 		}
 	}
 }

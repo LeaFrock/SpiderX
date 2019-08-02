@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -20,13 +21,13 @@ namespace SpiderX.Business.LaGou
 
 			#region PositionAjax
 
-			public static Uri GetPositionAjaxUri(string cityName, string type = "new")
+			public static Uri GetPositionAjaxUri(string encodedCityName, string type = "new")
 			{
 				StringBuilder sb = new StringBuilder(5);
 				sb.Append("https://www.lagou.com/jobs/positionAjax.json?px=");
 				sb.Append(type);
 				sb.Append("&gx=%E5%85%A8%E8%81%8C&city=");
-				sb.Append(WebTool.UrlEncodeByW3C(cityName));
+				sb.Append(encodedCityName);
 				sb.Append("&needAddtionalResult=false");
 				string url = sb.ToString();
 				return new Uri(url);
@@ -45,13 +46,13 @@ namespace SpiderX.Business.LaGou
 				return new Uri(url);
 			}
 
-			public static HttpContent GetPositionAjaxFormData(string keyword, string pageNum, string sid = null)
+			public static HttpContent GetPositionAjaxContent(string encodedKeyword, string pageNum, string sid = null)
 			{
 				var pairs = new List<KeyValuePair<string, string>>(4)
 				{
 					new KeyValuePair<string, string>("first", "false"),
 					new KeyValuePair<string, string>("pn", pageNum),
-					new KeyValuePair<string, string>("kd", keyword)
+					new KeyValuePair<string, string>("kd", encodedKeyword)
 				};
 				if (sid != null)
 				{
@@ -62,14 +63,16 @@ namespace SpiderX.Business.LaGou
 				return content;
 			}
 
-			public static LaGouResponseData CreateResponseData(string response)
+			public static LaGouResponseData CreateResponseData(string response, out string showId)
 			{
+				showId = null;
 				JToken source = JsonTool.DeserializeObject<JToken>(response);
 				JToken content = source?.Value<JToken>("content");
 				if (content == null)
 				{
 					return null;
 				}
+				showId = content.Value<string>("showId");
 				JToken positionResult = content.Value<JToken>("positionResult");
 				JArray positions = positionResult?.Value<JArray>("result");
 				if (positions.IsNullOrEmpty())
@@ -277,10 +280,24 @@ namespace SpiderX.Business.LaGou
 
 			#region JobsList
 
-			public static Uri GetJobListUri(string encodedCityName, string encodedKeyword)
+			private readonly static ConcurrentDictionary<string, Uri> _jobListRefererCache = new ConcurrentDictionary<string, Uri>();
+
+			public static Uri GetJobListUri(string encodedCityName, string encodedKeyword, string type = "new")
 			{
-				string urlString = $"https://www.lagou.com/jobs/list_{encodedKeyword}?px=default&city={encodedCityName}";
-				return new Uri(urlString);
+				StringBuilder sb = new StringBuilder(6);
+				sb.Append("https://www.lagou.com/jobs/list_");
+				sb.Append(encodedKeyword);
+				sb.Append("?px=");
+				sb.Append(type);
+				sb.Append("&gx=%E5%85%A8%E8%81%8C&city=");
+				sb.Append(encodedCityName);
+				string url = sb.ToString();
+				return new Uri(url);
+			}
+
+			public static Uri GetJobListReferer(string encodedKeyword)
+			{
+				return _jobListRefererCache.GetOrAdd(encodedKeyword, k => new Uri(string.Intern($"https://www.lagou.com/zhaopin/{k}/?labelWords=label")));
 			}
 
 			#endregion JobsList

@@ -20,59 +20,58 @@ namespace SpiderX.Business.LaGou
 	{
 		private class PcWebCollector : CollectorBase
 		{
-			private const int MaxPage = 2;
-
 			public bool UseProxy { get; set; }
 
 			public override async Task<LaGouResponseDataCollection> CollectAsync(LaGouSearchParam searchParam)
 			{
-				string encodedCityName = WebTool.UrlEncodeByW3C(searchParam.City);
+				string encodedCityName = WebTool.UrlEncodeByW3C(searchParam.CityName);
 				string encodedKeyword = WebTool.UrlEncodeByW3C(searchParam.Keyword);
 				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
-				using (var cookieClient = CreateCookiesWebClient())
+				using (var client = CreateHttpClient())
 				{
-					Uri jobsListPageUri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword);
-					cookieClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
-					//Init Cookies
-					ResetHttpClientCookies(cookieClient, jobsListPageUri).ConfigureAwait(false).GetAwaiter().GetResult();
-					await Task.Delay(3333);
-					Uri referer = PcWebApiProvider.GetPostionAjaxReferer(encodedCityName, encodedKeyword);
-					using (var positionAjaxClient = CreatePositionAjaxWebClient(referer))
+					await TryInitCookiesAsync(client, encodedCityName, encodedKeyword, searchParam.SearchType);
+					await Task.Delay(100);
+					string sid = null;
+					using (var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, "1"))
 					{
-						//Preparing
-						positionAjaxClient.DefaultRequestHeaders.Referrer = jobsListPageUri;
-						Uri positionAjaxUri = PcWebApiProvider.GetPositionAjaxUri(encodedCityName);
-						var tasks = new Task[MaxPage];
-						//Start tasks
-						for (int i = 1; i <= MaxPage; i++)
+						string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType);
+						var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
+						if (data != null)
 						{
-							HttpContent httpContent = PcWebApiProvider.GetPositionAjaxFormData(encodedKeyword, i.ToString());
-							tasks[i - 1] = GetResponseData(positionAjaxClient, positionAjaxUri, jobsListPageUri, httpContent, cookieClient.CookieContainer, dataCollection);
-							Thread.Sleep(RandomTool.NextIntSafely(5000, 10000));
+							dataCollection.AddResponseData(data);
 						}
-						//Wait all tasks
-						try
+					}
+					for (int i = 2; i <= searchParam.MaxPage; i++)
+					{
+						await Task.Delay(RandomTool.NextIntSafely(4000, 6000));
+						using (var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, i.ToString(), sid))
 						{
-							Task.WaitAll(tasks);
-						}
-						catch
-						{
-							throw;
+							string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType);
+							var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
+							if (data != null)
+							{
+								dataCollection.AddResponseData(data);
+							}
 						}
 					}
 				}
-				foreach (var pos in dataCollection.Positions)
-				{
-					pos.Value.Keyword = encodedKeyword;
-				}
-				foreach (var com in dataCollection.Companies)
-				{
-					com.Value.CityName = encodedCityName;
-				}
+				dataCollection.FillPositions(searchParam.Keyword);
+				dataCollection.FillCompanies(searchParam.CityName);
 				return dataCollection;
 			}
 
-			private SpiderHttpClient CreatePositionAjaxWebClient(Uri referer)
+			private async Task<bool> TryInitCookiesAsync(SpiderHttpClient client, string encodedCityName, string encodedKeyword, string type = "new")
+			{
+				var jobListRspMsg = await GetJobListAsync(client, encodedCityName, encodedKeyword, type);
+				if (jobListRspMsg != null)
+				{
+					jobListRspMsg.Dispose();
+					return true;
+				}
+				return false;
+			}
+
+			private SpiderHttpClient CreateHttpClient()
 			{
 				SocketsHttpHandler handler = new SocketsHttpHandler()
 				{
@@ -87,104 +86,90 @@ namespace SpiderX.Business.LaGou
 				SpiderHttpClient client = new SpiderHttpClient(handler);
 				var headers = client.DefaultRequestHeaders;
 				headers.Host = PcWebApiProvider.HomePageUri.Host;
-				headers.Referrer = referer;
-				headers.Add("Accept", "application/json, text/javascript, */*; q=0.01");
 				headers.Add("Accept-Encoding", "br");
 				headers.Add("Accept-Language", "zh-CN,zh;q=0.9");
+				headers.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
+				return client;
+			}
+
+			private static async Task<HttpResponseMessage> GetJobListAsync(SpiderHttpClient client, string encodedCityName, string encodedKeyword, string type = "new")
+			{
+				Uri uri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword, type);
+				Uri referer = PcWebApiProvider.GetJobListReferer(encodedKeyword);
+				HttpRequestMessage reqMsg = new HttpRequestMessage(HttpMethod.Get, uri);
+				var headers = reqMsg.Headers;
+				headers.Referrer = referer;
+				headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+				headers.Add("Pragma", "no-cache");
+				headers.Add("Cache-Control", "no-cache");
+				headers.Add("Upgrade-Insecure-Requests", "1");
+				try
+				{
+					var rspMsg = await client.SendAsync(reqMsg, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+					if (rspMsg.IsSuccessStatusCode)
+					{
+						FixCookies(client.CookieContainer, uri);
+					}
+					return rspMsg;
+				}
+				catch
+				{
+					return null;
+				}
+				finally
+				{
+					reqMsg.Dispose();
+				}
+			}
+
+			private static async Task<string> PostPositionAjaxAsync(HttpClient client, HttpContent content, string encodedCityName, string encodedKeyword, string type = "new")
+			{
+				Uri uri = PcWebApiProvider.GetPositionAjaxUri(encodedCityName, type);
+				Uri referer = PcWebApiProvider.GetPostionAjaxReferer(encodedCityName, encodedKeyword, type);
+				HttpRequestMessage reqMsg = new HttpRequestMessage(HttpMethod.Post, uri) { Content = content, Version = HttpVersion.Version11 };
+				var headers = reqMsg.Headers;
+				headers.Referrer = referer;
+				headers.Add("Accept", "application/json, text/javascript, */*; q=0.01");
 				headers.Add("X-Requested-With", "XMLHttpRequest");
 				headers.Add("X-Anit-Forge-Code", "0");
 				headers.Add("X-Anit-Forge-Token", "None");
 				headers.Add("Origin", PcWebApiProvider.HomePageUri.AbsoluteUri);
-				headers.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
-				return client;
-			}
-
-			private SpiderHttpClient CreateCookiesWebClient()
-			{
-				SocketsHttpHandler httpHandler = new SocketsHttpHandler()
-				{
-					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-					UseCookies = true,
-					UseProxy = UseProxy
-				};
-				if (UseProxy)
-				{
-					//var uris = GetUrisFromDb();
-					//var webProxy = CreateWebProxy(uris);
-					//httpHandler.Proxy = webProxy;
-					httpHandler.Proxy = HttpConsole.LocalWebProxy;
-				}
-				SpiderHttpClient client = new SpiderHttpClient(httpHandler);
-				var headers = client.DefaultRequestHeaders;
-				headers.Host = PcWebApiProvider.HomePageUri.Host;
-				headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-				headers.Add("Accept-Encoding", "br");
-				headers.Add("Accept-Language", "zh-CN,zh;q=0.9");
-				headers.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
-				return client;
-			}
-
-			private static async Task GetResponseData(SpiderHttpClient webClient, Uri targetUri, Uri cookieUri, HttpContent httpContent, CookieContainer cookieContainer, LaGouResponseDataCollection dataCollection)
-			{
-				var data = await GetResponseData(webClient, targetUri, cookieUri, httpContent, cookieContainer).ConfigureAwait(false);
-				if (data != null)
-				{
-					dataCollection.AddResponseData(data);
-				}
-			}
-
-			private static async Task<LaGouResponseData> GetResponseData(SpiderHttpClient webClient, Uri targetUri, Uri cookieUri, HttpContent content, CookieContainer cookieContainer)
-			{
-				string cookies = cookieContainer.GetCookieHeader(targetUri);
-				var httpRequest = CreatePositionAjaxRequest(targetUri, content, cookies);
-				var rspMsg = await webClient.SendAsync(httpRequest).ConfigureAwait(false);
-				if (rspMsg == null || !rspMsg.IsSuccessStatusCode)
-				{
-					return null;
-				}
-				string text = await rspMsg.ToTextAsync().ConfigureAwait(false);
-				ShowLogInfo(text);
-				if (string.IsNullOrEmpty(text))
-				{
-					return null;
-				}
-				if (text.Contains("频繁"))
-				{
-					return null;
-				}
-				return PcWebApiProvider.CreateResponseData(text);
-			}
-
-			private static async Task ResetHttpClientCookies(SpiderHttpClient webClient, Uri targetUri)
-			{
-				MakeCookiesExpired(webClient.CookieContainer, targetUri);
+				HttpResponseMessage rspMsg = null;
 				try
 				{
-					var rspMsg = await webClient.GetAsync(targetUri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-					rspMsg.EnsureSuccessStatusCode();
+					rspMsg = await client.SendAsync(reqMsg).ConfigureAwait(false);
 				}
 				catch
 				{
-					throw;
+					rspMsg?.Dispose();
+					return null;
+				}
+				using (rspMsg)
+				{
+					if (!rspMsg.IsSuccessStatusCode)
+					{
+						return null;
+					}
+					return await rspMsg.ToTextAsync();
 				}
 			}
 
-			private static HttpRequestMessage CreatePositionAjaxRequest(Uri targetUri, HttpContent content, string cookies)
+			private static void FixCookies(CookieContainer container, Uri uri)
 			{
-				HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Post, targetUri)
+				var cc = container.GetCookies(uri);
+				for (int i = 0; i < cc.Count; i++)
 				{
-					Content = content
-				};
-				httpRequest.Headers.Add("Cookie", cookies);
-				return httpRequest;
-			}
-
-			private static void MakeCookiesExpired(CookieContainer container, Uri targetUri)
-			{
-				var cookies = container.GetCookies(targetUri).Cast<Cookie>();
-				foreach (var cookie in cookies)
-				{
-					cookie.Expired = true;
+					Cookie cookie = cc[i];
+					if (cookie.Version == 1)
+					{
+						Cookie fixedCookie = new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain)
+						{
+							Expires = cookie.Expires,
+							Expired = false
+						};
+						container.Add(fixedCookie);
+						cc[i].Expired = true;
+					}
 				}
 			}
 		}

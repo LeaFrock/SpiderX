@@ -23,7 +23,7 @@ namespace SpiderX.Business.LaGou
 
 		public override async Task RunAsync()
 		{
-			const int settingLength = 4;
+			const int settingLength = 5;
 			var args = RunSettings;//[SchemeKey,City,Keyword,SearchType(default or new)]
 			if (args == null)
 			{
@@ -58,10 +58,14 @@ namespace SpiderX.Business.LaGou
 			}
 			var searchParam = new LaGouSearchParam()
 			{
-				City = args[1],
+				CityName = args[1],
 				Keyword = args[2],
 				SearchType = args[3]
 			};
+			if (int.TryParse(args[4], out int maxPage))
+			{
+				searchParam.MaxPage = Math.Max(1, maxPage);
+			}
 			await scheme.RunAsync(searchParam);
 			return;
 		}
