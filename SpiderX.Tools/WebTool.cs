@@ -6,7 +6,7 @@ namespace SpiderX.Tools
 	public static class WebTool
 	{
 		/// <summary>
-		/// For example, WHITESPACE will be replaced by '+'
+		/// For example, WHITESPACE will be encoded as '+'
 		/// </summary>
 		/// <param name="text"></param>
 		/// <returns></returns>
@@ -21,7 +21,7 @@ namespace SpiderX.Tools
 		}
 
 		/// <summary>
-		/// For example, WHITESPACE will be replaced by '%20'
+		/// For example, WHITESPACE will be encoded as '%20'
 		/// </summary>
 		/// <param name="text"></param>
 		/// <returns></returns>
