@@ -15,12 +15,22 @@ namespace SpiderX.Business.LaGou
 				var datas = await Collector.CollectAsync(searchParam);
 				using (var context = new LaGouSqlServerContext())
 				{
-					context.Database.EnsureCreated();
-					context.Positions.AddRange(datas.Positions.Values);
-					context.Companies.AddRange(datas.Companies.Values);
-					context.HrInfos.AddRange(datas.HrInfos.Values);
-					context.HrDailyRecords.AddRange(datas.HrDailyRecords.Values);
-					context.SaveChanges();
+					try
+					{
+						context.Database.EnsureCreated();
+						context.Positions.AddRange(datas.Positions.Values);
+						//context.SaveChanges();
+						context.Companies.AddRange(datas.Companies.Values);
+						//context.SaveChanges();
+						context.HrInfos.AddRange(datas.HrInfos.Values);
+						//context.SaveChanges();
+						context.HrDailyRecords.AddRange(datas.HrDailyRecords.Values);
+						context.SaveChanges();
+					}
+					catch (Exception ex)
+					{
+						ShowLogError(ex.Message);
+					}
 				}
 			}
 		}

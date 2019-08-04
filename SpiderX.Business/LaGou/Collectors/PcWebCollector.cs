@@ -96,29 +96,27 @@ namespace SpiderX.Business.LaGou
 			{
 				Uri uri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword, type);
 				Uri referer = PcWebApiProvider.GetJobListReferer(encodedKeyword);
-				HttpRequestMessage reqMsg = new HttpRequestMessage(HttpMethod.Get, uri);
-				var headers = reqMsg.Headers;
-				headers.Referrer = referer;
-				headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-				headers.Add("Pragma", "no-cache");
-				headers.Add("Cache-Control", "no-cache");
-				headers.Add("Upgrade-Insecure-Requests", "1");
-				try
+				using (HttpRequestMessage reqMsg = new HttpRequestMessage(HttpMethod.Get, uri) { Version = HttpVersion.Version11 })
 				{
-					var rspMsg = await client.SendAsync(reqMsg, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-					if (rspMsg.IsSuccessStatusCode)
+					var headers = reqMsg.Headers;
+					headers.Referrer = referer;
+					headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+					headers.Add("Pragma", "no-cache");
+					headers.Add("Cache-Control", "no-cache");
+					headers.Add("Upgrade-Insecure-Requests", "1");
+					try
 					{
-						FixCookies(client.CookieContainer, uri);
+						var rspMsg = await client.SendAsync(reqMsg, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+						if (rspMsg.IsSuccessStatusCode)
+						{
+							FixCookies(client.CookieContainer, uri);
+						}
+						return rspMsg;
 					}
-					return rspMsg;
-				}
-				catch
-				{
-					return null;
-				}
-				finally
-				{
-					reqMsg.Dispose();
+					catch
+					{
+						return null;
+					}
 				}
 			}
 
