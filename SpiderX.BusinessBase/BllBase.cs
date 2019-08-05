@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -48,6 +49,21 @@ namespace SpiderX.BusinessBase
 		protected static void ShowLogError(string msg)
 		{
 			Logger?.LogError(DateTime.Now.ToString("[MM/dd-hh:mm:ss] ") + msg);
+		}
+
+		protected static void ShowLogException(Exception ex)
+		{
+			if (Logger == null)
+			{
+				return;
+			}
+			List<string> args = new List<string>(2) { ex.Message };
+			while (ex.InnerException != null)
+			{
+				ex = ex.InnerException;
+				args.Add(ex.Message);
+			}
+			Logger.LogError(ex, DateTime.Now.ToString("[MM/dd-hh:mm:ss] "), args);
 		}
 	}
 }

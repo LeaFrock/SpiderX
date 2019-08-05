@@ -54,10 +54,10 @@ namespace SpiderX.Business.LaGou.DbContexts
 				e.HasIndex(p => p.PublisherId);
 				e.HasIndex(p => p.Keyword);
 				e.Property(p => p.Name)
-				.HasColumnType("VARCHAR(32)")
+				.HasColumnType("NVARCHAR(MAX)")
 				.IsRequired();
 				e.Property(p => p.Keyword)
-				.HasColumnType("VARCHAR(32)")
+				.HasColumnType("NVARCHAR(32)")
 				.IsRequired();
 				e.Property(p => p.CreateTime)
 				.HasColumnType("DATETIME");
@@ -76,7 +76,7 @@ namespace SpiderX.Business.LaGou.DbContexts
 				.IsUnique();
 				e.HasIndex(p => p.DistrictName);
 				e.Property(p => p.Name)
-				.HasColumnType("VARCHAR(32)")
+				.HasColumnType("NVARCHAR(MAX)")
 				.IsRequired();
 				e.Property(p => p.DbCreateTime)
 				.HasColumnType("DATETIME")
@@ -97,7 +97,7 @@ namespace SpiderX.Business.LaGou.DbContexts
 				.IsUnique();
 				e.HasIndex(p => p.CompanyId);
 				e.Property(p => p.Name)
-				.HasColumnType("VARCHAR(32)")
+				.HasColumnType("NVARCHAR(MAX)")
 				.IsRequired();
 			});
 
