@@ -14,7 +14,8 @@ namespace SpiderX.Business.LaGou
 		private readonly KeyValuePair<string, Func<SchemeBase>>[] _schemeFactories = new KeyValuePair<string, Func<SchemeBase>>[]
 		{
 			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb", () => new DefaultScheme() { Collector = new PcWebCollector() }),
-			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb_p", () => new DefaultScheme() { Collector = new PcWebCollector() { UseProxy = true } })
+			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb_p", () => new DefaultScheme() { Collector = new PcWebCollector() { UseProxy = true } }),
+			new KeyValuePair<string, Func<SchemeBase>>("def_pcwebpptr", () => new DefaultScheme() { Collector = new PcWebPptrCollector() })
 		};
 
 		public LaGouBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)

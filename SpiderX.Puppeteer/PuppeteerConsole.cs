@@ -52,10 +52,6 @@ namespace SpiderX.Puppeteer
 					revision = BrowserFetcher.DefaultRevision;
 				}
 			}
-			if (File.Exists(exePath))
-			{
-				return true;
-			}
 			if (string.IsNullOrEmpty(exePath))
 			{
 				exePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
@@ -63,6 +59,10 @@ namespace SpiderX.Puppeteer
 			}
 			else
 			{
+				if (File.Exists(exePath))
+				{
+					return true;
+				}
 				await _browserFetcher.DownloadAsync(revision);
 			}
 			return false;
