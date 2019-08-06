@@ -21,10 +21,12 @@ namespace SpiderX.Business.LaGou
 
 			#region PositionAjax
 
+			public const string PositionAjaxUrlPrefix = "https://www.lagou.com/jobs/positionAjax.json";
+
 			public static Uri GetPositionAjaxUri(string encodedCityName, string type = "new")
 			{
 				StringBuilder sb = new StringBuilder(5);
-				sb.Append("https://www.lagou.com/jobs/positionAjax.json?px=");
+				sb.Append(PositionAjaxUrlPrefix + "?px=");
 				sb.Append(type);
 				sb.Append("&gx=%E5%85%A8%E8%81%8C&city=");
 				sb.Append(encodedCityName);

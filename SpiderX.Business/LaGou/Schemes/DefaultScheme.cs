@@ -19,28 +19,35 @@ namespace SpiderX.Business.LaGou
 				using (var context = new LaGouSqlServerContext())
 				{
 					context.Database.EnsureCreated();
-					InsertData(context, c => c.Positions, datas.Positions.Values, p => p.PositionId);
-					InsertData(context, c => c.Companies, datas.Companies.Values, p => p.CompanyId);
-					InsertData(context, c => c.HrInfos, datas.HrInfos.Values, p => p.UserId);
-					InsertData(context, c => c.HrDailyRecords, datas.HrDailyRecords.Values);
+					int insertCount = 0;
+					insertCount = InsertData(context, c => c.Positions, datas.Positions.Values, p => p.PositionId);
+					ShowLogInfo($"{nameof(context.Positions)} inserted {insertCount.ToString()}.");
+					insertCount = InsertData(context, c => c.Companies, datas.Companies.Values, p => p.CompanyId);
+					ShowLogInfo($"{nameof(context.Companies)} inserted {insertCount.ToString()}.");
+					insertCount = InsertData(context, c => c.HrInfos, datas.HrInfos.Values, p => p.UserId);
+					ShowLogInfo($"{nameof(context.HrInfos)} inserted {insertCount.ToString()}.");
+					insertCount = InsertData(context, c => c.HrDailyRecords, datas.HrDailyRecords.Values);
+					ShowLogInfo($"{nameof(context.HrDailyRecords)} inserted {insertCount.ToString()}.");
 				}
 			}
 
-			private static void InsertData<T>(LaGouContext dbContext, Func<LaGouContext, DbSet<T>> dbSetSelector, ICollection<T> data) where T : class
+			private static int InsertData<T>(LaGouContext dbContext, Func<LaGouContext, DbSet<T>> dbSetSelector, ICollection<T> data) where T : class
 			{
 				var dbSet = dbSetSelector(dbContext);
 				dbSet.AddRange(data);
+				int insertCount = 0;
 				try
 				{
-					dbContext.SaveChanges();
+					insertCount = dbContext.SaveChanges();
 				}
 				catch (Exception ex)
 				{
 					ShowLogError(ex.Message);
 				}
+				return insertCount;
 			}
 
-			private static void InsertData<T, TKey>(LaGouContext dbContext, Func<LaGouContext, DbSet<T>> dbSetSelector, ICollection<T> data, Expression<Func<T, TKey>> keySelector) where T : class
+			private static int InsertData<T, TKey>(LaGouContext dbContext, Func<LaGouContext, DbSet<T>> dbSetSelector, ICollection<T> data, Expression<Func<T, TKey>> keySelector) where T : class
 			{
 				var dbSet = dbSetSelector(dbContext);
 				var keyHashSet = dbSet.Select(keySelector).ToHashSet();
@@ -48,17 +55,19 @@ namespace SpiderX.Business.LaGou
 				var newData = data.Where(p => !keyHashSet.Contains(keyFunc(p)));
 				if (!newData.Any())
 				{
-					return;
+					return 0;
 				}
 				dbSet.AddRange(newData);
+				int insertCount = 0;
 				try
 				{
-					dbContext.SaveChanges();
+					insertCount = dbContext.SaveChanges();
 				}
 				catch (Exception ex)
 				{
 					ShowLogException(ex);
 				}
+				return insertCount;
 			}
 		}
 	}

@@ -22,43 +22,51 @@ namespace SpiderX.Business.LaGou
 	{
 		private class PcWebPptrCollector : CollectorBase
 		{
-			private readonly LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
+			private const string NextPageElementSelector = "div[class=pager_container] span[class*=next]";
 
 			public override async Task<LaGouResponseDataCollection> CollectAsync(LaGouSearchParam searchParam)
 			{
 				string encodedCityName = WebTool.UrlEncodeByW3C(searchParam.CityName);
 				string encodedKeyword = WebTool.UrlEncodeByW3C(searchParam.Keyword);
+				var jobListUri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword, searchParam.SearchType);
+				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
 				using (var browser = await PuppeteerConsole.LauncherBrowser(false))
 				{
 					using (var page = await browser.NewPageAsync())
 					{
 						page.Response += OnResponsed;
-						var uri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword, searchParam.SearchType);
-						await page.GoToAsync(uri.AbsoluteUri, WaitUntilNavigation.Networkidle2);
-						await Task.Delay(1000);
-						dataCollection.FillPositions(searchParam.Keyword);
-						dataCollection.FillCompanies(searchParam.CityName);
+						await page.GoToAsync(jobListUri.AbsoluteUri);//Get the first page directly.
+						for (int i = 0; i < searchParam.MaxPage - 1; i++)
+						{
+							await Task.Delay(RandomTool.NextInt(2000, 3000));
+							await page.HoverAsync(NextPageElementSelector);
+							await Task.Delay(RandomTool.NextInt(2000, 3000));
+							await page.ClickAsync(NextPageElementSelector);
+						}
 						return dataCollection;
 					}
 				}
-			}
 
-			private void OnResponsed(object sender, ResponseCreatedEventArgs args)
-			{
-				var rsp = args.Response;
-				if (!rsp.Url.StartsWith("https://www.lagou.com/jobs/positionAjax.json"))
+				async void OnResponsed(object sender, ResponseCreatedEventArgs args)
 				{
-					return;
-				}
-				if (!rsp.Ok)
-				{
-					return;
-				}
-				string ajaxRsp = rsp.TextAsync().Result;
-				var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out string _);
-				if (data != null)
-				{
+					var rsp = args.Response;
+					if (!rsp.Url.StartsWith(PcWebApiProvider.PositionAjaxUrlPrefix))
+					{
+						return;
+					}
+					if (!rsp.Ok)
+					{
+						return;
+					}
+					string rspText = await rsp.TextAsync();
+					var data = PcWebApiProvider.CreateResponseData(rspText, out string _);
+					if (data is null)
+					{
+						return;
+					}
 					dataCollection.AddResponseData(data);
+					dataCollection.FillPositions(searchParam.Keyword);
+					dataCollection.FillCompanies(searchParam.CityName);
 				}
 			}
 		}

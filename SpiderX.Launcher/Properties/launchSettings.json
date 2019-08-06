@@ -5,9 +5,9 @@
       "commandLineArgs": "PxFt SpiderX.Business-LaGou.LaGouBll-def_pcwebpptr,上海,.NET,new,5 /SpiderX.Business-samples.iptest /SpiderX.Business-samples.test /SpiderX.Business-bilibili.BilibiliLiveRoomCountBll /*-iphaiproxy /*-feiyiproxy /*-fatezeroproxy /*-kuaidailiproxy /*-kxdailiproxy /*-qydailiproxy /*-xicidailiproxy /*-yundailiproxy",
       "environmentVariables": {
         "PUPPETEER_EXECUTABLE_PATH": "*\\.local-chromium\\chrome.exe",
-        "App_Resources_FolderName": "SpiderX",
-        "PUPPETEER_CHROMIUM_REVISION": "669486",
-        "PUPPETEER_CHROMIUM_DOWNLOADHOST": "https://npm.taobao.org/mirrors"
+        "PUPPETEER_CHROMIUM_REVISION": "0",
+        "PUPPETEER_CHROMIUM_DOWNLOADHOST": "https://npm.taobao.org/mirrors",
+        "APP_RESOURCE_FOLDERNAME": "SpiderX"
       }
     }
   }
