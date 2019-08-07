@@ -38,9 +38,9 @@ namespace SpiderX.Business.LaGou
 						await page.GoToAsync(jobListUri.AbsoluteUri);//Get the first page directly.
 						for (int i = 0; i < searchParam.MaxPage - 1; i++)
 						{
-							await Task.Delay(RandomTool.NextInt(2000, 3000));
+							await Task.Delay(RandomTool.NextInt(2000, 4000));
 							await page.HoverAsync(NextPageElementSelector);
-							await Task.Delay(RandomTool.NextInt(2000, 3000));
+							await Task.Delay(RandomTool.NextInt(3000, 5000));
 							await page.ClickAsync(NextPageElementSelector);
 						}
 						return dataCollection;
@@ -58,7 +58,16 @@ namespace SpiderX.Business.LaGou
 					{
 						return;
 					}
-					string rspText = await rsp.TextAsync();
+					string rspText = null;
+					try
+					{
+						rspText = await rsp.TextAsync();
+					}
+					catch (Exception ex)
+					{
+						ShowLogException(ex);
+						return;
+					}
 					var data = PcWebApiProvider.CreateResponseData(rspText, out string _);
 					if (data is null)
 					{
