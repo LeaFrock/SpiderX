@@ -13,6 +13,9 @@ using SpiderX.Http;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
 using SpiderX.Puppeteer;
+using Titanium.Web.Proxy.EventArguments;
+using Titanium.Web.Proxy.Http;
+using Titanium.Web.Proxy.Models;
 
 namespace SpiderX.Business.Samples
 {
@@ -22,6 +25,8 @@ namespace SpiderX.Business.Samples
 		{
 		}
 
+		public event EventHandler Eeee;
+
 		public override async Task RunAsync()
 		{
 			var conf = DbConfigManager.Default.GetConfig("SqlServerTest", true);
@@ -29,44 +34,16 @@ namespace SpiderX.Business.Samples
 			{
 				throw new DbConfigNotFoundException();
 			}
-			//var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance(conf, c => new SqlServerProxyDbContext(c));
-			//DefaultProxyUriLoader proxyUriLoader = new DefaultProxyUriLoader()
-			//{
-			//	Days = 360,
-			//	Condition = p => p.Id > 0,
-			//	ProxyAgent = proxyAgent
-			//};
-			//DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, CreateWebClient, ValidateWebProxy)
-			//{
-			//	UseThresold = 1,
-			//	VerifyPauseThresold = 2
-			//};
-			for (int i = 0; i < 2; i++)
-			{
-				var browser = await PuppeteerConsole.LauncherBrowser(false);
-				var page = await browser.NewPageAsync();
-				await page.GoToAsync("https://www.baidu.com");
-				Console.ReadKey();
-			}
-			PuppeteerConsole.CloseAllBrowsers();
+			var eventOpt = new SpiderProxyServerEventOption() { AfterResponse = AfterResponse };
+			var explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8000, true);
+			var proxyServer = SpiderProxyServer.StartNew(explicitEndPoint, eventOpt);
+			proxyServer.Close();
+			await Task.CompletedTask;
 		}
 
-		public static SpiderHttpClient CreateWebClient(IWebProxy proxy)
+		public async Task AfterResponse(object sender, SessionEventArgs args)
 		{
-			SpiderHttpClient client = new SpiderHttpClient(proxy);
-			client.DefaultRequestHeaders.Host = "www.baidu.com";
-			client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-			client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
-			client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-			client.DefaultRequestHeaders.Add("Pragma", "no-cache");
-			client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
-			client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
-			return client;
-		}
-
-		private static bool ValidateWebProxy(string rspText)
-		{
-			return rspText.EndsWith("</html>") && rspText.Contains("baidu");
+			await Task.CompletedTask;
 		}
 	}
 }
