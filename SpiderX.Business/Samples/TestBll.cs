@@ -13,6 +13,7 @@ using SpiderX.Http;
 using SpiderX.Http.Util;
 using SpiderX.Proxy;
 using SpiderX.Puppeteer;
+using SpiderX.Tools;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Http;
 using Titanium.Web.Proxy.Models;

@@ -4,5 +4,7 @@
 	{
 		SqlServer = 0,
 		MySql = 1,
+
+		Redis = 128
 	}
 }
