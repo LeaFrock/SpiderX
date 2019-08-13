@@ -4,7 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
-    <!--RuntimeIdentifiers>win10-x64</RuntimeIdentifiers-->
     <StartupObject>SpiderX.Launcher.Program</StartupObject>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

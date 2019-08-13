@@ -17,6 +17,7 @@
     <ProjectReference Include="..\SpiderX.Http\SpiderX.Http.csproj" />
     <ProjectReference Include="..\SpiderX.Proxy\SpiderX.Proxy.csproj" />
     <ProjectReference Include="..\SpiderX.Puppeteer\SpiderX.Puppeteer.csproj" />
+    <ProjectReference Include="..\SpiderX.Redis\SpiderX.Redis.csproj" />
     <ProjectReference Include="..\SpiderX.Security\SpiderX.Security.csproj" />
     <ProjectReference Include="..\SpiderX.Tools\SpiderX.Tools.csproj" />
   </ItemGroup>

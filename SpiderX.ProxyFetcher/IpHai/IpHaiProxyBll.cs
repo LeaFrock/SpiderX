@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SpiderX.DataClient;
 using SpiderX.Proxy;
 
 namespace SpiderX.ProxyFetcher
@@ -26,6 +27,8 @@ namespace SpiderX.ProxyFetcher
 					return;
 				}
 				entities.ForEach(e => e.Source = caseName);
+				//var redisConfig = DbConfigManager.Default.GetConfig("RedisTest", true);
+				//long a = await InternRedisHelper.PublishProxiesAsync(entities, redisConfig, useCache: false);
 				ShowLogInfo("CollectCount: " + entities.Count.ToString());
 				int insertCount = pa.InsertProxyEntities(entities);
 				ShowLogInfo("InsertCount: " + insertCount.ToString());

@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Tools", "SpiderX.To
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Puppeteer", "SpiderX.Puppeteer\SpiderX.Puppeteer.csproj", "{40764487-09AA-411F-B495-4DD05CE4705A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.Redis", "SpiderX.Redis\SpiderX.Redis.csproj", "{FA5EA4C6-C5F7-4554-9B89-4DE9BC9A2BE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Redis", "SpiderX.Redis\SpiderX.Redis.csproj", "{FA5EA4C6-C5F7-4554-9B89-4DE9BC9A2BE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.ProxyFilter", "SpiderX.ProxyFilter\SpiderX.ProxyFilter.csproj", "{C7909CFC-C89F-425E-A4DA-AAD9379405C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,10 @@ Global
 		{FA5EA4C6-C5F7-4554-9B89-4DE9BC9A2BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA5EA4C6-C5F7-4554-9B89-4DE9BC9A2BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA5EA4C6-C5F7-4554-9B89-4DE9BC9A2BE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7909CFC-C89F-425E-A4DA-AAD9379405C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7909CFC-C89F-425E-A4DA-AAD9379405C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7909CFC-C89F-425E-A4DA-AAD9379405C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7909CFC-C89F-425E-A4DA-AAD9379405C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

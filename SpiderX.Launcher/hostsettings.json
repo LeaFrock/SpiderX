@@ -32,6 +32,13 @@
       "ConnectionString": "Server=localhost\\SQLEXPRESS;Database=SpiderProxy;Integrated Security=true;Trusted_Connection=True;",
       "IsTest": true,
       "IsEnabled": true
+    },
+    {
+      "Name": "RedisTest",
+      "Type": 128,
+      "ConnectionString": "127.0.0.1:6379,connectTimeout=5000,connectRetry=2,syncTimeout=5000",
+      "IsTest": true,
+      "IsEnabled": true
     }
   ]
 }
