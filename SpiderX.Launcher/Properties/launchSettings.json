@@ -2,7 +2,7 @@
   "profiles": {
     "SpiderX.Launcher": {
       "commandName": "Project",
-      "commandLineArgs": "PxFt /SpiderX.Business-LaGou.LaGouBll-def_pcwebpptr,上海,.NET,new,5 /SpiderX.Business-samples.iptest /SpiderX.Business-samples.test /SpiderX.Business-bilibili.BilibiliLiveRoomCountBll *-iphaiproxy /*-feiyiproxy /*-fatezeroproxy /*-kuaidailiproxy /*-kxdailiproxy /*-qydailiproxy /*-xicidailiproxy /*-yundailiproxy",
+      "commandLineArgs": "PxFt /SpiderX.Business-LaGou.LaGouBll-def_pcwebpptr,上海,.NET,new,5 /SpiderX.Business-samples.iptest /SpiderX.Business-samples.test /SpiderX.Business-bilibili.BilibiliLiveRoomCountBll /*-iphaiproxy *-feiyiproxy /*-fatezeroproxy /*-kuaidailiproxy /*-kxdailiproxy /*-qydailiproxy /*-xicidailiproxy /*-yundailiproxy",
       "environmentVariables": {
         "PUPPETEER_EXECUTABLE_PATH": "*\\.local-chromium\\chrome.exe",
         "PUPPETEER_CHROMIUM_REVISION": "0",

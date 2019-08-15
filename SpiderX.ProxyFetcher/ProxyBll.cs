@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
+using SpiderX.DataClient;
 using SpiderX.Extensions;
 using SpiderX.Extensions.Http;
 using SpiderX.Http;
@@ -18,6 +19,19 @@ namespace SpiderX.ProxyFetcher
 		}
 
 		internal abstract ProxyApiProvider ApiProvider { get; }
+
+		protected virtual async Task<long> PublishProxiesToRedisAsync(IEnumerable<SpiderProxyUriEntity> entities, string dbConfigName, bool isTest)
+		{
+			var redisConfig = DbConfigManager.Default.GetConfig(dbConfigName, isTest);
+			if (redisConfig == null)
+			{
+				ShowLogError($"DbConfig[{dbConfigName}] Not Found.");
+				return -1;
+			}
+			long result = await InternRedisHelper.PublishProxiesAsync(entities, redisConfig, useCache: false);
+			ShowLogInfo(ClassName + "_PublishProxiesAsync: " + result.ToString());
+			return result;
+		}
 
 		protected async Task<List<SpiderProxyUriEntity>> GetProxyEntitiesAsync(SpiderHttpClient webClient, HttpMethod httpMethod, string url)
 		{

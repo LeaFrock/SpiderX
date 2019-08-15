@@ -19,16 +19,20 @@ namespace SpiderX.ProxyFetcher
 				_redisClientCache.GetOrAdd(connStr, str => SpiderRedisClient.Create(str))
 				: await SpiderRedisClient.CreateAsync(connStr).ConfigureAwait(false);
 			string json = JsonConvert.SerializeObject(proxies);
-			return await redisClient.PublishAsync(redisChannel, json);
+			long result = await redisClient.PublishAsync(redisChannel, json);
+			if (!useCache)
+			{
+				redisClient.Disable();
+			}
+			return result;
 		}
 
-		internal static void ClearClientCache()
+		internal static void ClearClientCache(string connStr)
 		{
-			foreach (var c in _redisClientCache.Values)
+			if (_redisClientCache.TryRemove(connStr, out var client))
 			{
-				c.Disable();
+				client.Disable();
 			}
-			_redisClientCache.Clear();
 		}
 	}
 }
