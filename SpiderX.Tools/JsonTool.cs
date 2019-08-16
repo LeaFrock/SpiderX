@@ -9,7 +9,7 @@ namespace SpiderX.Tools
 {
 	public sealed class JsonTool
 	{
-		public static T DeserializeObject<T>(string text, bool throwError = false) where T : class, IEnumerable<JToken>
+		public static T DeserializeObject<T>(string text, bool throwError = false) where T : class
 		{
 			T result;
 			try
