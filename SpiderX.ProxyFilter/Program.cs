@@ -11,7 +11,8 @@ namespace SpiderX.ProxyFilter
 	{
 		private readonly static Dictionary<RunModeEnum, Func<IConfiguration, IProxyReceiver>> _receiverFactories = new Dictionary<RunModeEnum, Func<IConfiguration, IProxyReceiver>>()
 		{
-			{ RunModeEnum.Redis, (conf) => new RedisProxyReceiver(conf["RedisConfig:ConnectionString"], conf["RedisConfig:ChannelName"]) }
+			{ RunModeEnum.RabbitMQ, (conf) => RabbitMqProxyReceiver.Create(conf) },
+			{ RunModeEnum.Redis, (conf) => new RedisProxyReceiver(conf["RedisConfig:ConnectionString"], conf["RedisConfig:ChannelName"]) },
 		};
 
 		private static async Task Main(string[] args)
@@ -33,9 +34,9 @@ namespace SpiderX.ProxyFilter
 				ShowConsoleMsg(receiverName, eArgs.Proxies.Length.ToString());
 			};
 			await receiver.InitializeAsync();
+			ShowConsoleMsg("Info", "Press K for Exiting.");
 			while (true)
 			{
-				ShowConsoleMsg("Info", "Press K for Exiting.");
 				var k = Console.ReadKey();
 				if (k.Key == ConsoleKey.K)
 				{

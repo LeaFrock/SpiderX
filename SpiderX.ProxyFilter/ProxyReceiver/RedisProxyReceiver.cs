@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SpiderX.Proxy;
 using SpiderX.ProxyFilter.Events;
 using SpiderX.Redis;
+using SpiderX.Tools;
 using StackExchange.Redis;
 
 namespace SpiderX.ProxyFilter
@@ -43,8 +43,15 @@ namespace SpiderX.ProxyFilter
 				return;
 			}
 			string json = redisValue.ToString();
-			var proxies = JsonConvert.DeserializeObject<SpiderProxyUriEntity[]>(json);
-			OnProxyReceived?.Invoke(this, new ProxyReceiveEventArgs() { Proxies = proxies });
+			var proxies = JsonTool.DeserializeObject<SpiderProxyUriEntity[]>(json);
+			if (proxies == null || proxies.Length < 1)
+			{
+				OnProxyReceived?.Invoke(this, ProxyReceiveEventArgs.Empty);
+			}
+			else
+			{
+				OnProxyReceived?.Invoke(this, new ProxyReceiveEventArgs() { Proxies = proxies });
+			}
 		}
 	}
 }
