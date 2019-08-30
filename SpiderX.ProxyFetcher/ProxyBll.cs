@@ -38,7 +38,15 @@ namespace SpiderX.ProxyFetcher
 			List<SpiderProxyUriEntity> entities = null;
 			using (var reqMsg = new HttpRequestMessage(httpMethod, url))
 			{
-				var rspMsg = await webClient.SendAsync(reqMsg);
+				HttpResponseMessage rspMsg;
+				try
+				{
+					rspMsg = await webClient.SendAsync(reqMsg);
+				}
+				catch
+				{
+					return new List<SpiderProxyUriEntity>(1);
+				}
 				if (rspMsg != null)
 				{
 					using (rspMsg)
@@ -51,7 +59,7 @@ namespace SpiderX.ProxyFetcher
 					};
 				}
 			}
-			return entities ?? new List<SpiderProxyUriEntity>(0);
+			return entities ?? new List<SpiderProxyUriEntity>(1);
 		}
 
 		protected async Task<List<SpiderProxyUriEntity>> GetProxyEntitiesAsync(SpiderHttpClient webClient, HttpMethod httpMethod, IList<string> urls, int estimatedCount = 0)
