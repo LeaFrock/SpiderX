@@ -5,13 +5,13 @@ This is a simple web-crawler development framework based on .Net Core.
 
 ## Develop Environment |开发环境
 
-- Target Framework |运行框架: [.Net Core 2.2+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
+- Target Framework |运行框架: [.Net Core 3.0+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
 
-- Recommended IDE |推荐IDE: [Visual Studio 2019 16.1+](https://visualstudio.microsoft.com/zh-hans/downloads/)
+- Recommended IDE |推荐IDE: [Visual Studio 2019 16.3+](https://visualstudio.microsoft.com/zh-hans/downloads/)
 
 - Recommended Language Version |推荐语言版本: [C# 7.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
 
-- Recommended ORM |推荐ORM： [EntityFramework Core 2.2+](https://docs.microsoft.com/zh-cn/ef/index#pivot=efcore)
+- Recommended ORM |推荐ORM： [EntityFramework Core 3.0+](https://docs.microsoft.com/zh-cn/ef/index#pivot=efcore)
 
 ## Structure |项目结构
 
@@ -56,8 +56,8 @@ This is a simple web-crawler development framework based on .Net Core.
 - Proxy |代理模块
 
   - SpiderX.ProxyFetcher  
-    A special 'SpiderX.Business' in fact which is responsible for proxy-fetching.
-    >其实是一个特殊的“SpiderX.Business”，负责获取代理。
+    A special 'SpiderX.Business' in fact which is responsible for free-proxy-fetching.
+    >其实是一个特殊的“SpiderX.Business”，负责获取免费代理。
 
   - SpiderX.Proxy  
     A wrapper of WebProxy including other codes related to Proxy.
@@ -68,6 +68,10 @@ This is a simple web-crawler development framework based on .Net Core.
   - SpiderX.DataClient  
     Includes codes related to DB like SqlServer & MySQL, and based on EF Core currently.
     >包含跟数据库相关的代码，目前基于EF Core.
+
+  - SpiderX.Redis  
+    Includes codes related to Redis, and based on StackExchange.Redis currently.
+    >包含跟Redis相关的代码，目前基于StackExchange.Redis.
 
 - Common-Use |通用模块
 
@@ -82,6 +86,10 @@ This is a simple web-crawler development framework based on .Net Core.
   - SpiderX.Security  
     Includes kinds of functions related to cryptography.
     >包含各种加密解密相关的方法。
+
+  - SpiderX.Puppeteer  
+    Includes kinds of functions related to Puppeteer operations, based on PuppeteerSharp.
+    >基于PuppeteerSharp封装各种与Puppeteer操作相关的方法。
 
 ## Contribution |贡献
 
