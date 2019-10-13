@@ -15,11 +15,11 @@ namespace SpiderX.Launcher
 	{
 		private readonly ILogger _logger;
 		private readonly IConfiguration _configuration;
-		private readonly IApplicationLifetime _applicationLifetime;
+		private readonly IHostApplicationLifetime _applicationLifetime;
 
 		private readonly List<IBllCaseBuilder> _caseBuilders;
 
-		public BllCaseLaunchService(IApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<IBllCaseBuilder>> caseBuilders)
+		public BllCaseLaunchService(IHostApplicationLifetime applicationLifetime, ILogger<BllCaseLaunchService> logger, IConfiguration configuration, IOptions<List<IBllCaseBuilder>> caseBuilders)
 		{
 			_caseBuilders = caseBuilders.Value ?? throw new ArgumentNullException(nameof(caseBuilders));
 
