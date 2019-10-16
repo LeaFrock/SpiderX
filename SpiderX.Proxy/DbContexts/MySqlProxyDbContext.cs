@@ -24,7 +24,6 @@ namespace SpiderX.Proxy
 					{
 						opt.CommandTimeout(60);
 						opt.EnableRetryOnFailure(3);
-						//opt.ServerVersion("8.0.11");
 					});
 			}
 			else
@@ -37,7 +36,6 @@ namespace SpiderX.Proxy
 							{
 								opt.CommandTimeout(60);
 								opt.EnableRetryOnFailure(3);
-								//opt.ServerVersion("8.0.11");
 							});
 						break;
 

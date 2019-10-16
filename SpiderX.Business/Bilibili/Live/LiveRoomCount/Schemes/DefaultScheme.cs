@@ -15,13 +15,11 @@ namespace SpiderX.Business.Bilibili
 				Collector.BeforeCollectAsync();
 				int liveRoomCount = await Collector.CollectAsync("0");
 				ShowLogInfo(liveRoomCount.ToString());
-				using (var context = new BilibiliLiveRoomCountMySqlContext())
-				{
-					context.Database.EnsureCreated();
-					var item = BilibiliLiveRoomCount.Create(liveRoomCount);
-					context.LiveRoomCount.Add(item);
-					context.SaveChanges();
-				}
+				using var context = new BilibiliLiveRoomCountMySqlContext();
+				context.Database.EnsureCreated();
+				var item = BilibiliLiveRoomCount.Create(liveRoomCount);
+				context.LiveRoomCount.Add(item);
+				context.SaveChanges();
 			}
 		}
 	}
