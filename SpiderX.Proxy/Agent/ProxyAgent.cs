@@ -25,11 +25,7 @@ namespace SpiderX.Proxy
 
 		public static ProxyAgent<TContext> CreateInstance(string confName, bool isTest, Func<DbConfig, TContext> dbContextFactory)
 		{
-			var conf = DbConfigManager.Default.GetConfig(confName, isTest);
-			if (conf == null)
-			{
-				throw new DbConfigNotFoundException(confName);
-			}
+			var conf = DbConfigManager.Default.GetConfig(confName, isTest) ?? throw new DbConfigNotFoundException(confName);
 			return CreateInstance(conf, dbContextFactory);
 		}
 
@@ -44,33 +40,29 @@ namespace SpiderX.Proxy
 				recentDays = 360;
 			}
 			Expression<Func<SpiderProxyUriEntity, bool>> filter = predicate != null
-				? (p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
-				: (Expression<Func<SpiderProxyUriEntity, bool>>)(p => EF.Functions.DateDiffDay(p.UpdateTime, DateTime.UtcNow) <= recentDays);
-			using (var context = _dbContextCreateFunc(DbConfig))
-			{
-				var query = context.ProxyUriEntities
-					   .Where(filter)
-					   .OrderByDescending(e => e.UpdateTime);
-				return (count > 0 ? query.Take(count) : query).ToArray();
-			}
+				? (p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
+				: (Expression<Func<SpiderProxyUriEntity, bool>>)(p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays);
+			using var context = _dbContextCreateFunc(DbConfig);
+			var query = context.ProxyUriEntities
+				.Where(filter)
+				.OrderByDescending(e => e.UpdateTime);
+			return (count > 0 ? query.Take(count) : query).ToArray();
 		}
 
 		public int InsertProxyEntities(IEnumerable<SpiderProxyUriEntity> entities)
 		{
 			int count = 0;
 			var distinctEntities = entities.Distinct(SpiderProxyEntityComparer.Default);
-			using (var context = _dbContextCreateFunc(DbConfig))
+			using var context = _dbContextCreateFunc(DbConfig);
+			foreach (var entity in distinctEntities)
 			{
-				foreach (var entity in distinctEntities)
+				if (!context.ProxyUriEntities.Any(p => p.Port == entity.Port && p.Host == entity.Host))
 				{
-					if (!context.ProxyUriEntities.Any(p => p.Port == entity.Port && p.Host == entity.Host))
-					{
-						context.ProxyUriEntities.Add(entity);
-						count++;
-					}
+					context.ProxyUriEntities.Add(entity);
+					count++;
 				}
-				return count > 0 ? context.SaveChanges() : 0;
 			}
+			return count > 0 ? context.SaveChanges() : 0;
 		}
 
 		public int UpdateProxyEntity(int id, Action<SpiderProxyUriEntity> update)
@@ -90,18 +82,16 @@ namespace SpiderX.Proxy
 		public int UpdateProxyEntities(IEnumerable<int> ids, Action<SpiderProxyUriEntity> update)
 		{
 			var distinctIds = ids.Distinct();
-			using (var context = _dbContextCreateFunc(DbConfig))
+			using var context = _dbContextCreateFunc(DbConfig);
+			foreach (var id in distinctIds)
 			{
-				foreach (var id in distinctIds)
+				var entity = context.ProxyUriEntities.Find(id);
+				if (entity != null)
 				{
-					var entity = context.ProxyUriEntities.Find(id);
-					if (entity != null)
-					{
-						update(entity);
-					}
+					update(entity);
 				}
-				return context.SaveChanges();
 			}
+			return context.SaveChanges();
 		}
 
 		public int DeleteProxyEntity(string host, int port)
