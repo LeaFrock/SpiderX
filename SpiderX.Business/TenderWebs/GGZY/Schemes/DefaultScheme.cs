@@ -8,7 +8,7 @@ namespace SpiderX.Business.TenderWebs
 {
 	public partial class GgzyGovBll
 	{
-		public sealed class DefaultScheme : SchemeBase
+		private sealed class DefaultScheme : SchemeBase
 		{
 			public override CollectorBase Collector { get; } = new PcWebCollector();
 

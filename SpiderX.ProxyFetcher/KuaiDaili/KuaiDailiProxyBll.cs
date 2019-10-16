@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SpiderX.Http;
 using SpiderX.Proxy;
 
 namespace SpiderX.ProxyFetcher
@@ -17,20 +16,18 @@ namespace SpiderX.ProxyFetcher
 		public override async Task RunAsync()
 		{
 			string caseName = ClassName;
-			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
+			using var pa = ProxyDbContext.CreateInstance("SqlServerTest");
 			var urls = ApiProvider.GetRequestUrls();
-			using (SpiderHttpClient webClient = ApiProvider.CreateWebClient())
+			using var webClient = ApiProvider.CreateWebClient();
+			var entities = await GetProxyEntitiesAsync(webClient, HttpMethod.Get, urls, urls.Count * 15);
+			if (entities.Count < 1)
 			{
-				var entities = await GetProxyEntitiesAsync(webClient, HttpMethod.Get, urls, urls.Count * 15);
-				if (entities.Count < 1)
-				{
-					return;
-				}
-				entities.ForEach(e => e.Source = caseName);
-				ShowLogInfo("CollectCount: " + entities.Count.ToString());
-				int insertCount = pa.InsertProxyEntities(entities);
-				ShowLogInfo("InsertCount: " + insertCount.ToString());
+				return;
 			}
+			entities.ForEach(e => e.Source = caseName);
+			ShowLogInfo("CollectCount: " + entities.Count.ToString());
+			int insertCount = pa.InsertProxyEntities(entities);
+			ShowLogInfo("InsertCount: " + insertCount.ToString());
 		}
 	}
 }

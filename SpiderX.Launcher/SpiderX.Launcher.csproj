@@ -44,6 +44,6 @@
     <ProjectReference Include="..\SpiderX.ProxyFetcher\SpiderX.ProxyFetcher.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties hostsettings_1json__JsonSchema="http://json.schemastore.org/appsettings" /></VisualStudio></ProjectExtensions>
 
 </Project>

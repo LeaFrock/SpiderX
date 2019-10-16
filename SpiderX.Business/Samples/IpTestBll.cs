@@ -18,7 +18,7 @@ namespace SpiderX.Business.Samples
 	public sealed class IpTestBll : BllBase
 	{
 		public const string HomePageHost = "icanhazip.com";
-		public readonly Uri HomePageUri = new Uri("http://icanhazip.com");
+		private readonly Uri HomePageUri = new Uri("http://icanhazip.com");
 
 		public IpTestBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
 		{
@@ -26,17 +26,11 @@ namespace SpiderX.Business.Samples
 
 		public override async Task RunAsync()
 		{
-			var conf = DbConfigManager.Default.GetConfig("SqlServerTest", true);
-			if (conf == null)
-			{
-				throw new DbConfigNotFoundException();
-			}
-			var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance(conf, c => new SqlServerProxyDbContext(c));
 			DefaultProxyUriLoader proxyUriLoader = new DefaultProxyUriLoader()
 			{
 				Days = 360,
 				Condition = p => p.Id > 0,
-				ProxyAgent = proxyAgent
+				DbContextFactory = () => ProxyDbContext.CreateInstance("SqlServerTest")
 			};
 			DefaultWebProxyValidator webProxyValidator = new DefaultWebProxyValidator(CreateWebClient, ValidateWebProxy, new WebProxyValidatorConfig()
 			{
@@ -45,7 +39,7 @@ namespace SpiderX.Business.Samples
 			});
 			DefaultWebProxySelector proxySelector = new DefaultWebProxySelector(new Uri("http://www.baidu.com"), proxyUriLoader, webProxyValidator);
 			proxySelector.Initialize();
-			string rspText = await HttpConsole.GetResponseTextByProxyAsync(HomePageUri, proxySelector, GetResponseTextAsync);
+			string rspText = await HttpConsole.GetResponseTextByProxyAsync(HomePageUri, proxySelector, GetResponseTextAsync).ConfigureAwait(false);
 			ShowLogInfo(rspText);
 		}
 
@@ -55,7 +49,7 @@ namespace SpiderX.Business.Samples
 			{
 				try
 				{
-					return await client.GetStringAsync(uri);
+					return await client.GetStringAsync(uri).ConfigureAwait(false);
 				}
 				catch
 				{
@@ -79,7 +73,7 @@ namespace SpiderX.Business.Samples
 
 		private static bool ValidateWebProxy(string rspText)
 		{
-			return rspText.EndsWith("</html>") && rspText.Contains("baidu");
+			return rspText.EndsWith("</html>") && rspText.Contains("baidu", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

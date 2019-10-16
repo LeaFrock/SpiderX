@@ -6,7 +6,7 @@ namespace SpiderX.Business.Bilibili
 {
 	public partial class BilibiliLiveRoomCountBll
 	{
-		public sealed class BilibiliLiveRoomCount
+		internal sealed class BilibiliLiveRoomCount
 		{
 			public int Id { get; set; }
 

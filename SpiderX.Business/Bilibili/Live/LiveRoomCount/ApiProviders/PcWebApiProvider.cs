@@ -8,7 +8,7 @@ namespace SpiderX.Business.Bilibili
 {
 	public partial class BilibiliLiveRoomCountBll
 	{
-		private sealed class PcWebApiProvider
+		private static class PcWebApiProvider
 		{
 			public readonly static Uri HomePageUri = new Uri("https://live.bilibili.com");
 

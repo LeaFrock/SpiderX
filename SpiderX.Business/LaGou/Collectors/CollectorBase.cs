@@ -16,11 +16,11 @@ namespace SpiderX.Business.LaGou
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{
-				var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
 				DefaultProxyUriLoader loader = new DefaultProxyUriLoader()
 				{
 					Days = 360,
-					Condition = e => e.Category == 1 && e.AnonymityDegree == 3
+					Condition = e => e.Category == 1 && e.AnonymityDegree == 3,
+					DbContextFactory = () => ProxyDbContext.CreateInstance("SqlServerTest")
 				};
 				return loader;
 			}

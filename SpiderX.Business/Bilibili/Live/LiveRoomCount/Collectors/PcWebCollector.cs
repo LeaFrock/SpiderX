@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SpiderX.Http;
 using SpiderX.Http.Util;
 
@@ -16,9 +17,9 @@ namespace SpiderX.Business.Bilibili
 			public override async Task<int> CollectAsync(string areaIdStr)
 			{
 				Uri apiUri = PcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
-				var proxyUriLoader = CreateProxyUriLoader();
+				var proxyUriLoader = CreateProxyUriLoader("SqlServerTest");
 				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
-				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, 49);
+				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, 49).ConfigureAwait(false);
 				if (string.IsNullOrEmpty(rspText))
 				{
 					return 0;
@@ -28,30 +29,28 @@ namespace SpiderX.Business.Bilibili
 
 			private async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
 			{
-				using (var client = CreateWebClient(proxy))
+				using var client = CreateWebClient(proxy);
+				RequestCounter.OnSend();
+				try
 				{
-					RequestCounter.OnSend();
-					try
-					{
-						string rspText = await client.GetStringAsync(targetUri);
-						RequestCounter.OnPass();
-						if (!ValidateResponseTextOK(rspText))
-						{
-							return null;
-						}
-						RequestCounter.OnSucceed();
-						return rspText;
-					}
-					catch
+					string rspText = await client.GetStringAsync(targetUri).ConfigureAwait(false);
+					RequestCounter.OnPass();
+					if (!ValidateResponseTextOK(rspText))
 					{
 						return null;
 					}
+					RequestCounter.OnSucceed();
+					return rspText;
+				}
+				catch
+				{
+					return null;
 				}
 			}
 
 			private static bool ValidateResponseTextOK(string rspText)
 			{
-				return rspText.EndsWith("}") && rspText.Contains("success", StringComparison.CurrentCultureIgnoreCase);
+				return rspText.EndsWith("}", StringComparison.Ordinal) && rspText.Contains("success", StringComparison.CurrentCultureIgnoreCase);
 			}
 
 			private static SpiderHttpClient CreateWebClient(IWebProxy proxy)

@@ -15,20 +15,18 @@ namespace SpiderX.Business.LaGou
 		{
 			public override async Task RunAsync(LaGouSearchParam searchParam)
 			{
-				var datas = await Collector.CollectAsync(searchParam);
-				using (var context = new LaGouSqlServerContext())
-				{
-					context.Database.EnsureCreated();
-					int insertCount = 0;
-					insertCount = InsertData(context, c => c.Positions, datas.Positions.Values, p => p.PositionId);
-					ShowLogInfo($"{nameof(context.Positions)} inserted {insertCount.ToString()}.");
-					insertCount = InsertData(context, c => c.Companies, datas.Companies.Values, p => p.CompanyId);
-					ShowLogInfo($"{nameof(context.Companies)} inserted {insertCount.ToString()}.");
-					insertCount = InsertData(context, c => c.HrInfos, datas.HrInfos.Values, p => p.UserId);
-					ShowLogInfo($"{nameof(context.HrInfos)} inserted {insertCount.ToString()}.");
-					insertCount = InsertData(context, c => c.HrDailyRecords, datas.HrDailyRecords.Values);
-					ShowLogInfo($"{nameof(context.HrDailyRecords)} inserted {insertCount.ToString()}.");
-				}
+				var datas = await Collector.CollectAsync(searchParam).ConfigureAwait(false);
+				using var context = new LaGouSqlServerContext();
+				context.Database.EnsureCreated();
+				int insertCount = 0;
+				insertCount = InsertData(context, c => c.Positions, datas.Positions.Values, p => p.PositionId);
+				ShowLogInfo($"{nameof(context.Positions)} inserted {insertCount.ToString()}.");
+				insertCount = InsertData(context, c => c.Companies, datas.Companies.Values, p => p.CompanyId);
+				ShowLogInfo($"{nameof(context.Companies)} inserted {insertCount.ToString()}.");
+				insertCount = InsertData(context, c => c.HrInfos, datas.HrInfos.Values, p => p.UserId);
+				ShowLogInfo($"{nameof(context.HrInfos)} inserted {insertCount.ToString()}.");
+				insertCount = InsertData(context, c => c.HrDailyRecords, datas.HrDailyRecords.Values);
+				ShowLogInfo($"{nameof(context.HrDailyRecords)} inserted {insertCount.ToString()}.");
 			}
 
 			private static int InsertData<T>(LaGouContext dbContext, Func<LaGouContext, DbSet<T>> dbSetSelector, ICollection<T> data) where T : class

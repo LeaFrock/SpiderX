@@ -10,7 +10,7 @@ namespace SpiderX.Business.TenderWebs
 {
 	public partial class GgzyGovBll
 	{
-		public abstract class CollectorBase
+		private abstract class CollectorBase
 		{
 			public abstract Task<List<OpenTenderEntity>> CollectOpenBids(string[] keywords);
 
@@ -18,10 +18,9 @@ namespace SpiderX.Business.TenderWebs
 
 			protected virtual IProxyUriLoader CreateProxyUriLoader()
 			{
-				var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
 				DefaultProxyUriLoader loader = new DefaultProxyUriLoader()
 				{
-					ProxyAgent = proxyAgent,
+					DbContextFactory = () => ProxyDbContext.CreateInstance("SqlServerTest"),
 					Days = 360,
 					Condition = e => e.Category == 1 && e.AnonymityDegree == 3
 				};

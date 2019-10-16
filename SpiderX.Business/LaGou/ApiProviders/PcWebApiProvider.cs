@@ -167,7 +167,7 @@ namespace SpiderX.Business.LaGou
 							break;
 
 						case 1:
-							if (companySizeText.Contains("少于"))
+							if (companySizeText.Contains("少于", StringComparison.Ordinal))
 							{
 								maxCompanySize = companySizes[0];
 							}
@@ -265,17 +265,12 @@ namespace SpiderX.Business.LaGou
 					return (0, 0);
 				}
 				var array = StringTool.MatchIntList(text, true);
-				switch (array.Count)
+				return array.Count switch
 				{
-					case 0:
-						return (0, 0);
-
-					case 1:
-						return (array[0], 0);
-
-					default:
-						return (array[0], array[1]);
-				}
+					0 => (0, 0),
+					1 => (array[0], 0),
+					_ => (array[0], array[1]),
+				};
 			}
 
 			#endregion PositionAjax

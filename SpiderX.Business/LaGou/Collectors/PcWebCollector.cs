@@ -29,12 +29,12 @@ namespace SpiderX.Business.LaGou
 				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
 				using (var client = CreateHttpClient())
 				{
-					await TryInitCookiesAsync(client, encodedCityName, encodedKeyword, searchParam.SearchType);
+					await TryInitCookiesAsync(client, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
 					await Task.Delay(100);
 					string sid = null;
 					using (var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, "1"))
 					{
-						string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType);
+						string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
 						var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
 						if (data != null)
 						{
@@ -44,14 +44,12 @@ namespace SpiderX.Business.LaGou
 					for (int i = 2; i <= searchParam.MaxPage; i++)
 					{
 						await Task.Delay(RandomTool.NextIntSafely(4000, 6000));
-						using (var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, i.ToString(), sid))
+						using var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, i.ToString(), sid);
+						string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
+						var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
+						if (data != null)
 						{
-							string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType);
-							var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
-							if (data != null)
-							{
-								dataCollection.AddResponseData(data);
-							}
+							dataCollection.AddResponseData(data);
 						}
 					}
 				}
@@ -62,7 +60,7 @@ namespace SpiderX.Business.LaGou
 
 			private async Task<bool> TryInitCookiesAsync(SpiderHttpClient client, string encodedCityName, string encodedKeyword, string type = "new")
 			{
-				var jobListRspMsg = await GetJobListAsync(client, encodedCityName, encodedKeyword, type);
+				var jobListRspMsg = await GetJobListAsync(client, encodedCityName, encodedKeyword, type).ConfigureAwait(false);
 				if (jobListRspMsg != null)
 				{
 					jobListRspMsg.Dispose();
@@ -73,7 +71,7 @@ namespace SpiderX.Business.LaGou
 
 			private SpiderHttpClient CreateHttpClient()
 			{
-				SocketsHttpHandler handler = new SocketsHttpHandler()
+				var handler = new SocketsHttpHandler()
 				{
 					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
 					UseCookies = true,
@@ -96,27 +94,25 @@ namespace SpiderX.Business.LaGou
 			{
 				Uri uri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword, type);
 				Uri referer = PcWebApiProvider.GetJobListReferer(encodedKeyword);
-				using (HttpRequestMessage reqMsg = new HttpRequestMessage(HttpMethod.Get, uri) { Version = HttpVersion.Version11 })
+				using var reqMsg = new HttpRequestMessage(HttpMethod.Get, uri) { Version = HttpVersion.Version11 };
+				var headers = reqMsg.Headers;
+				headers.Referrer = referer;
+				headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+				headers.Add("Pragma", "no-cache");
+				headers.Add("Cache-Control", "no-cache");
+				headers.Add("Upgrade-Insecure-Requests", "1");
+				try
 				{
-					var headers = reqMsg.Headers;
-					headers.Referrer = referer;
-					headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-					headers.Add("Pragma", "no-cache");
-					headers.Add("Cache-Control", "no-cache");
-					headers.Add("Upgrade-Insecure-Requests", "1");
-					try
+					var rspMsg = await client.SendAsync(reqMsg, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+					if (rspMsg.IsSuccessStatusCode)
 					{
-						var rspMsg = await client.SendAsync(reqMsg, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-						if (rspMsg.IsSuccessStatusCode)
-						{
-							FixCookies(client.CookieContainer, uri);
-						}
-						return rspMsg;
+						FixCookies(client.CookieContainer, uri);
 					}
-					catch
-					{
-						return null;
-					}
+					return rspMsg;
+				}
+				catch
+				{
+					return null;
 				}
 			}
 
@@ -148,7 +144,7 @@ namespace SpiderX.Business.LaGou
 					{
 						return null;
 					}
-					return await rspMsg.ToTextAsync();
+					return await rspMsg.ToTextAsync().ConfigureAwait(false);
 				}
 			}
 

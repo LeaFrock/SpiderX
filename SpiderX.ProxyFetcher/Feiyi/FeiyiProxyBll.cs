@@ -16,20 +16,18 @@ namespace SpiderX.ProxyFetcher
 		public override async Task RunAsync()
 		{
 			string caseName = ClassName;
-			var pa = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
+			using var pa = ProxyDbContext.CreateInstance("SqlServerTest");
 			string url = ApiProvider.GetRequestUrl();
-			using (var client = ApiProvider.CreateWebClient())
+			using var client = ApiProvider.CreateWebClient();
+			var entities = await GetProxyEntitiesAsync(client, HttpMethod.Get, url);
+			if (entities.Count < 1)
 			{
-				var entities = await GetProxyEntitiesAsync(client, HttpMethod.Get, url);
-				if (entities.Count < 1)
-				{
-					return;
-				}
-				entities.ForEach(e => e.Source = caseName);
-				ShowLogInfo("CollectCount: " + entities.Count.ToString());
-				int insertCount = pa.InsertProxyEntities(entities);
-				ShowLogInfo("InsertCount: " + insertCount.ToString());
+				return;
 			}
+			entities.ForEach(e => e.Source = caseName);
+			ShowLogInfo("CollectCount: " + entities.Count.ToString());
+			int insertCount = pa.InsertProxyEntities(entities);
+			ShowLogInfo("InsertCount: " + insertCount.ToString());
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace SpiderX.Business.TenderWebs
 {
 	public sealed partial class GgzyGovBll : BllBase
 	{
-		public abstract class SchemeBase
+		private abstract class SchemeBase
 		{
 			public abstract CollectorBase Collector { get; }
 

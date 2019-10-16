@@ -8,7 +8,7 @@ namespace SpiderX.Business.Bilibili
 {
 	public partial class BilibiliLiveRoomCountBll
 	{
-		public abstract class BilibiliLiveRoomCountContext : DbContext
+		protected abstract class BilibiliLiveRoomCountContext : DbContext
 		{
 			public BilibiliLiveRoomCountContext(DbConfig config)
 			{
@@ -17,7 +17,7 @@ namespace SpiderX.Business.Bilibili
 
 			public DbConfig Config { get; }
 
-			public DbSet<BilibiliLiveRoomCount> LiveRoomCount { get; set; }
+			internal DbSet<BilibiliLiveRoomCount> LiveRoomCount { get; set; }
 		}
 	}
 }

@@ -8,13 +8,14 @@ namespace SpiderX.Http.Util
 	{
 		public int Days { get; set; }
 
-		public IProxyAgent ProxyAgent { get; set; }
+		public Func<ProxyDbContext> DbContextFactory { get; set; }
 
 		public Predicate<SpiderProxyUriEntity> Condition { get; set; }
 
 		public Uri[] Load(int maxCount)
 		{
-			var proxyEntities = ProxyAgent.SelectProxyEntities(Condition, Days, maxCount);
+			using var dbContext = DbContextFactory.Invoke();
+			var proxyEntities = dbContext.SelectProxyEntities(Condition, Days, maxCount);
 			if (proxyEntities.Count < 1)
 			{
 				return Array.Empty<Uri>();

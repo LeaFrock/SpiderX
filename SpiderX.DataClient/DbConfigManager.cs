@@ -18,9 +18,13 @@ namespace SpiderX.DataClient
 
 		public IReadOnlyList<DbConfig> DbConfigs => _dbConfigs;
 
-		public DbConfig GetConfig(string name, bool isTest)
+		public DbConfig GetConfig(string name, bool? isTest = null)
 		{
-			return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
+			if (isTest.HasValue)
+			{
+				return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
+			}
+			return _dbConfigs.Find(p => p.Name == name);
 		}
 
 		private void Initialize(IConfiguration root)

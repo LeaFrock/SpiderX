@@ -30,22 +30,18 @@ namespace SpiderX.Business.LaGou
 				string encodedKeyword = WebTool.UrlEncodeByW3C(searchParam.Keyword);
 				var jobListUri = PcWebApiProvider.GetJobListUri(encodedCityName, encodedKeyword, searchParam.SearchType);
 				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
-				using (var browser = await PuppeteerConsole.LauncherBrowser(false))
+				using var browser = await PuppeteerConsole.LauncherBrowser(false);
+				using var page = await browser.NewPageAsync();
+				page.Response += OnResponsed;
+				await page.GoToAsync(jobListUri.AbsoluteUri).ConfigureAwait(false);//Get the first page directly.
+				for (int i = 0; i < searchParam.MaxPage - 1; i++)
 				{
-					using (var page = await browser.NewPageAsync())
-					{
-						page.Response += OnResponsed;
-						await page.GoToAsync(jobListUri.AbsoluteUri);//Get the first page directly.
-						for (int i = 0; i < searchParam.MaxPage - 1; i++)
-						{
-							await Task.Delay(RandomTool.NextInt(2000, 4000));
-							await page.HoverAsync(NextPageElementSelector);
-							await Task.Delay(RandomTool.NextInt(3000, 5000));
-							await page.ClickAsync(NextPageElementSelector);
-						}
-						return dataCollection;
-					}
+					await Task.Delay(RandomTool.NextInt(2000, 4000));
+					await page.HoverAsync(NextPageElementSelector);
+					await Task.Delay(RandomTool.NextInt(3000, 5000));
+					await page.ClickAsync(NextPageElementSelector);
 				}
+				return dataCollection;
 
 				async void OnResponsed(object sender, ResponseCreatedEventArgs args)
 				{

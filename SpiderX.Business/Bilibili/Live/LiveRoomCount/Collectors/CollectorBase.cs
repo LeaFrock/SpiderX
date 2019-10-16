@@ -22,12 +22,11 @@ namespace SpiderX.Business.Bilibili
 
 			public abstract Task<int> CollectAsync(string areaId);
 
-			protected virtual IProxyUriLoader CreateProxyUriLoader()
+			protected virtual IProxyUriLoader CreateProxyUriLoader(string dbConfigName)
 			{
-				var proxyAgent = ProxyAgent<SqlServerProxyDbContext>.CreateInstance("SqlServerTest", true, c => new SqlServerProxyDbContext(c));
 				DefaultProxyUriLoader loader = new DefaultProxyUriLoader()
 				{
-					ProxyAgent = proxyAgent,
+					DbContextFactory = () => ProxyDbContext.CreateInstance(dbConfigName),
 					Days = 360,
 					Condition = e => e.Category == 1 && e.AnonymityDegree == 3
 				};

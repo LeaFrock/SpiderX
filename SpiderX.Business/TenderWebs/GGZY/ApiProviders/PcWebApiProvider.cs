@@ -11,7 +11,7 @@ namespace SpiderX.Business.TenderWebs
 {
 	public partial class GgzyGovBll
 	{
-		public sealed class PcWebApiProvider : ApiProviderBase
+		private sealed class PcWebApiProvider : ApiProviderBase
 		{
 			public readonly static Uri ApiUri_GetBids = new Uri("http://deal.ggzy.gov.cn/ds/deal/dealList_find.jsp");
 

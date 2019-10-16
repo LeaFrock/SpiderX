@@ -8,7 +8,7 @@ namespace SpiderX.Business.Bilibili
 {
 	public partial class BilibiliLiveRoomCountBll
 	{
-		public sealed class BilibiliLiveRoomCountMySqlContext : BilibiliLiveRoomCountContext
+		protected sealed class BilibiliLiveRoomCountMySqlContext : BilibiliLiveRoomCountContext
 		{
 			private readonly static DbConfig _defaultDbConfig = new DbConfig(
 				"DefaultMySql",

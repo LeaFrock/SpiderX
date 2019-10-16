@@ -12,7 +12,7 @@ namespace SpiderX.Business.TenderWebs
 {
 	public sealed partial class GgzyGovBll : BllBase
 	{
-		public sealed class PcWebCollector : CollectorBase
+		private sealed class PcWebCollector : CollectorBase
 		{
 			public override Task<List<OpenTenderEntity>> CollectOpenBids(string[] keywords)
 			{

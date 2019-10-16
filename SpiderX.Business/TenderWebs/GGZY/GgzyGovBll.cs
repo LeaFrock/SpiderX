@@ -16,7 +16,7 @@ namespace SpiderX.Business.TenderWebs
 		public override async Task RunAsync()
 		{
 			var scheme = new DefaultScheme();
-			await scheme.RunAsync(RunSettings);
+			await scheme.RunAsync(RunSettings).ConfigureAwait(false);
 		}
 	}
 }

@@ -75,6 +75,10 @@ namespace SpiderX.Business.LaGou
 
 		public void AddResponseItem(LaGouResponseItem item)
 		{
+			if (item is null)
+			{
+				return;
+			}
 			if (item.Company != null)
 			{
 				Companies.Add(item.Company);
