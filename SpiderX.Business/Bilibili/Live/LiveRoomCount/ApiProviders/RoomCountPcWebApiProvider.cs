@@ -6,9 +6,9 @@ using SpiderX.Tools;
 
 namespace SpiderX.Business.Bilibili
 {
-	public partial class BilibiliLiveRoomCountBll
+	public partial class BilibiliLiveBll
 	{
-		private static class PcWebApiProvider
+		private static class RoomCountPcWebApiProvider
 		{
 			public readonly static Uri HomePageUri = new Uri("https://live.bilibili.com");
 

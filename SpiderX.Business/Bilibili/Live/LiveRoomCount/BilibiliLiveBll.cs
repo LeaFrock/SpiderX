@@ -7,15 +7,15 @@ using SpiderX.BusinessBase;
 
 namespace SpiderX.Business.Bilibili
 {
-	public sealed partial class BilibiliLiveRoomCountBll : BllBase
+	public sealed partial class BilibiliLiveBll : BllBase
 	{
-		public BilibiliLiveRoomCountBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public BilibiliLiveBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
 		{
 		}
 
 		public override async Task RunAsync()
 		{
-			var scheme = new DefaultScheme() { Collector = new PcWebCollector() };
+			var scheme = new RoomCountScheme() { Collector = new RoomCountPcWebCollector() };
 			await scheme.RunAsync().ConfigureAwait(false);
 		}
 	}

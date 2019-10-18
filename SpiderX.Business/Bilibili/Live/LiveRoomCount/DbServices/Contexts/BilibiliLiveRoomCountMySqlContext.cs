@@ -6,7 +6,7 @@ using SpiderX.DataClient;
 
 namespace SpiderX.Business.Bilibili
 {
-	public partial class BilibiliLiveRoomCountBll
+	public partial class BilibiliLiveBll
 	{
 		protected sealed class BilibiliLiveRoomCountMySqlContext : BilibiliLiveRoomCountContext
 		{

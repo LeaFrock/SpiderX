@@ -6,9 +6,9 @@ using SpiderX.Http;
 
 namespace SpiderX.Business.Bilibili
 {
-	public partial class BilibiliLiveRoomCountBll
+	public partial class BilibiliLiveBll
 	{
-		private sealed class DefaultScheme : SchemeBase
+		private sealed class RoomCountScheme : SchemeBase
 		{
 			public override async Task RunAsync()
 			{

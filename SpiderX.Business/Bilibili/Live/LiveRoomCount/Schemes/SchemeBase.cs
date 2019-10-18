@@ -6,7 +6,7 @@ using SpiderX.Http;
 
 namespace SpiderX.Business.Bilibili
 {
-	public partial class BilibiliLiveRoomCountBll
+	public partial class BilibiliLiveBll
 	{
 		private abstract class SchemeBase
 		{

@@ -9,7 +9,7 @@ using SpiderX.Proxy;
 
 namespace SpiderX.Business.Bilibili
 {
-	public partial class BilibiliLiveRoomCountBll
+	public partial class BilibiliLiveBll
 	{
 		private abstract class CollectorBase
 		{
@@ -17,7 +17,7 @@ namespace SpiderX.Business.Bilibili
 
 			public virtual void BeforeCollectAsync()
 			{
-				RequestCounter = InternBllHelper.CreateHttpRequestCounter(nameof(BilibiliLiveRoomCountBll), Logger);
+				RequestCounter = InternBllHelper.CreateHttpRequestCounter(nameof(BilibiliLiveBll), Logger);
 			}
 
 			public abstract Task<int> CollectAsync(string areaId);

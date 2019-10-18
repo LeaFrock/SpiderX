@@ -10,13 +10,13 @@ using SpiderX.Http.Util;
 
 namespace SpiderX.Business.Bilibili
 {
-	public partial class BilibiliLiveRoomCountBll
+	public partial class BilibiliLiveBll
 	{
-		private sealed class PcWebCollector : CollectorBase
+		private sealed class RoomCountPcWebCollector : CollectorBase
 		{
 			public override async Task<int> CollectAsync(string areaIdStr)
 			{
-				Uri apiUri = PcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
+				Uri apiUri = RoomCountPcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
 				var proxyUriLoader = CreateProxyUriLoader("SqlServerTest");
 				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
 				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, 49).ConfigureAwait(false);
@@ -24,7 +24,7 @@ namespace SpiderX.Business.Bilibili
 				{
 					return 0;
 				}
-				return PcWebApiProvider.GetLiveRoomCount(rspText);
+				return RoomCountPcWebApiProvider.GetLiveRoomCount(rspText);
 			}
 
 			private async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
@@ -61,7 +61,7 @@ namespace SpiderX.Business.Bilibili
 				client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
 				client.DefaultRequestHeaders.Add("User-Agent", HttpConsole.DefaultPcUserAgent);
 				client.DefaultRequestHeaders.Add("Origin", "https://live.bilibili.com");
-				client.DefaultRequestHeaders.Referrer = PcWebApiProvider.RefererUri;
+				client.DefaultRequestHeaders.Referrer = RoomCountPcWebApiProvider.RefererUri;
 				client.DefaultRequestHeaders.Host = "api.live.bilibili.com";
 				client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
 				client.DefaultRequestHeaders.Add("Pragma", "no-cache");
