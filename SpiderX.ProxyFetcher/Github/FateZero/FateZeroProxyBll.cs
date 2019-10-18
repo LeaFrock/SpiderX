@@ -16,7 +16,7 @@ namespace SpiderX.ProxyFetcher
 		public override async Task RunAsync()
 		{
 			string caseName = ClassName;
-			var pa = ProxyDbContext.CreateInstance("SqlServerTest");
+			var pa = ProxyDbContext.CreateInstance();
 			string url = ApiProvider.GetRequestUrl();
 			using var client = ApiProvider.CreateWebClient();
 			var entities = await GetProxyEntitiesAsync(client, HttpMethod.Get, url);
