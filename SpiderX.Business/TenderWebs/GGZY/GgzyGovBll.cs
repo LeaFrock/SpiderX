@@ -9,7 +9,7 @@ namespace SpiderX.Business.TenderWebs
 {
 	public sealed partial class GgzyGovBll : BllBase
 	{
-		public GgzyGovBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public GgzyGovBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 

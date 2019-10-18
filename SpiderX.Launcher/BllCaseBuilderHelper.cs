@@ -15,6 +15,7 @@ namespace SpiderX.Launcher
 			string nameSpace = defaultNamespace;
 			string caseName;
 			string[] runSettings = null;
+			string dbConfigName = null;
 			int version = 0;
 			string[] parts = commandLineParam.Split('-', StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length == 1)
@@ -36,7 +37,14 @@ namespace SpiderX.Launcher
 					}
 					if (parts.Length > 3)
 					{
-						int.TryParse(parts[3], out version);
+						if (parts[3] != "_")
+						{
+							dbConfigName = parts[3];
+						}
+						if (parts.Length > 4)
+						{
+							int.TryParse(parts[4], out version);
+						}
 					}
 				}
 			}
@@ -45,13 +53,14 @@ namespace SpiderX.Launcher
 			{
 				return EmptyBllCaseBuilder.Default;
 			}
-			return new DefaultBllCaseBuilder(caseType, new BllCaseBuildOption(runSettings, version), logger);
+			return new DefaultBllCaseBuilder(caseType, new BllCaseBuildOption(runSettings, dbConfigName, version), logger);
 		}
 
 		public static IBllCaseBuilder FromConfiguration(IConfiguration cs, ILoggerFactory loggerFactory = null)
 		{
 			string nameSpace = cs.GetValue<string>("NameSpace");
 			string caseName = cs.GetValue<string>("CaseName");
+			string dbConfigName = cs.GetValue<string>("DbConfigName");
 			var logger = loggerFactory?.CreateLogger(nameSpace + '.' + caseName);
 			if (!TryGetCaseType(nameSpace, caseName, logger, out var caseType))
 			{
@@ -69,7 +78,7 @@ namespace SpiderX.Launcher
 				}
 				runSettings = paramList.ToArray();
 			}
-			return new DefaultBllCaseBuilder(caseType, new BllCaseBuildOption(runSettings, version), logger);
+			return new DefaultBllCaseBuilder(caseType, new BllCaseBuildOption(runSettings, dbConfigName, version), logger);
 		}
 
 		private static bool TryGetCaseType(string nameSpace, string caseName, ILogger logger, out Type caseType)

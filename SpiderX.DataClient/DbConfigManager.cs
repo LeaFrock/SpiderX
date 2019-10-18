@@ -18,6 +18,8 @@ namespace SpiderX.DataClient
 
 		public IReadOnlyList<DbConfig> DbConfigs => _dbConfigs;
 
+		private string _proxyDbConfigName;
+
 		public DbConfig GetConfig(string name, bool? isTest = null)
 		{
 			if (isTest.HasValue)
@@ -25,6 +27,18 @@ namespace SpiderX.DataClient
 				return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
 			}
 			return _dbConfigs.Find(p => p.Name == name);
+		}
+
+		public DbConfig GetDefaultConfig() => _dbConfigs[0];
+
+		public DbConfig GetProxyConfig()
+		{
+			if (_proxyDbConfigName is null)
+			{
+				return GetDefaultConfig();
+			}
+			var c = _dbConfigs.Find(p => p.Name.Equals(_proxyDbConfigName, StringComparison.OrdinalIgnoreCase)) ?? GetDefaultConfig();
+			return c;
 		}
 
 		private void Initialize(IConfiguration root)
@@ -45,6 +59,7 @@ namespace SpiderX.DataClient
 			}
 			configs.TrimExcess();
 			_dbConfigs = configs;
+			_proxyDbConfigName = root.GetValue<string>("ProxyDbConfigName");
 		}
 
 		public static void SetDefault(IServiceProvider provider)

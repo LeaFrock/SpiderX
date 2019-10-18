@@ -26,7 +26,7 @@ namespace SpiderX.BusinessBase
 			BllBase bllInstance;
 			try
 			{
-				bllInstance = (BllBase)Activator.CreateInstance(_subType, _logger, Option.RunSettings, Option.Version);
+				bllInstance = (BllBase)Activator.CreateInstance(_subType, _logger, Option.RunSettings, Option.DbConfigName, Option.Version);
 			}
 			catch (Exception ex)
 			{

@@ -20,7 +20,7 @@ namespace SpiderX.Business.Samples
 		public const string HomePageHost = "icanhazip.com";
 		private readonly Uri HomePageUri = new Uri("http://icanhazip.com");
 
-		public IpTestBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public IpTestBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 

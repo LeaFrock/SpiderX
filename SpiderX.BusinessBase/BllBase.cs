@@ -12,7 +12,7 @@ namespace SpiderX.BusinessBase
 
 		protected static ILogger Logger => _logger;
 
-		public BllBase(ILogger logger, string[] runSetting, int version)
+		public BllBase(ILogger logger, string[] runSetting, string dbConfigName, int version)
 		{
 			Interlocked.CompareExchange(ref _logger, logger, null);
 			RunSettings = runSetting;
@@ -34,6 +34,8 @@ namespace SpiderX.BusinessBase
 		}
 
 		public string[] RunSettings { get; }
+
+		public string DbConfigName { get; }
 
 		public int Version { get; }
 

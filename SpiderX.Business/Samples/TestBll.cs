@@ -11,7 +11,7 @@ namespace SpiderX.Business.Samples
 {
 	public sealed class TestBll : BllBase
 	{
-		public TestBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public TestBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 

@@ -16,9 +16,11 @@ namespace SpiderX.Proxy
 
 		public DbSet<SpiderProxyUriEntity> ProxyUriEntities { get; set; }
 
-		public static ProxyDbContext CreateInstance(string dbConfigName)
+		public static ProxyDbContext CreateInstance(string dbConfigName = null)
 		{
-			var c = DbConfigManager.Default.GetConfig(dbConfigName);
+			var c = dbConfigName is null
+				? DbConfigManager.Default.GetProxyConfig()
+				: DbConfigManager.Default.GetConfig(dbConfigName);
 			if (c is null)
 			{
 				throw new DbConfigNotFoundException($"Config '{dbConfigName}' not found.");

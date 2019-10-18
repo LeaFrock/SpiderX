@@ -18,7 +18,7 @@ namespace SpiderX.Business.LaGou
 			new KeyValuePair<string, Func<SchemeBase>>("def_pcwebpptr", () => new DefaultScheme() { Collector = new PcWebPptrCollector() })
 		};
 
-		public LaGouBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public LaGouBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 
@@ -67,7 +67,7 @@ namespace SpiderX.Business.LaGou
 			{
 				searchParam.MaxPage = Math.Max(1, maxPage);
 			}
-			await scheme.RunAsync(searchParam);
+			await scheme.RunAsync(searchParam).ConfigureAwait(false);
 			return;
 		}
 	}
