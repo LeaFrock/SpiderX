@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SpiderX.BusinessBase;
+using SpiderX.DataClient;
 
 namespace SpiderX.Business.Bilibili
 {
@@ -15,7 +16,12 @@ namespace SpiderX.Business.Bilibili
 
 		public override async Task RunAsync()
 		{
-			var scheme = new RoomCountScheme() { Collector = new RoomCountPcWebCollector() };
+			var dbConf = DbConfigManager.Default.GetConfig(DbConfigName) ?? throw new DbConfigNotFoundException($"Config '{DbConfigName}' not found.");
+			var scheme = new RoomCountScheme()
+			{
+				DbConfig = dbConf,
+				Collector = new RoomCountPcWebCollector()
+			};
 			await scheme.RunAsync().ConfigureAwait(false);
 		}
 	}

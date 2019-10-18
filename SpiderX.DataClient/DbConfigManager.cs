@@ -24,9 +24,9 @@ namespace SpiderX.DataClient
 		{
 			if (isTest.HasValue)
 			{
-				return _dbConfigs.Find(p => p.IsTest == isTest && p.Name == name);
+				return _dbConfigs.Find(p => p.IsTest == isTest && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 			}
-			return _dbConfigs.Find(p => p.Name == name);
+			return _dbConfigs.Find(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 		}
 
 		public DbConfig GetDefaultConfig() => _dbConfigs[0];

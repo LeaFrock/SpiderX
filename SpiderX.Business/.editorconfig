@@ -16,4 +16,7 @@ dotnet_diagnostic.CA2000.severity = silent
 dotnet_diagnostic.CA2007.severity = suggestion
 
 # IDE0058: 永远不会使用表达式值
-csharp_style_unused_value_expression_statement_preference = discard_variable:suggestion
+csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+
+# CA1062: 验证公共方法的参数
+dotnet_diagnostic.CA1062.severity = silent
