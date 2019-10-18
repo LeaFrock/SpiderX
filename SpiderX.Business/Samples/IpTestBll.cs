@@ -45,16 +45,14 @@ namespace SpiderX.Business.Samples
 
 		public static async Task<string> GetResponseTextAsync(Uri uri, IWebProxy proxy)
 		{
-			using (var client = CreateWebClient(proxy))
+			using var client = CreateWebClient(proxy);
+			try
 			{
-				try
-				{
-					return await client.GetStringAsync(uri).ConfigureAwait(false);
-				}
-				catch
-				{
-					return string.Empty;
-				}
+				return await client.GetStringAsync(uri).ConfigureAwait(false);
+			}
+			catch
+			{
+				return string.Empty;
 			}
 		}
 
