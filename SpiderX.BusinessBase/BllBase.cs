@@ -16,6 +16,7 @@ namespace SpiderX.BusinessBase
 		{
 			Interlocked.CompareExchange(ref _logger, logger, null);
 			RunSettings = runSetting;
+			DbConfigName = dbConfigName;
 			Version = version;
 		}
 
