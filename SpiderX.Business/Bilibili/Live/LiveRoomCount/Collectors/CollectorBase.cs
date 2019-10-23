@@ -28,7 +28,7 @@ namespace SpiderX.Business.Bilibili
 				{
 					DbContextFactory = () => ProxyDbContext.CreateInstance(dbConfigName),
 					Days = 360,
-					Condition = e => e.Category == 1 && e.AnonymityDegree == 3
+					EntityOption = new SpiderProxyUriEntityOption() { Category = 1, AnonymityDegree = 3, ResponseMilliseconds = 10000 }
 				};
 				return loader;
 			}

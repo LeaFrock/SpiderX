@@ -17,7 +17,7 @@ namespace SpiderX.Business.Bilibili
 			public override async Task<int> CollectAsync(string areaIdStr)
 			{
 				Uri apiUri = RoomCountPcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
-				var proxyUriLoader = CreateProxyUriLoader("SqlServerTest");
+				var proxyUriLoader = CreateProxyUriLoader("sqlservertest");
 				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
 				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, 49).ConfigureAwait(false);
 				if (string.IsNullOrEmpty(rspText))
@@ -30,16 +30,17 @@ namespace SpiderX.Business.Bilibili
 			private async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
 			{
 				using var client = CreateWebClient(proxy);
-				RequestCounter.OnSend();
+				var reqCounter = RequestCounter;
+				reqCounter?.OnSend();
 				try
 				{
 					string rspText = await client.GetStringAsync(targetUri).ConfigureAwait(false);
-					RequestCounter.OnPass();
+					reqCounter?.OnPass();
 					if (!ValidateResponseTextOK(rspText))
 					{
 						return null;
 					}
-					RequestCounter.OnSucceed();
+					reqCounter?.OnSucceed();
 					return rspText;
 				}
 				catch

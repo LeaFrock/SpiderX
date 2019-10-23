@@ -19,8 +19,8 @@ namespace SpiderX.Business.LaGou
 				DefaultProxyUriLoader loader = new DefaultProxyUriLoader()
 				{
 					Days = 360,
-					Condition = e => e.Category == 1 && e.AnonymityDegree == 3,
-					DbContextFactory = () => ProxyDbContext.CreateInstance("SqlServerTest")
+					DbContextFactory = () => ProxyDbContext.CreateInstance(),
+					EntityOption = new SpiderProxyUriEntityOption() { Category = 1, AnonymityDegree = 3, ResponseMilliseconds = 10000 }
 				};
 				return loader;
 			}

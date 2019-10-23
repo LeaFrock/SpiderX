@@ -29,8 +29,7 @@ namespace SpiderX.Business.Samples
 			DefaultProxyUriLoader proxyUriLoader = new DefaultProxyUriLoader()
 			{
 				Days = 360,
-				Condition = p => p.Id > 0,
-				DbContextFactory = () => ProxyDbContext.CreateInstance("SqlServerTest")
+				DbContextFactory = () => ProxyDbContext.CreateInstance()
 			};
 			DefaultWebProxyValidator webProxyValidator = new DefaultWebProxyValidator(CreateWebClient, ValidateWebProxy, new WebProxyValidatorConfig()
 			{

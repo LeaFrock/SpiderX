@@ -20,6 +20,7 @@ namespace SpiderX.Business.Bilibili
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			modelBuilder.HasDefaultSchema("Bilibili");
 			modelBuilder.Entity<BilibiliLiveRoomCount>(
 				e =>
 				{

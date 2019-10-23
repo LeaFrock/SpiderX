@@ -22,7 +22,7 @@ namespace SpiderX.Business.Bilibili
 				DbConfig = dbConf,
 				Collector = new RoomCountPcWebCollector()
 			};
-			await scheme.RunAsync().ConfigureAwait(false);
+			await scheme.RunAsync().ConfigureAwait(true);
 		}
 	}
 }

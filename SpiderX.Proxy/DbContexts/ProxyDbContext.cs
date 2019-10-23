@@ -33,7 +33,7 @@ namespace SpiderX.Proxy
 			};
 		}
 
-		public abstract ICollection<SpiderProxyUriEntity> SelectProxyEntities(Predicate<SpiderProxyUriEntity> predicate, int recentDays, int count);
+		public abstract ICollection<SpiderProxyUriEntity> SelectProxyEntities(ISpiderProxyUriEntityOption entityOption, int recentDays, int count);
 
 		public abstract int InsertProxyEntities(IEnumerable<SpiderProxyUriEntity> entities);
 

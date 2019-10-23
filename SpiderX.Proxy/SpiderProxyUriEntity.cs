@@ -42,14 +42,7 @@ namespace SpiderX.Proxy
 			}
 		}
 
-		public bool Equals(SpiderProxyUriEntity other)
-		{
-			if (other == null)
-			{
-				return false;
-			}
-			return Host == other.Host && Port == other.Port;
-		}
+		public bool Equals(SpiderProxyUriEntity other) => other != null && Host == other.Host && Port == other.Port;
 
 		public override int GetHashCode() => (Host, Port).GetHashCode();
 	}

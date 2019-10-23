@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SpiderX.DataClient;
 
@@ -68,18 +67,37 @@ namespace SpiderX.Proxy
 			});
 		}
 
-		public override ICollection<SpiderProxyUriEntity> SelectProxyEntities(Predicate<SpiderProxyUriEntity> predicate, int recentDays = 10, int count = 0)
+		public override ICollection<SpiderProxyUriEntity> SelectProxyEntities(ISpiderProxyUriEntityOption entityOption, int recentDays = 10, int count = 0)
 		{
 			if (recentDays < 1)
 			{
 				recentDays = 360;
 			}
-			Expression<Func<SpiderProxyUriEntity, bool>> filter = predicate != null
-				? (p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays && predicate(p))
-				: (Expression<Func<SpiderProxyUriEntity, bool>>)(p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays);
-			var query = ProxyUriEntities
-				.Where(filter)
-				.OrderByDescending(e => e.UpdateTime);
+			IQueryable<SpiderProxyUriEntity> query;
+			if (entityOption is null)
+			{
+				query = ProxyUriEntities.AsNoTracking()
+					.Where(p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays)
+					.OrderByDescending(e => e.UpdateTime);
+			}
+			else
+			{
+				var queryableData = ProxyUriEntities.AsNoTracking().AsQueryable();
+				var expression = entityOption.GetExpressionTree(queryableData);
+				if (expression is null)
+				{
+					query = ProxyUriEntities
+					.Where(p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays)
+					.OrderByDescending(e => e.UpdateTime);
+				}
+				else
+				{
+					query = queryableData.Provider
+						.CreateQuery<SpiderProxyUriEntity>(expression)
+						.Where(p => SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, p.UpdateTime, DateTime.UtcNow) <= recentDays)
+						.OrderByDescending(e => e.UpdateTime);
+				}
+			}
 			return (count > 0 ? query.Take(count) : query).ToArray();
 		}
 
