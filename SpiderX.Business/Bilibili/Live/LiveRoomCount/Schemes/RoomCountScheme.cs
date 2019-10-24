@@ -12,12 +12,11 @@ namespace SpiderX.Business.Bilibili
 		{
 			public override async Task RunAsync()
 			{
-				Collector.BeforeCollectAsync();
-				int liveRoomCount = await Collector.CollectAsync("0").ConfigureAwait(true);
+				int liveRoomCount = await Collector.CollectRoomCountAsync("0").ConfigureAwait(true);
 				ShowLogInfo(liveRoomCount.ToString());
+				var item = BilibiliLiveRoomCount.Create(liveRoomCount);
 				using var context = new BilibiliDbContext(DbConfig);
 				context.Database.EnsureCreated();
-				var item = BilibiliLiveRoomCount.Create(liveRoomCount);
 				context.LiveRoomCount.Add(item);
 				context.SaveChanges();
 			}

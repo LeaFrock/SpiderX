@@ -14,39 +14,24 @@ namespace SpiderX.Business.Bilibili
 	{
 		private sealed class RoomCountPcWebCollector : CollectorBase
 		{
-			public override async Task<int> CollectAsync(string areaIdStr)
+			public override async Task<int> CollectRoomCountAsync(string areaIdStr)
 			{
-				Uri apiUri = RoomCountPcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
-				var proxyUriLoader = CreateProxyUriLoader("sqlservertest");
-				var proxySelector = new SimpleWebProxySelector(proxyUriLoader);
-				string rspText = await HttpConsole.GetResponseTextByProxyAsync(apiUri, proxySelector, GetResponseTextByProxyAsync, 49).ConfigureAwait(false);
-				if (string.IsNullOrEmpty(rspText))
+				Uri targetUri = RoomCountPcWebApiProvider.GetApiUri_GetLiveRoomCountByAreaID(areaIdStr);
+				using var client = CreateWebClient();
+				string rspText = null;
+				try
+				{
+					rspText = await client.GetStringAsync(targetUri).ConfigureAwait(false);
+				}
+				catch
+				{
+					return 0;
+				}
+				if (!ValidateResponseTextOK(rspText))
 				{
 					return 0;
 				}
 				return RoomCountPcWebApiProvider.GetLiveRoomCount(rspText);
-			}
-
-			private async Task<string> GetResponseTextByProxyAsync(Uri targetUri, IWebProxy proxy)
-			{
-				using var client = CreateWebClient(proxy);
-				var reqCounter = RequestCounter;
-				reqCounter?.OnSend();
-				try
-				{
-					string rspText = await client.GetStringAsync(targetUri).ConfigureAwait(false);
-					reqCounter?.OnPass();
-					if (!ValidateResponseTextOK(rspText))
-					{
-						return null;
-					}
-					reqCounter?.OnSucceed();
-					return rspText;
-				}
-				catch
-				{
-					return null;
-				}
 			}
 
 			private static bool ValidateResponseTextOK(string rspText)
@@ -54,9 +39,9 @@ namespace SpiderX.Business.Bilibili
 				return rspText.EndsWith("}", StringComparison.Ordinal) && rspText.Contains("success", StringComparison.CurrentCultureIgnoreCase);
 			}
 
-			private static SpiderHttpClient CreateWebClient(IWebProxy proxy)
+			private static SpiderHttpClient CreateWebClient()
 			{
-				var client = new SpiderHttpClient(proxy);
+				var client = new SpiderHttpClient();
 				client.DefaultRequestHeaders.Add("Accept", "application/json, text/plain, */*");
 				client.DefaultRequestHeaders.Add("Accept-Encoding", "br");
 				client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9");
