@@ -15,7 +15,7 @@
     {
       "Name": "SqlServerTest",
       "Type": 0,
-      "ConnectionString": "Server=localhost\\SQLEXPRESS;Database=SpiderProxy;Integrated Security=true;Trusted_Connection=True;",
+      "ConnectionString": "Server=localhost\\SQLEXPRESS;Database={0};Integrated Security=true;Trusted_Connection=True;",
       "IsTest": true,
       "IsEnabled": true
     },
@@ -29,7 +29,7 @@
     {
       "Name": "MySqlTest",
       "Type": 1,
-      "ConnectionString": "Server=localhost;Database=SpiderProxy;UID=root;Password=20180423;CharSet=utf8;pooling=true;port=3306;sslmode=none;",
+      "ConnectionString": "Server=localhost;Database={0};UID=root;Password=20180423;CharSet=utf8;pooling=true;port=3306;sslmode=none;",
       "IsTest": true,
       "IsEnabled": true
     },

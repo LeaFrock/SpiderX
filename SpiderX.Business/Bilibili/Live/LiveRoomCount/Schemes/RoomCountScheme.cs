@@ -18,7 +18,7 @@ namespace SpiderX.Business.Bilibili
 				using var context = new BilibiliDbContext(DbConfig);
 				context.Database.EnsureCreated();
 				context.LiveRoomCount.Add(item);
-				context.SaveChanges();
+				await context.SaveChangesAsync();
 			}
 		}
 	}

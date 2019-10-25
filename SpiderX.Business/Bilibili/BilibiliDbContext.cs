@@ -8,19 +8,25 @@ namespace SpiderX.Business.Bilibili
 {
 	internal sealed class BilibiliDbContext : DbContext
 	{
-		public BilibiliDbContext(DbConfig config) : base()
+		public BilibiliDbContext(DbConfig config) : this(config, "Bilibili")
+		{
+		}
+
+		public BilibiliDbContext(DbConfig config, string dbName) : base()
 		{
 			Config = config;
+			DbName = dbName;
 		}
 
 		public DbConfig Config { get; }
+
+		public string DbName { get; }
 
 		internal DbSet<BilibiliLiveRoomCount> LiveRoomCount { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-			modelBuilder.HasDefaultSchema("Bilibili");
 			modelBuilder.Entity<BilibiliLiveRoomCount>(
 				e =>
 				{
@@ -41,7 +47,12 @@ namespace SpiderX.Business.Bilibili
 			switch (Config.Type)
 			{
 				case DbEnum.MySql:
-					optionsBuilder.UseMySql(Config.ConnectionString, opt =>
+					string connStr = Config.ConnectionString;
+					if (Config.IsConnectionStringTemplate)
+					{
+						connStr = string.Format(connStr, DbName);
+					}
+					optionsBuilder.UseMySql(connStr, opt =>
 					{
 						opt.CommandTimeout(60);
 						opt.EnableRetryOnFailure(3);

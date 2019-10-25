@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 
 namespace SpiderX.DataClient
@@ -14,21 +15,24 @@ namespace SpiderX.DataClient
 
 		public DbConfig(string name, DbEnum type, string connStr, bool isTest) : this()
 		{
+			ConnectionString = connStr ?? throw new ArgumentNullException("ConnectionString cannot be null.");
+			IsConnectionStringTemplate = connStr.Contains('{');
 			Name = name;
 			Type = type;
-			ConnectionString = connStr;
 			IsTest = isTest;
 		}
 
 		public int TempId { get; }
 
-		public string Name { get; private set; }
+		public string Name { get; }
 
-		public DbEnum Type { get; private set; }
+		public DbEnum Type { get; }
 
-		public string ConnectionString { get; private set; }
+		public string ConnectionString { get; }
 
-		public bool IsTest { get; private set; } = true;
+		public bool IsTest { get; } = true;
+
+		public bool IsConnectionStringTemplate { get; }
 
 		public static DbConfig FromConfiguration(IConfiguration source)
 		{

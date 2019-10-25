@@ -7,12 +7,15 @@ namespace SpiderX.Proxy
 {
 	public abstract class ProxyDbContext : DbContext
 	{
-		public ProxyDbContext(DbConfig dbConfig) : base()
+		public ProxyDbContext(DbConfig dbConfig, string dbName) : base()
 		{
 			Config = dbConfig;
+			DbName = dbName ?? "SpiderProxy";
 		}
 
 		public DbConfig Config { get; }
+
+		public string DbName { get; }
 
 		public DbSet<SpiderProxyUriEntity> ProxyUriEntities { get; set; }
 
@@ -27,8 +30,8 @@ namespace SpiderX.Proxy
 			}
 			return c.Type switch
 			{
-				DbEnum.SqlServer => new SqlServerProxyDbContext(c),
-				DbEnum.MySql => new MySqlProxyDbContext(c),
+				DbEnum.SqlServer => new SqlServerProxyDbContext(c, null),
+				DbEnum.MySql => new MySqlProxyDbContext(c, null),
 				_ => throw new NotSupportedException($"Config '{dbConfigName}' not supported."),
 			};
 		}

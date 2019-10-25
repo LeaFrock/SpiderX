@@ -8,42 +8,31 @@ namespace SpiderX.Proxy
 {
 	public sealed class MySqlProxyDbContext : ProxyDbContext
 	{
-		public MySqlProxyDbContext() : this(null)
-		{
-		}
-
-		public MySqlProxyDbContext(DbConfig dbconfig) : base(dbconfig)
+		public MySqlProxyDbContext(DbConfig dbConfig, string dbName) : base(dbConfig, dbName)
 		{
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			base.OnConfiguring(optionsBuilder);
-			if (Config == null)
+			switch (Config.Type)
 			{
-				optionsBuilder.UseMySql(@"Server=localhost;Database=SpiderProxy;UID=root;Password=20180423;CharSet=utf8;pooling=true;port=3306;sslmode=none;",
-					opt =>
+				case DbEnum.MySql:
+					string connStr = Config.ConnectionString;
+					if (Config.IsConnectionStringTemplate)
 					{
-						opt.CommandTimeout(60);
-						opt.EnableRetryOnFailure(3);
-					});
-			}
-			else
-			{
-				switch (Config.Type)
-				{
-					case DbEnum.MySql:
-						optionsBuilder.UseMySql(Config.ConnectionString,
-							opt =>
-							{
-								opt.CommandTimeout(60);
-								opt.EnableRetryOnFailure(3);
-							});
-						break;
+						connStr = string.Format(connStr, DbName);
+					}
+					optionsBuilder.UseMySql(connStr,
+						opt =>
+						{
+							opt.CommandTimeout(60);
+							opt.EnableRetryOnFailure(3);
+						});
+					break;
 
-					default:
-						throw new NotSupportedException(Config.Name);
-				}
+				default:
+					throw new NotSupportedException(Config.Name);
 			}
 		}
 

@@ -8,42 +8,31 @@ namespace SpiderX.Proxy
 {
 	public sealed class SqlServerProxyDbContext : ProxyDbContext
 	{
-		public SqlServerProxyDbContext() : this(null)
-		{
-		}
-
-		public SqlServerProxyDbContext(DbConfig dbConfig) : base(dbConfig)
+		public SqlServerProxyDbContext(DbConfig dbConfig, string dbName) : base(dbConfig, dbName)
 		{
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			base.OnConfiguring(optionsBuilder);
-			if (Config == null)
+			switch (Config.Type)
 			{
-				optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=SpiderProxy;Integrated Security=true;Trusted_Connection=True;",
-					opt =>
+				case DbEnum.SqlServer:
+					string connStr = Config.ConnectionString;
+					if (Config.IsConnectionStringTemplate)
 					{
-						opt.CommandTimeout(60);
-						opt.EnableRetryOnFailure(3);
-					});
-			}
-			else
-			{
-				switch (Config.Type)
-				{
-					case DbEnum.SqlServer:
-						optionsBuilder.UseSqlServer(Config.ConnectionString,
-							opt =>
-							{
-								opt.CommandTimeout(60);
-								opt.EnableRetryOnFailure(3);
-							});
-						break;
+						connStr = string.Format(connStr, DbName);
+					}
+					optionsBuilder.UseSqlServer(connStr,
+						opt =>
+						{
+							opt.CommandTimeout(60);
+							opt.EnableRetryOnFailure(3);
+						});
+					break;
 
-					default:
-						throw new NotSupportedException(Config.Name);
-				}
+				default:
+					throw new NotSupportedException(Config.Name);
 			}
 		}
 
