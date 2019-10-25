@@ -7,7 +7,7 @@ namespace SpiderX.ProxyFetcher
 {
 	public sealed class IpHaiProxyBll : ProxyBll
 	{
-		public IpHaiProxyBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public IpHaiProxyBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 

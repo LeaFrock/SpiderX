@@ -53,6 +53,7 @@ namespace SpiderX.Proxy
 				.HasDefaultValueSql("GETUTCDATE()")
 				.IsRequired();
 				e.Ignore(p => p.Value);
+				e.ToTable("ProxyEntities");
 			});
 		}
 

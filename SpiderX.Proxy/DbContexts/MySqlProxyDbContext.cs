@@ -48,11 +48,18 @@ namespace SpiderX.Proxy
 				e.Property(p => p.Host)
 				.HasColumnType("VARCHAR(32)")
 				.IsRequired();
+				e.Property(p => p.Location)
+				.HasColumnType("VARCHAR(32)")
+				.IsRequired();
+				e.Property(p => p.Source)
+				.HasColumnType("VARCHAR(25)")
+				.IsRequired();
 				e.Property(p => p.UpdateTime)
 				.HasColumnType("DATETIME")
-				.HasDefaultValueSql("utc_timestamp()")
+				.HasDefaultValueSql("CURRENT_TIMESTAMP()")
 				.IsRequired();
 				e.Ignore(p => p.Value);
+				e.ToTable("ProxyEntities");
 			});
 		}
 

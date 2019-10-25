@@ -19,21 +19,20 @@ namespace SpiderX.Proxy
 
 		public DbSet<SpiderProxyUriEntity> ProxyUriEntities { get; set; }
 
-		public static ProxyDbContext CreateInstance(string dbConfigName = null)
+		public static ProxyDbContext CreateInstance(bool ensureDbCreated = true)
 		{
-			var c = dbConfigName is null
-				? DbConfigManager.Default.GetProxyConfig()
-				: DbConfigManager.Default.GetConfig(dbConfigName);
-			if (c is null)
+			var config = DbConfigManager.Default.GetProxyConfig();
+			ProxyDbContext context = config.Type switch
 			{
-				throw new DbConfigNotFoundException($"Config '{dbConfigName}' not found.");
-			}
-			return c.Type switch
-			{
-				DbEnum.SqlServer => new SqlServerProxyDbContext(c, null),
-				DbEnum.MySql => new MySqlProxyDbContext(c, null),
-				_ => throw new NotSupportedException($"Config '{dbConfigName}' not supported."),
+				DbEnum.SqlServer => new SqlServerProxyDbContext(config, null),
+				DbEnum.MySql => new MySqlProxyDbContext(config, null),
+				_ => throw new NotSupportedException($"Config not supported. Please check 'ProxyDbConfigName' in the setting file."),
 			};
+			if (ensureDbCreated)
+			{
+				context.Database.EnsureCreated();
+			}
+			return context;
 		}
 
 		public abstract ICollection<SpiderProxyUriEntity> SelectProxyEntities(ISpiderProxyUriEntityOption entityOption, int recentDays, int count);

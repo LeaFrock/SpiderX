@@ -14,7 +14,7 @@ namespace SpiderX.ProxyFetcher
 {
 	public abstract class ProxyBll : BllBase
 	{
-		public ProxyBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, null, version)
+		public ProxyBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 

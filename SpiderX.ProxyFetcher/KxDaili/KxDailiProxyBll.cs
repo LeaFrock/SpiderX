@@ -7,7 +7,7 @@ namespace SpiderX.ProxyFetcher
 {
 	public class KxDailiProxyBll : ProxyBll
 	{
-		public KxDailiProxyBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public KxDailiProxyBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 

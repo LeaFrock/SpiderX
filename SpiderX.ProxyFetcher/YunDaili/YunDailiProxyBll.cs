@@ -7,7 +7,7 @@ namespace SpiderX.ProxyFetcher
 {
 	public class YunDailiProxyBll : ProxyBll
 	{
-		public YunDailiProxyBll(ILogger logger, string[] runSetting, int version) : base(logger, runSetting, version)
+		public YunDailiProxyBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
 		{
 		}
 
