@@ -1,7 +1,15 @@
 # SpiderX
 
-This is a simple web-crawler development framework based on .Net Core.
+This is a simple web-crawler development framework based on .Net Core.  
 >本项目是一个简单的基于 .Net Core 的爬虫开发框架。
+
+## Disclaimer |免责声明
+
+For everyone, this framework must be used legally under local law. Users have total responsibility for ensuring their own compliance with legal requirements, while authors and contributors won't be held responsible for actions of illegal users.
+>对所有人来说，该框架必须在当地法律允许的范围内使用。使用者对确保自己遵守法律要求负有完全责任，而作者和贡献者对违法使用者的行为概不负责。
+
+All of the samples in this project are just for instructions, learning and communication. If you change the source codes, please obey the open-source lisence.
+>本项目中的所有样例仅用于说明、学习和交流。如果你修改了源代码，请遵守开源协议。
 
 ## Develop Environment |开发环境
 
