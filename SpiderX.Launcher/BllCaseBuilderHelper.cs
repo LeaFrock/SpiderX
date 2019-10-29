@@ -48,7 +48,12 @@ namespace SpiderX.Launcher
 					}
 				}
 			}
-			var logger = loggerFactory?.CreateLogger(nameSpace + '.' + caseName);
+			ILogger logger = null;
+			if (loggerFactory != null)
+			{
+				logger = loggerFactory.CreateLogger(nameSpace + '.' + caseName);
+				loggerFactory.Dispose();
+			}
 			if (!TryGetCaseType(nameSpace, caseName, logger, out var caseType))
 			{
 				return EmptyBllCaseBuilder.Default;
@@ -61,7 +66,12 @@ namespace SpiderX.Launcher
 			string nameSpace = cs.GetValue<string>("NameSpace");
 			string caseName = cs.GetValue<string>("CaseName");
 			string dbConfigName = cs.GetValue<string>("DbConfigName");
-			var logger = loggerFactory?.CreateLogger(nameSpace + '.' + caseName);
+			ILogger logger = null;
+			if (loggerFactory != null)
+			{
+				logger = loggerFactory.CreateLogger(nameSpace + '.' + caseName);
+				loggerFactory.Dispose();
+			}
 			if (!TryGetCaseType(nameSpace, caseName, logger, out var caseType))
 			{
 				return EmptyBllCaseBuilder.Default;
