@@ -17,7 +17,7 @@ All of the samples in this project are just for instructions, learning and commu
 
 - Recommended IDE |推荐IDE: [Visual Studio 2019 16.3+](https://visualstudio.microsoft.com/zh-hans/downloads/)
 
-- Recommended Language Version |推荐语言版本: [C# 7.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
+- Recommended Language Version |推荐语言版本: [C# 8.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
 
 - Recommended ORM |推荐ORM： [EntityFramework Core 3.0+](https://docs.microsoft.com/zh-cn/ef/index#pivot=efcore)
 
