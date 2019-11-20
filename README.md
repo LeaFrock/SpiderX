@@ -1,5 +1,10 @@
 # SpiderX
 
+[![.NET Core](https://img.shields.io/badge/.NET%20Core-%203.0-brightgreen)][DotNetCoreUrl]
+![License](https://img.shields.io/badge/License-GPL--3.0-blue)
+
+[DotNetCoreUrl]: https://dotnet.microsoft.com/download
+
 This is a simple web-crawler development framework based on .Net Core.  
 >本项目是一个简单的基于 .Net Core 的爬虫开发框架。
 
