@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Titanium.Web.Proxy" Version="3.1.1136" />
+    <PackageReference Include="Titanium.Web.Proxy" Version="3.1.1201" />
   </ItemGroup>
 
   <ItemGroup>
