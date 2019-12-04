@@ -1,6 +1,6 @@
 # SpiderX
 
-[![.NET Core](https://img.shields.io/badge/.NET%20Core-%203.0-brightgreen)][DotNetCoreUrl]
+[![.NET Core](https://img.shields.io/badge/.NET%20Core-%203.1-brightgreen)][DotNetCoreUrl]
 ![License](https://img.shields.io/badge/License-GPL--3.0-blue)
 
 [DotNetCoreUrl]: https://dotnet.microsoft.com/download
@@ -18,13 +18,13 @@ All of the samples in this project are just for instructions, learning and commu
 
 ## Develop Environment |开发环境
 
-- Target Framework |运行框架: [.Net Core 3.0+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
+- Target Framework |运行框架: [.Net Core 3.1+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
 
-- Recommended IDE |推荐IDE: [Visual Studio 2019 16.3+](https://visualstudio.microsoft.com/zh-hans/downloads/)
+- Recommended IDE |推荐IDE: [Visual Studio 2019 16.4+](https://visualstudio.microsoft.com/zh-hans/downloads/)
 
 - Recommended Language Version |推荐语言版本: [C# 8.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
 
-- Recommended ORM |推荐ORM： [EntityFramework Core 3.0+](https://docs.microsoft.com/zh-cn/ef/index#pivot=efcore)
+- Recommended ORM |推荐ORM： [EntityFramework Core 3.1+](https://docs.microsoft.com/zh-cn/ef/index#pivot=efcore)
 
 ## Structure |项目结构
 
