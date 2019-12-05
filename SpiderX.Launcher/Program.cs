@@ -74,18 +74,15 @@ namespace SpiderX.Launcher
 				});
 			});
 			hostBuilder.UseConsoleLifetime();
-			var host = hostBuilder.Build();
-			using (host)
+			using var host = hostBuilder.Build();
+			DbConfigManager.SetDefault(host.Services);
+			await host.StartAsync();
+			bool autoClose = hostConfig.GetValue<bool>("AutoClose");
+			if (!autoClose)
 			{
-				DbConfigManager.SetDefault(host.Services);
-				await host.StartAsync();
-				await host.StopAsync();
-				bool autoClose = hostConfig.GetValue<bool>("AutoClose");
-				if (!autoClose)
-				{
-					Console.ReadKey();
-				}
+				Console.ReadKey();
 			}
+			await host.StopAsync();
 		}
 
 		private static string GetNameSpaceOfServices(IConfiguration hostConf, string arg)
