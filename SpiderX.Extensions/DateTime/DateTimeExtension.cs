@@ -8,12 +8,12 @@ namespace SpiderX.Extensions
 
 		public static long ToTimestamp(this DateTime dt)
 		{
-			return (dt.Ticks - TicksOfDbBirth) / 10_000_000;
+			return (dt.ToUniversalTime().Ticks - TicksOfDbBirth) / 10_000_000;
 		}
 
 		public static long ToTimestampMillisec(this DateTime dt)
 		{
-			return (dt.Ticks - TicksOfDbBirth) / 10_000;
+			return (dt.ToUniversalTime().Ticks - TicksOfDbBirth) / 10_000;
 		}
 
 		public static int ToShortDateNumber(this DateTime dt)
