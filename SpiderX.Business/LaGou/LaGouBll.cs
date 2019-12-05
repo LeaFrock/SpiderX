@@ -11,11 +11,11 @@ namespace SpiderX.Business.LaGou
 {
 	public sealed partial class LaGouBll : BllBase
 	{
-		private readonly KeyValuePair<string, Func<SchemeBase>>[] _schemeFactories = new KeyValuePair<string, Func<SchemeBase>>[]
+		private readonly Dictionary<string, Func<SchemeBase>> _schemeFactories = new Dictionary<string, Func<SchemeBase>>()
 		{
-			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb", () => new DefaultScheme() { Collector = new PcWebCollector() }),
-			new KeyValuePair<string, Func<SchemeBase>>("def_pcweb_p", () => new DefaultScheme() { Collector = new PcWebCollector() { UseProxy = true } }),
-			new KeyValuePair<string, Func<SchemeBase>>("def_pcwebpptr", () => new DefaultScheme() { Collector = new PcWebPptrCollector() })
+			{ "def_pcweb", () => new DefaultScheme() { Collector = new PcWebCollector() } },
+			{ "def_pcweb_p", () => new DefaultScheme() { Collector = new PcWebCollector() { UseProxy = true } } },
+			{ "def_pcwebpptr", () => new DefaultScheme() { Collector = new PcWebPptrCollector() } }
 		};
 
 		public LaGouBll(ILogger logger, string[] runSetting, string dbConfigName, int version) : base(logger, runSetting, dbConfigName, version)
@@ -37,13 +37,12 @@ namespace SpiderX.Business.LaGou
 				return;
 			}
 			string schemeKey = args[0];
-			if (string.IsNullOrEmpty(schemeKey))
+			if (string.IsNullOrEmpty(schemeKey) || !_schemeFactories.TryGetValue(schemeKey.ToLowerInvariant(), out var schemeFactory))
 			{
 				ShowLogError($"Invalid RunSettings[0]: {schemeKey}.");
 				return;
 			}
-			var schemePair = Array.Find(_schemeFactories, s => s.Key.Equals(schemeKey, StringComparison.CurrentCultureIgnoreCase));
-			var scheme = schemePair.Value?.Invoke();
+			var scheme = schemeFactory.Invoke();
 			if (scheme == null)
 			{
 				ShowLogError($"Scheme Invoke Error: {schemeKey}.");

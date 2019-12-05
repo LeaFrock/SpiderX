@@ -14,7 +14,7 @@ namespace SpiderX.Business.LaGou.DbEntities
 
 		public int ResumeProcessDay { get; set; }
 
-		public long LastLoginTimestamp { get; set; }
+		public DateTime LastLoginTime { get; set; }
 
 		public int DateNumber { get; set; }
 

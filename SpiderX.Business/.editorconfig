@@ -20,3 +20,6 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 
 # CA1062: 验证公共方法的参数
 dotnet_diagnostic.CA1062.severity = silent
+
+# CA1308: 将字符串规范化为大写
+dotnet_diagnostic.CA1308.severity = none

@@ -27,35 +27,30 @@ namespace SpiderX.Business.LaGou
 				string encodedCityName = WebTool.UrlEncodeByW3C(searchParam.CityName);
 				string encodedKeyword = WebTool.UrlEncodeByW3C(searchParam.Keyword);
 				LaGouResponseDataCollection dataCollection = new LaGouResponseDataCollection();
-				using (var client = CreateHttpClient())
+				using var client = CreateHttpClient();
+				await TryInitCookiesAsync(client, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
+				await Task.Delay(100).ConfigureAwait(false);
+				string sid = null;
+				await GetResponseData("1").ConfigureAwait(false);
+				for (int i = 2; i <= searchParam.MaxPage; i++)
 				{
-					await TryInitCookiesAsync(client, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
-					await Task.Delay(100);
-					string sid = null;
-					using (var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, "1"))
-					{
-						string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
-						var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
-						if (data != null)
-						{
-							dataCollection.AddResponseData(data);
-						}
-					}
-					for (int i = 2; i <= searchParam.MaxPage; i++)
-					{
-						await Task.Delay(RandomTool.NextIntSafely(4000, 6000));
-						using var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, i.ToString(), sid);
-						string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
-						var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
-						if (data != null)
-						{
-							dataCollection.AddResponseData(data);
-						}
-					}
+					await Task.Delay(RandomTool.NextIntSafely(4000, 6000)).ConfigureAwait(false);
+					await GetResponseData(i.ToString()).ConfigureAwait(false);
 				}
 				dataCollection.FillPositions(searchParam.Keyword);
 				dataCollection.FillCompanies(searchParam.CityName);
 				return dataCollection;
+
+				async Task GetResponseData(string pageNum)
+				{
+					using var postContent = PcWebApiProvider.GetPositionAjaxContent(encodedKeyword, pageNum);
+					string ajaxRsp = await PostPositionAjaxAsync(client, postContent, encodedCityName, encodedKeyword, searchParam.SearchType).ConfigureAwait(false);
+					var data = PcWebApiProvider.CreateResponseData(ajaxRsp, out sid);
+					if (data != null)
+					{
+						dataCollection.AddResponseData(data);
+					}
+				}
 			}
 
 			private async Task<bool> TryInitCookiesAsync(SpiderHttpClient client, string encodedCityName, string encodedKeyword, string type = "new")

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -188,7 +189,8 @@ namespace SpiderX.Business.LaGou
 				//Publisher Record
 				int resumeProcessRate = jsonItem.Value<int>("resumeProcessRate");
 				int resumeProcessDay = jsonItem.Value<int>("resumeProcessDay");
-				long lastloginTime = jsonItem.Value<long>("lastLogin");
+				DateTime? lastLogin = jsonItem.Value<DateTime?>("lastLogin");
+				DateTime lastLoginTime = lastLogin ?? SqlDateTime.MinValue.Value;
 				LaGouPositionEntity pe = new LaGouPositionEntity()
 				{
 					Name = positionName,
@@ -233,7 +235,7 @@ namespace SpiderX.Business.LaGou
 					UserId = publisherId,
 					ResumeProcessDay = resumeProcessDay,
 					ResumeProcessRate = resumeProcessRate,
-					LastLoginTimestamp = lastloginTime,
+					LastLoginTime = lastLoginTime,
 					DateNumber = DateTime.Now.ToDateNumber()
 				};
 				return new LaGouResponseItem()

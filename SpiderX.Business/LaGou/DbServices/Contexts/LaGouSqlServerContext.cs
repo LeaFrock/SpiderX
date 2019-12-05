@@ -108,6 +108,8 @@ namespace SpiderX.Business.LaGou.DbContexts
 				.ValueGeneratedOnAdd();
 				e.HasIndex(p => p.UserId);
 				e.HasIndex(p => p.DateNumber);
+				e.Property(p => p.LastLoginTime)
+				.HasColumnType("DATETIME");
 				e.Property(p => p.DbCreateTime)
 				.HasColumnType("DATETIME")
 				.HasDefaultValueSql("GETDATE()")
