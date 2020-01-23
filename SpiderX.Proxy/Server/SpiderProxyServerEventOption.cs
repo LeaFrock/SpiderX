@@ -14,8 +14,8 @@ namespace SpiderX.Proxy
 		public AsyncEventHandler<CertificateValidationEventArgs> ServerCertificateValidationCallback { get; set; }
 		public EventHandler ServerConnectionCountChanged { get; set; }
 		public EventHandler ClientConnectionCountChanged { get; set; }
-		public AsyncEventHandler<TcpClient> OnServerConnectionCreate { get; set; }
-		public AsyncEventHandler<TcpClient> OnClientConnectionCreate { get; set; }
+		public AsyncEventHandler<Socket> OnServerConnectionCreate { get; set; }
+		public AsyncEventHandler<Socket> OnClientConnectionCreate { get; set; }
 
 		internal void Bind(ProxyServer server)
 		{
