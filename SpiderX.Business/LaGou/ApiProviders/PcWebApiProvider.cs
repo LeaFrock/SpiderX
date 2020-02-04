@@ -26,7 +26,7 @@ namespace SpiderX.Business.LaGou
 
             public static Uri GetPositionAjaxUri(string encodedCityName, string type = "new")
             {
-                StringBuilder sb = new StringBuilder(5);
+                StringBuilder sb = new StringBuilder(64);
                 sb.Append(PositionAjaxUrlPrefix + "?px=");
                 sb.Append(type);
                 sb.Append("&gx=%E5%85%A8%E8%81%8C&city=");
@@ -38,7 +38,7 @@ namespace SpiderX.Business.LaGou
 
             public static Uri GetPostionAjaxReferer(string encodedCityName, string encodedKeyword, string type = "new")
             {
-                StringBuilder sb = new StringBuilder(6);
+                StringBuilder sb = new StringBuilder(64);
                 sb.Append("https://www.lagou.com/jobs/list_");
                 sb.Append(encodedKeyword);
                 sb.Append("?px=");
@@ -289,7 +289,7 @@ namespace SpiderX.Business.LaGou
 
             public static Uri GetJobListUri(string encodedCityName, string encodedKeyword, string type = "new")
             {
-                StringBuilder sb = new StringBuilder(6);
+                StringBuilder sb = new StringBuilder(64);
                 sb.Append("https://www.lagou.com/jobs/list_");
                 sb.Append(encodedKeyword);
                 sb.Append("?px=");
