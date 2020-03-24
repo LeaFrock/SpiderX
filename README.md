@@ -1,9 +1,10 @@
 # SpiderX
 
+[DotNetCoreUrl]: https://dotnet.microsoft.com/download
+[SpiderXTemplateRepoUrl]: https://github.com/LeaFrock/SpiderX.Template
+
 [![.NET Core](https://img.shields.io/badge/.NET%20Core-%203.1-brightgreen)][DotNetCoreUrl]
 ![License](https://img.shields.io/badge/License-GPL--3.0-blue)
-
-[DotNetCoreUrl]: https://dotnet.microsoft.com/download
 
 This is a simple web-crawler development framework based on .Net Core.  
 >本项目是一个简单的基于 .Net Core 的爬虫开发框架。
@@ -105,6 +106,10 @@ All of the samples in this project are just for instructions, learning and commu
   - SpiderX.Puppeteer  
     Includes kinds of functions related to Puppeteer operations, based on PuppeteerSharp.
     >基于PuppeteerSharp封装各种与Puppeteer操作相关的方法。
+
+## Assistant |辅助工具
+
+- CLI & Templates : [SpiderX.Template][SpiderXTemplateRepoUrl]
 
 ## Contribution |贡献
 
