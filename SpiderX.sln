@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Puppeteer", "Spider
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.Redis", "SpiderX.Redis\SpiderX.Redis.csproj", "{FA5EA4C6-C5F7-4554-9B89-4DE9BC9A2BE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderX.ProxyFilter", "SpiderX.ProxyFilter\SpiderX.ProxyFilter.csproj", "{C7909CFC-C89F-425E-A4DA-AAD9379405C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiderX.ProxyFilter", "SpiderX.ProxyFilter\SpiderX.ProxyFilter.csproj", "{C7909CFC-C89F-425E-A4DA-AAD9379405C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
