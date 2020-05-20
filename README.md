@@ -21,7 +21,7 @@ All of the samples in this project are just for instructions, learning and commu
 
 - Target Framework |运行框架: [.Net Core 3.1+](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
 
-- Recommended IDE |推荐IDE: [Visual Studio 2019 16.4+](https://visualstudio.microsoft.com/zh-hans/downloads/)
+- Recommended IDE |推荐IDE: [Visual Studio 2019 16.6+](https://visualstudio.microsoft.com/zh-hans/downloads/)
 
 - Recommended Language Version |推荐语言版本: [C# 8.0+](https://docs.microsoft.com/zh-cn/dotnet/csharp/whats-new/)
 
