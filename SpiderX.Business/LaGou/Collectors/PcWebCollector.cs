@@ -53,7 +53,7 @@ namespace SpiderX.Business.LaGou
 				}
 			}
 
-			private async Task<bool> TryInitCookiesAsync(SpiderHttpClient client, string encodedCityName, string encodedKeyword, string type = "new")
+			private static async Task<bool> TryInitCookiesAsync(SpiderHttpClient client, string encodedCityName, string encodedKeyword, string type = "new")
 			{
 				var jobListRspMsg = await GetJobListAsync(client, encodedCityName, encodedKeyword, type).ConfigureAwait(false);
 				if (jobListRspMsg != null)
