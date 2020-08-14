@@ -33,7 +33,7 @@ namespace SpiderX.Business.LaGou
 			}
 			if (args.Length != settingLength)
 			{
-				ShowLogError($"Invalid length of RunSettings: {args.Length.ToString()}. The right length should be {settingLength.ToString()}.");
+				ShowLogError($"Invalid length of RunSettings: {args.Length}. The right length should be {settingLength}.");
 				return;
 			}
 			string schemeKey = args[0];
@@ -52,7 +52,7 @@ namespace SpiderX.Business.LaGou
 			{
 				if (string.IsNullOrEmpty(args[i]))
 				{
-					ShowLogError($"Invalid RunSettings[{i.ToString()}]: {args[i]}.");
+					ShowLogError($"Invalid RunSettings[{i}]: {args[i]}.");
 					return;
 				}
 			}
